@@ -1,0 +1,3008 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>岗位虾工作台 - 设计稿 V2</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #F5F8FC;
+      color: #161A2D;
+      line-height: 1.5;
+    }
+
+    /* 页面容器 */
+    .page-container {
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* 主内容区 */
+    .main-content {
+      flex: 1;
+      padding: 24px;
+    }
+
+    /* 页面头部 */
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .page-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #161A2D;
+    }
+
+    .btn-primary {
+      background: #2660FF;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+
+    .btn-primary:hover {
+      background: #4078FF;
+    }
+
+    /* 卡片 */
+    .card {
+      background: white;
+      border-radius: 12px;
+      border: 1px solid #E4ECF8;
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #F0F4FA;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #161A2D;
+    }
+
+    .card-extra {
+      color: #2660FF;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .card-body {
+      padding: 20px;
+    }
+
+    /* 快捷入口 */
+    .quick-entries {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .quick-entry-card {
+      background: white;
+      border-radius: 12px;
+      border: 1px solid #E4ECF8;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .quick-entry-card:hover {
+      border-color: #2660FF;
+      box-shadow: 0 4px 12px rgba(38, 96, 255, 0.1);
+    }
+
+    .quick-entry-card.active {
+      border-color: #2660FF;
+      background: #F5F8FF;
+    }
+
+    .quick-entry-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .quick-entry-icon svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .quick-entry-icon img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .quick-entry-info {
+      flex: 1;
+    }
+
+    .quick-entry-title {
+      font-size: 14px;
+      color: #576477;
+      margin-bottom: 4px;
+    }
+
+    .quick-entry-count {
+      font-size: 32px;
+      font-weight: 600;
+      color: #161A2D;
+    }
+
+    /* 最近使用 - 紧凑横向列表 */
+    .recent-section {
+      margin-bottom: 24px;
+    }
+
+    .recent-list-compact {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding: 4px 0;
+    }
+
+    .recent-item-compact {
+      flex: 0 0 auto;
+      min-width: 180px;
+      background: white;
+      border-radius: 8px;
+      border: 1px solid #E4ECF8;
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .recent-item-compact:hover {
+      border-color: #2660FF;
+      background: #F5F8FF;
+    }
+
+    .recent-item-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 500;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+
+    .recent-item-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .recent-item-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: #161A2D;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .recent-item-meta {
+      font-size: 12px;
+      color: #8C93B3;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .recent-item-meta svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    /* 状态标签 */
+    .status-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .status-tag.success {
+      background: #E6F7ED;
+      color: #00B259;
+    }
+
+    .status-tag.warning {
+      background: #FFF4E6;
+      color: #FF8800;
+    }
+
+    .status-tag.default {
+      background: #F0F4FA;
+      color: #8C93B3;
+    }
+
+    .status-tag.primary {
+      background: #E5ECFF;
+      color: #2660FF;
+    }
+
+    .status-tag.danger {
+      background: #FFECE8;
+      color: #FF4D4F;
+    }
+
+    /* 筛选区 */
+    .filter-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .filter-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: white;
+      border: 1px solid #E4ECF8;
+      border-radius: 6px;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    .filter-item:hover {
+      border-color: #2660FF;
+    }
+
+    .filter-item.active {
+      border-color: #2660FF;
+      background: #F5F8FF;
+    }
+
+    .filter-label {
+      color: #576477;
+      font-size: 14px;
+    }
+
+    .filter-arrow {
+      color: #8C93B3;
+      transition: transform 0.2s;
+    }
+
+    .filter-arrow svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    .filter-item.active .filter-arrow {
+      transform: rotate(180deg);
+    }
+
+    /* 筛选下拉面板 */
+    .filter-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      min-width: 220px;
+      background: white;
+      border-radius: 8px;
+      border: 1px solid #E4ECF8;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+      z-index: 100;
+      margin-top: 4px;
+      display: none;
+    }
+
+    .filter-dropdown.show {
+      display: block;
+    }
+
+    .filter-dropdown-search {
+      padding: 12px;
+      border-bottom: 1px solid #F0F4FA;
+    }
+
+    .filter-dropdown-search input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #E4ECF8;
+      border-radius: 6px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .filter-dropdown-search input:focus {
+      border-color: #2660FF;
+    }
+
+    .filter-dropdown-list {
+      max-height: 240px;
+      overflow-y: auto;
+      padding: 8px 0;
+    }
+
+    .filter-dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .filter-dropdown-item:hover {
+      background: #F5F8FC;
+    }
+
+    .filter-dropdown-item input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #2660FF;
+      cursor: pointer;
+    }
+
+    .filter-dropdown-item label {
+      font-size: 14px;
+      color: #161A2D;
+      cursor: pointer;
+      flex: 1;
+    }
+
+    .filter-dropdown-footer {
+      padding: 12px 16px;
+      border-top: 1px solid #F0F4FA;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .filter-select-all {
+      color: #2660FF;
+      font-size: 14px;
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
+
+    .filter-select-all:hover {
+      text-decoration: underline;
+    }
+
+    /* 筛选项容器 */
+    .filter-item-wrapper {
+      position: relative;
+    }
+
+    .btn-line {
+      background: white;
+      color: #576477;
+      border: 1px solid #E4ECF8;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-line:hover {
+      border-color: #2660FF;
+      color: #2660FF;
+    }
+
+    .btn-line svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* 表格 */
+    .table-container {
+      overflow-x: auto;
+      overflow-y: visible;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      min-width: 1600px;
+    }
+
+    th {
+      background: #F8FAFC;
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 500;
+      color: #576477;
+      border-bottom: 1px solid #E4ECF8;
+      white-space: nowrap;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid #F0F4FA;
+      font-size: 14px;
+      color: #161A2D;
+      white-space: nowrap;
+    }
+
+    /* 固定第一列（岗位虾名称） */
+    th:first-child,
+    td:first-child {
+      position: sticky;
+      left: 0;
+      z-index: 2;
+      background: white;
+      box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
+    }
+
+    th:first-child {
+      background: #F8FAFC;
+    }
+
+    /* 固定最后一列（操作） */
+    th:last-child,
+    td:last-child {
+      position: sticky;
+      right: 0;
+      z-index: 2;
+      background: white;
+      box-shadow: -2px 0 4px rgba(0, 0, 0, 0.05);
+    }
+
+    th:last-child {
+      background: #F8FAFC;
+    }
+
+    tr:hover td {
+      background: #F8FAFC;
+    }
+
+    tr:hover td:first-child,
+    tr:hover td:last-child {
+      background: #F8FAFC;
+    }
+
+    .table-name {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      white-space: nowrap;
+    }
+
+    .table-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .table-link {
+      color: #2660FF;
+      cursor: pointer;
+    }
+
+    .table-link:hover {
+      text-decoration: underline;
+    }
+
+    .app-list-name-link {
+      background: none;
+      border: none;
+      padding: 0;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    /* 标签容器 - 隐藏滚动条 */
+    .tag-container {
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .tag-container::-webkit-scrollbar {
+      display: none;
+    }
+
+    .table-space {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #2660FF;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .table-space:hover {
+      text-decoration: underline;
+    }
+
+    .table-space svg {
+      width: 14px;
+      height: 14px;
+      color: #8C93B3;
+    }
+
+    .table-actions {
+      display: flex;
+      gap: 16px;
+      white-space: nowrap;
+    }
+
+    .table-action {
+      color: #2660FF;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+
+    .table-action:hover {
+      text-decoration: underline;
+    }
+
+    .table-action svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* 弹窗 */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal {
+      background: white;
+      border-radius: 12px;
+      width: 480px;
+      max-height: 80vh;
+      overflow: hidden;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .modal-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid #F0F4FA;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #161A2D;
+    }
+
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      color: #8C93B3;
+    }
+
+    .modal-close:hover {
+      background: #F5F8FC;
+      color: #161A2D;
+    }
+
+    .modal-body {
+      padding: 24px;
+    }
+
+    .space-info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .space-info-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .space-info-label {
+      font-size: 12px;
+      color: #8C93B3;
+    }
+
+    .space-info-value {
+      font-size: 14px;
+      color: #161A2D;
+      font-weight: 500;
+    }
+
+    .space-info-input {
+      background: #F8FAFC;
+      border: 1px solid #E4ECF8;
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-size: 14px;
+      color: #161A2D;
+    }
+
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid #F0F4FA;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    .btn-default {
+      background: white;
+      color: #576477;
+      border: 1px solid #E4ECF8;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-default:hover {
+      border-color: #2660FF;
+      color: #2660FF;
+    }
+
+    /* 分页 */
+    .pagination {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 16px 0;
+      border-top: 1px solid #F0F4FA;
+      margin-top: 16px;
+    }
+
+    .pagination-info {
+      color: #576477;
+      font-size: 14px;
+      margin-right: auto;
+      font-weight: 500;
+    }
+
+    .pagination-btn {
+      min-width: 32px;
+      height: 32px;
+      border: 1px solid #E4ECF8;
+      border-radius: 6px;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 14px;
+      color: #576477;
+      padding: 0 8px;
+    }
+
+    .pagination-btn:hover {
+      border-color: #2660FF;
+      color: #2660FF;
+    }
+
+    .pagination-btn.active {
+      background: #2660FF;
+      border-color: #2660FF;
+      color: white;
+      font-weight: 500;
+    }
+
+    .pagination-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .pagination-btn.disabled {
+      color: #C9CDD8;
+      cursor: not-allowed;
+      border-color: #E4ECF8;
+      background: #F8FAFC;
+    }
+
+    .pagination-ellipsis {
+      color: #8C93B3;
+      font-size: 14px;
+      padding: 0 4px;
+      letter-spacing: 2px;
+    }
+
+    .pagination-size {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: 8px;
+      padding-left: 12px;
+      border-left: 1px solid #E4ECF8;
+    }
+
+    .pagination-size-label {
+      color: #576477;
+      font-size: 14px;
+    }
+
+    .pagination-size-select {
+      border: 1px solid #E4ECF8;
+      border-radius: 6px;
+      padding: 6px 28px 6px 10px;
+      font-size: 14px;
+      color: #161A2D;
+      background: white;
+      cursor: pointer;
+      outline: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%238C93B3' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+    }
+
+    .pagination-size-select:hover {
+      border-color: #2660FF;
+    }
+
+    /* 字段管理侧边栏 */
+    .drawer-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.45);
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s;
+    }
+
+    .drawer-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 400px;
+      height: 100vh;
+      background: white;
+      box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1);
+      z-index: 1001;
+      transform: translateX(100%);
+      transition: transform 0.3s;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .drawer.show {
+      transform: translateX(0);
+    }
+
+    .drawer-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid #F0F4FA;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .drawer-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #161A2D;
+    }
+
+    .drawer-close {
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      color: #8C93B3;
+    }
+
+    .drawer-close:hover {
+      background: #F5F8FC;
+      color: #161A2D;
+    }
+
+    .drawer-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 24px;
+    }
+
+    .drawer-footer {
+      padding: 16px 24px;
+      border-top: 1px solid #F0F4FA;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    /* 字段列表 */
+    .field-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .field-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .field-item:hover {
+      background: #F5F8FC;
+    }
+
+    .field-item.dragging {
+      background: #E5ECFF;
+      opacity: 0.8;
+    }
+
+    .field-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #2660FF;
+      cursor: pointer;
+    }
+
+    .field-item label {
+      flex: 1;
+      font-size: 14px;
+      color: #161A2D;
+      cursor: pointer;
+    }
+
+    .field-drag-handle {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2px;
+      cursor: grab;
+      padding: 2px;
+    }
+
+    .field-drag-handle:active {
+      cursor: grabbing;
+    }
+
+    .drag-dot {
+      width: 4px;
+      height: 4px;
+      background: #8C93B3;
+      border-radius: 50%;
+    }
+
+    .field-all-item {
+      padding-bottom: 12px;
+      margin-bottom: 8px;
+      border-bottom: 1px solid #F0F4FA;
+    }
+
+    /* Popover 弹出层 */
+    .popover-trigger {
+      display: inline-flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .popover {
+      position: fixed;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+      border: 1px solid #E4ECF8;
+      z-index: 2000;
+      padding: 12px 16px;
+      min-width: 180px;
+      max-width: 320px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(4px);
+      transition: all 0.15s;
+    }
+
+    .popover.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .popover-title {
+      font-size: 13px;
+      color: #8C93B3;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .popover-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .popover-list-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 0;
+    }
+
+    .popover-list-item-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #E5ECFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: #2660FF;
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+
+    .popover-list-item-name {
+      font-size: 13px;
+      color: #161A2D;
+    }
+
+    .tag-more {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #F0F4FA;
+      color: #576477;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 2px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.2s;
+      line-height: 18px;
+    }
+
+    .tag-more:hover {
+      background: #E5ECFF;
+      color: #2660FF;
+    }
+
+    /* ====== 申请岗位虾 Drawer ====== */
+    .apply-drawer-overlay {
+      display: none; position: fixed; inset: 0; z-index: 10000;
+      background: rgba(0,0,0,.3); transition: opacity .3s;
+    }
+    .apply-drawer-overlay.show { display: flex; }
+    .apply-drawer-panel {
+      position: fixed; top: 0; right: 0; bottom: 0; width: 520px;
+      background: #fff; box-shadow: -4px 0 24px rgba(0,0,0,.12);
+      display: flex; flex-direction: column;
+      transform: translateX(100%); transition: transform .3s cubic-bezier(.4,0,.2,1);
+    }
+    .apply-drawer-overlay.show .apply-drawer-panel { transform: translateX(0); }
+
+    .apply-drawer-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 28px 16px; border-bottom: 1px solid #eef1f6;
+    }
+    .apply-drawer-header h2 { font-size: 17px; font-weight: 600; color: #161A2D; }
+    .apply-drawer-close {
+      width: 32px; height: 32px; border: none; background: #f5f6f8; border-radius: 8px;
+      font-size: 18px; cursor: pointer; color: #60636b; display: flex;
+      align-items: center; justify-content: center; transition: background .15s;
+    }
+    .apply-drawer-close:hover { background: #e5e8ef; }
+
+    .apply-drawer-body { flex: 1; padding: 24px 28px; overflow-y: auto; }
+
+    .apply-form-section {
+      background: #f8f9fc; border-radius: 10px; padding: 20px;
+      margin-bottom: 16px;
+    }
+    .apply-form-section-title {
+      font-size: 13px; font-weight: 600; color: #60636b; margin-bottom: 16px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .apply-form-section-title .dot {
+      width: 4px; height: 14px; border-radius: 2px; background: #2660FF;
+    }
+
+    .apply-form-group { margin-bottom: 18px; }
+    .apply-form-group:last-child { margin-bottom: 0; }
+    .apply-form-label {
+      display: flex; align-items: center; gap: 4px;
+      font-size: 13px; font-weight: 500; color: #161A2D; margin-bottom: 6px;
+    }
+    .apply-form-label .required { color: #FF4D4F; font-size: 14px; line-height: 1; }
+    .apply-form-input, .apply-form-select, .apply-form-textarea {
+      width: 100%; padding: 9px 12px; border: 1px solid #d0d5dd; border-radius: 8px;
+      font-size: 14px; color: #161A2D; outline: none; transition: all .2s;
+      background: #fff;
+    }
+    .apply-form-input:focus, .apply-form-select:focus, .apply-form-textarea:focus {
+      border-color: #2660FF; box-shadow: 0 0 0 3px rgba(38,96,255,.1);
+    }
+    .apply-form-input--readonly {
+      background: #F2F3F5; color: #86909C; cursor: not-allowed;
+    }
+    .apply-form-input--readonly.apply-form-input--has-value {
+      background: #F5F8FC; color: #161A2D;
+    }
+    .apply-form-textarea {
+      resize: vertical; min-height: 80px; font-family: inherit; line-height: 1.6;
+    }
+    .apply-form-textarea.tall { min-height: 100px; }
+    .apply-form-select {
+      appearance: none; cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%238f959e' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px;
+    }
+
+    .apply-form-hint {
+      font-size: 12px; color: #8f959e; margin-top: 6px; line-height: 1.5;
+      display: flex; align-items: flex-start; gap: 4px;
+    }
+    .apply-form-hint .hint-icon {
+      width: 14px; height: 14px; border-radius: 50%; background: #eef1f6;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 10px; color: #8f959e; flex-shrink: 0; margin-top: 2px;
+    }
+    .apply-char-counter {
+      font-size: 12px; color: #8f959e; text-align: right; margin-top: 4px;
+    }
+    .apply-char-counter.warn { color: #d48806; }
+    .apply-char-counter.over { color: #cf1322; }
+
+    .apply-drawer-footer {
+      padding: 16px 28px; border-top: 1px solid #eef1f6;
+    }
+    .apply-drawer-footer-actions { display: flex; justify-content: flex-end; gap: 10px; }
+
+    .apply-toast {
+      display: none; position: fixed; top: 24px; left: 50%; transform: translateX(-50%);
+      z-index: 10001; padding: 12px 24px; border-radius: 10px;
+      font-size: 14px; font-weight: 500; box-shadow: 0 4px 16px rgba(0,0,0,.12);
+      animation: applyToastIn .3s;
+    }
+    .apply-toast.success { background: #f0f9eb; color: #389e0d; border: 1px solid #b7eb8f; }
+    @keyframes applyToastIn { from { opacity: 0; transform: translateX(-50%) translateY(-10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+
+    /* Tree Selector - Breadcrumb + Flat List */
+    .apply-tree-trigger {
+      width: 100%; padding: 9px 12px; border: 1px solid #d0d5dd; border-radius: 8px;
+      font-size: 14px; color: #161A2D; background: #fff; cursor: pointer;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: all .2s; min-height: 38px;
+    }
+    .apply-tree-trigger:hover { border-color: #2660FF; }
+    .apply-tree-trigger.active { border-color: #2660FF; box-shadow: 0 0 0 3px rgba(38,96,255,.1); }
+    .apply-tree-trigger .placeholder { color: #b0b5bd; }
+    .apply-tree-trigger .selected-text { color: #161A2D; }
+    .apply-tree-trigger .arrow {
+      width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;
+      transition: transform .2s; color: #8f959e; flex-shrink: 0;
+    }
+    .apply-tree-trigger.active .arrow { transform: rotate(180deg); }
+
+    .apply-tree-dropdown {
+      display: none; position: absolute; top: 100%; left: 0; right: 0; z-index: 100;
+      background: #fff; border: 1px solid #e5e8ef; border-radius: 10px;
+      box-shadow: 0 6px 20px rgba(0,0,0,.12); margin-top: 4px; overflow: hidden;
+    }
+    .apply-tree-dropdown.show { display: block; }
+
+    .apply-tree-search {
+      padding: 10px 12px; border-bottom: 1px solid #eef1f6;
+    }
+    .apply-tree-search input {
+      width: 100%; padding: 7px 10px; border: 1px solid #d0d5dd; border-radius: 6px;
+      font-size: 13px; outline: none; transition: border-color .2s;
+    }
+    .apply-tree-search input:focus { border-color: #2660FF; }
+    .apply-tree-search input::placeholder { color: #b0b5bd; }
+
+    /* Breadcrumb */
+    .apply-tree-breadcrumb {
+      display: flex; align-items: center; gap: 2px; padding: 8px 12px;
+      border-bottom: 1px solid #f0f1f3; flex-wrap: wrap; min-height: 36px;
+    }
+    .apply-tree-breadcrumb-item {
+      font-size: 12px; color: #576477; cursor: pointer; padding: 2px 6px;
+      border-radius: 4px; transition: all .15s; white-space: nowrap;
+    }
+    .apply-tree-breadcrumb-item:hover { background: #f0f4fa; color: #2660FF; }
+    .apply-tree-breadcrumb-item:last-child { color: #161A2D; font-weight: 500; cursor: default; }
+    .apply-tree-breadcrumb-item:last-child:hover { background: transparent; }
+    .apply-tree-breadcrumb-sep {
+      font-size: 10px; color: #C9CDD8; flex-shrink: 0;
+    }
+
+    /* Flat List */
+    .apply-tree-flat-list {
+      max-height: 280px; overflow-y: auto; padding: 4px 0;
+    }
+    .apply-tree-flat-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 9px 12px; font-size: 13px; color: #4e5969; cursor: pointer;
+      transition: background .1s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .apply-tree-flat-item:hover { background: #f5f8fc; }
+    .apply-tree-flat-item .item-left {
+      display: flex; align-items: center; gap: 8px; min-width: 0;
+    }
+    .apply-tree-flat-item .item-icon {
+      width: 28px; height: 28px; border-radius: 6px; background: #f0f4fa;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; flex-shrink: 0;
+    }
+    .apply-tree-flat-item .item-name {
+      overflow: hidden; text-overflow: ellipsis;
+    }
+    .apply-tree-flat-item .item-arrow {
+      font-size: 11px; color: #b0b5bd; flex-shrink: 0; margin-left: 8px;
+    }
+    .apply-tree-flat-item.has-children .item-name { color: #161A2D; font-weight: 500; }
+    .apply-tree-flat-item.is-leaf .item-name { padding-left: 36px; }
+
+    /* Search result path */
+    .apply-tree-search-result {
+      display: flex; align-items: center; gap: 4px; margin-top: 2px;
+    }
+    .apply-tree-search-path {
+      font-size: 11px; color: #8C93B3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+
+    /* Selected tag */
+    .apply-tree-selected-tag {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 8px; background: #e6ecff; color: #2660FF; border-radius: 4px;
+      font-size: 12px; margin: 8px 12px; max-width: calc(100% - 24px);
+    }
+    .apply-tree-selected-tag .tag-remove {
+      width: 14px; height: 14px; border-radius: 50%; background: rgba(38,96,255,.2);
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+      font-size: 10px; flex-shrink: 0;
+    }
+    .apply-tree-selected-tag .tag-remove:hover { background: rgba(38,96,255,.4); }
+
+    .apply-tree-empty {
+      padding: 24px; text-align: center; font-size: 13px; color: #b0b5bd;
+    }
+
+    .apply-form-group-tree { position: relative; }
+
+    /* 响应式 */
+    @media (max-width: 1200px) {
+      .quick-entries {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .main-content {
+        padding: 16px;
+      }
+      .quick-entries {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .recent-item-compact {
+        min-width: 160px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-container">
+    <!-- 主内容区 -->
+    <main class="main-content">
+      <!-- 页面头部 -->
+      <header class="page-header">
+        <h1 class="page-title">岗位虾工作台</h1>
+        <button class="btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          <span>申请岗位虾</span>
+        </button>
+      </header>
+
+      <!-- 快捷入口 -->
+      <section class="quick-entries" id="quickEntries">
+        <div class="quick-entry-card active" data-filter="used" onclick="handleQuickFilter('used', this)">
+          <div class="quick-entry-icon" style="background: #7B61FF;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+          </div>
+          <div class="quick-entry-info">
+            <div class="quick-entry-title">我使用的</div>
+            <div class="quick-entry-count" id="countUsed">23</div>
+          </div>
+        </div>
+        <div class="quick-entry-card" data-filter="managed" onclick="handleQuickFilter('managed', this)">
+          <div class="quick-entry-icon" style="background: #00B259;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="8.5" cy="7" r="4"/>
+              <path d="M20 8v6"/>
+              <path d="M23 11h-6"/>
+            </svg>
+          </div>
+          <div class="quick-entry-info">
+            <div class="quick-entry-title">我管理的</div>
+            <div class="quick-entry-count" id="countManaged">5</div>
+          </div>
+        </div>
+        <div class="quick-entry-card" data-filter="trained" onclick="handleQuickFilter('trained', this)">
+          <div class="quick-entry-icon" style="background: #FF8800;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <div class="quick-entry-info">
+            <div class="quick-entry-title">我训练的</div>
+            <div class="quick-entry-count" id="countTrained">2</div>
+          </div>
+        </div>
+        <div class="quick-entry-card" data-filter="applied" onclick="handleQuickFilter('applied', this)">
+          <div class="quick-entry-icon" style="background: #2660FF;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+              <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
+            </svg>
+          </div>
+          <div class="quick-entry-info">
+            <div class="quick-entry-title">我申请的</div>
+            <div class="quick-entry-count" id="countApplied">3</div>
+          </div>
+        </div>
+        <div class="quick-entry-card" data-filter="favorited" onclick="handleQuickFilter('favorited', this)">
+          <div class="quick-entry-icon" style="background: #FF4D4F;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+              <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+            </svg>
+          </div>
+          <div class="quick-entry-info">
+            <div class="quick-entry-title">我收藏的</div>
+            <div class="quick-entry-count" id="countFavorited">4</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 最近使用 -->
+      <section class="recent-section">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">最近使用</h2>
+          </div>
+          <div class="card-body">
+            <div class="recent-list-compact">
+              <div class="recent-item-compact">
+                <div class="recent-item-avatar" style="background: #00B259;">HW</div>
+                <div class="recent-item-info">
+                  <div class="recent-item-name">HW的虾米</div>
+                  <div class="recent-item-meta">
+                    <span class="status-tag success" style="padding: 1px 6px; font-size: 11px;">上岗</span>
+                    <span>2分钟前</span>
+                  </div>
+                </div>
+              </div>
+              <div class="recent-item-compact">
+                <div class="recent-item-avatar" style="background: #2660FF;">东南</div>
+                <div class="recent-item-info">
+                  <div class="recent-item-name">东南亚销售虾</div>
+                  <div class="recent-item-meta">
+                    <span class="status-tag success" style="padding: 1px 6px; font-size: 11px;">上岗</span>
+                    <span>1小时前</span>
+                  </div>
+                </div>
+              </div>
+              <div class="recent-item-compact">
+                <div class="recent-item-avatar" style="background: #FF8800;">客服</div>
+                <div class="recent-item-info">
+                  <div class="recent-item-name">客服助手</div>
+                  <div class="recent-item-meta">
+                    <span class="status-tag warning" style="padding: 1px 6px; font-size: 11px;">试运行</span>
+                    <span>昨天</span>
+                  </div>
+                </div>
+              </div>
+              <div class="recent-item-compact">
+                <div class="recent-item-avatar" style="background: #7B61FF;">数据</div>
+                <div class="recent-item-info">
+                  <div class="recent-item-name">数据分析虾</div>
+                  <div class="recent-item-meta">
+                    <span class="status-tag success" style="padding: 1px 6px; font-size: 11px;">上岗</span>
+                    <span>3天前</span>
+                  </div>
+                </div>
+              </div>
+              <div class="recent-item-compact">
+                <div class="recent-item-avatar" style="background: #8C93B3;">培训</div>
+                <div class="recent-item-info">
+                  <div class="recent-item-name">培训助手</div>
+                  <div class="recent-item-meta">
+                    <span class="status-tag default" style="padding: 1px 6px; font-size: 11px;">申请中</span>
+                    <span>1周前</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 全部岗位虾 -->
+      <section class="card">
+        <div class="card-header">
+          <h2 class="card-title">全部岗位虾</h2>
+        </div>
+        <div class="card-body">
+          <!-- 筛选区 -->
+          <div class="filter-section">
+            <!-- 状态筛选 -->
+            <div class="filter-item-wrapper">
+              <div class="filter-item" data-filter="status">
+                <span class="filter-label">状态</span>
+                <span class="filter-arrow">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6,9 12,15 18,9"/>
+                  </svg>
+                </span>
+              </div>
+              <div class="filter-dropdown" id="statusFilter">
+                <div class="filter-dropdown-search">
+                  <input type="text" placeholder="搜索" />
+                </div>
+                <div class="filter-dropdown-list">
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="status-1" />
+                    <label for="status-1">上岗</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="status-2" />
+                    <label for="status-2">试运行</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="status-3" />
+                    <label for="status-3">申请中</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="status-4" />
+                    <label for="status-4">冻结</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="status-5" />
+                    <label for="status-5">下岗</label>
+                  </div>
+                </div>
+                <div class="filter-dropdown-footer">
+                  <button class="filter-select-all">全选</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 空间筛选 -->
+            <div class="filter-item-wrapper">
+              <div class="filter-item" data-filter="space">
+                <span class="filter-label">所属空间</span>
+                <span class="filter-arrow">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6,9 12,15 18,9"/>
+                  </svg>
+                </span>
+              </div>
+              <div class="filter-dropdown" id="spaceFilter">
+                <div class="filter-dropdown-search">
+                  <input type="text" placeholder="搜索" />
+                </div>
+                <div class="filter-dropdown-list">
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="space-1" />
+                    <label for="space-1">国际业务 BP空间 (SP001)</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="space-2" />
+                    <label for="space-2">东南亚空间 (SP002)</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="space-3" />
+                    <label for="space-3">客服空间 (SP003)</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="space-4" />
+                    <label for="space-4">数据空间 (SP004)</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="space-5" />
+                    <label for="space-5">培训空间 (SP005)</label>
+                  </div>
+                </div>
+                <div class="filter-dropdown-footer">
+                  <button class="filter-select-all">全选</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 工号筛选 -->
+            <div class="filter-item-wrapper">
+              <div class="filter-item" data-filter="employeeId">
+                <span class="filter-label">工号</span>
+                <span class="filter-arrow">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6,9 12,15 18,9"/>
+                  </svg>
+                </span>
+              </div>
+              <div class="filter-dropdown" id="employeeIdFilter">
+                <div class="filter-dropdown-search">
+                  <input type="text" placeholder="搜索" />
+                </div>
+                <div class="filter-dropdown-list">
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="emp-1" />
+                    <label for="emp-1">E100142</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="emp-2" />
+                    <label for="emp-2">E100234</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="emp-3" />
+                    <label for="emp-3">E100345</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="emp-4" />
+                    <label for="emp-4">E100456</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="emp-5" />
+                    <label for="emp-5">E100567</label>
+                  </div>
+                </div>
+                <div class="filter-dropdown-footer">
+                  <button class="filter-select-all">全选</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- MID筛选 -->
+            <div class="filter-item-wrapper">
+              <div class="filter-item" data-filter="mid">
+                <span class="filter-label">MID</span>
+                <span class="filter-arrow">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6,9 12,15 18,9"/>
+                  </svg>
+                </span>
+              </div>
+              <div class="filter-dropdown" id="midFilter">
+                <div class="filter-dropdown-search">
+                  <input type="text" placeholder="搜索" />
+                </div>
+                <div class="filter-dropdown-list">
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="mid-1" />
+                    <label for="mid-1">13800138001</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="mid-2" />
+                    <label for="mid-2">13900139002</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="mid-3" />
+                    <label for="mid-3">15000150003</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="mid-4" />
+                    <label for="mid-4">18600186004</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="mid-5" />
+                    <label for="mid-5">17700177005</label>
+                  </div>
+                </div>
+                <div class="filter-dropdown-footer">
+                  <button class="filter-select-all">全选</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 所属部门筛选 -->
+            <div class="filter-item-wrapper">
+              <div class="filter-item" data-filter="department">
+                <span class="filter-label">所属部门</span>
+                <span class="filter-arrow">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6,9 12,15 18,9"/>
+                  </svg>
+                </span>
+              </div>
+              <div class="filter-dropdown" id="departmentFilter">
+                <div class="filter-dropdown-search">
+                  <input type="text" placeholder="搜索" />
+                </div>
+                <div class="filter-dropdown-list">
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="dept-1" />
+                    <label for="dept-1">国际业务部</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="dept-2" />
+                    <label for="dept-2">东南亚销售部</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="dept-3" />
+                    <label for="dept-3">客户服务部</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="dept-4" />
+                    <label for="dept-4">数据分析部</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="dept-5" />
+                    <label for="dept-5">培训发展部</label>
+                  </div>
+                </div>
+                <div class="filter-dropdown-footer">
+                  <button class="filter-select-all">全选</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 训虾员筛选 -->
+            <div class="filter-item-wrapper">
+              <div class="filter-item" data-filter="trainer">
+                <span class="filter-label">训虾员</span>
+                <span class="filter-arrow">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6,9 12,15 18,9"/>
+                  </svg>
+                </span>
+              </div>
+              <div class="filter-dropdown" id="trainerFilter">
+                <div class="filter-dropdown-search">
+                  <input type="text" placeholder="搜索" />
+                </div>
+                <div class="filter-dropdown-list">
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="trainer-1" />
+                    <label for="trainer-1">Wei He 何伟</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="trainer-2" />
+                    <label for="trainer-2">Eric Deng 邓舟</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="trainer-3" />
+                    <label for="trainer-3">Will 徐巍</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="trainer-4" />
+                    <label for="trainer-4">张可阿心</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="trainer-5" />
+                    <label for="trainer-5">周烨</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="trainer-6" />
+                    <label for="trainer-6">陈亮</label>
+                  </div>
+                </div>
+                <div class="filter-dropdown-footer">
+                  <button class="filter-select-all">全选</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 管理者筛选 -->
+            <div class="filter-item-wrapper">
+              <div class="filter-item" data-filter="manager">
+                <span class="filter-label">管理者</span>
+                <span class="filter-arrow">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6,9 12,15 18,9"/>
+                  </svg>
+                </span>
+              </div>
+              <div class="filter-dropdown" id="managerFilter">
+                <div class="filter-dropdown-search">
+                  <input type="text" placeholder="搜索" />
+                </div>
+                <div class="filter-dropdown-list">
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="manager-1" />
+                    <label for="manager-1">郭瑞琪 Seven</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="manager-2" />
+                    <label for="manager-2">Joffrey 马俊淞</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="manager-3" />
+                    <label for="manager-3">杨帆</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="manager-4" />
+                    <label for="manager-4">李建国</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="manager-5" />
+                    <label for="manager-5">战达</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="manager-6" />
+                    <label for="manager-6">Hanya 韩亚</label>
+                  </div>
+                </div>
+                <div class="filter-dropdown-footer">
+                  <button class="filter-select-all">全选</button>
+                </div>
+              </div>
+            </div>
+
+            <button class="btn-line" id="fieldManageBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+              </svg>
+              <span>字段管理</span>
+            </button>
+            <button class="btn-line">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="23,4 23,10 17,10"/>
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+              </svg>
+              <span>重置</span>
+            </button>
+          </div>
+
+          <!-- 表格 -->
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>岗位虾名称</th>
+                  <th>所属空间</th>
+                  <th>状态</th>
+                  <th>AgentID</th>
+                  <th>工号</th>
+                  <th>邮箱</th>
+                  <th>MID</th>
+                  <th>训虾员</th>
+                  <th>管理者</th>
+                  <th>汇报上级</th>
+                  <th>申请人</th>
+                  <th>用虾人</th>
+                  <th>所属部门</th>
+                  <th>最近使用</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody">
+                <!-- JS 动态渲染 -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- 分页 -->
+          <div class="pagination" id="pagination">
+            <!-- JS 动态渲染 -->
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // 当前用户（模拟）
+    const currentUser = '杨帆';
+
+    // 23 条岗位虾数据
+    const allShrimps = [
+      { id: 1, name: 'HW的虾米', avatar: 'HW', avatarColor: '#00B259', space: '国际业务 BP空间 (SP001)', status: 'active', statusLabel: '上岗', agentId: 'AGT001', employeeId: 'E100142', email: 'hewei@xiaomi.com', mid: '13800138001', trainers: ['Wei He 何伟', 'Eric Deng 邓舟'], managers: ['郭瑞琪 Seven', 'Joffrey 马俊淞'], reportSuperior: 'Wei He 何伟', applicant: '杨帆', user: '李建国', department: '国际业务部', lastUsed: '2分钟前', favorited: true },
+      { id: 2, name: '东南亚销售虾', avatar: '东南', avatarColor: '#2660FF', space: '东南亚空间 (SP002)', status: 'active', statusLabel: '上岗', agentId: 'AGT002', employeeId: 'E100234', email: 'dengzhou@xiaomi.com', mid: '13900139002', trainers: ['Will 徐巍', '张可阿心'], managers: ['杨帆', '李建国'], reportSuperior: 'Eric Deng 邓舟', applicant: 'Wei He 何伟', user: 'Eric Deng 邓舟', department: '东南亚销售部', lastUsed: '1小时前', favorited: true },
+      { id: 3, name: '客服助手', avatar: '客服', avatarColor: '#FF8800', space: '客服空间 (SP003)', status: 'trial', statusLabel: '试运行', agentId: 'AGT003', employeeId: 'E100345', email: 'zhouye@xiaomi.com', mid: '15000150003', trainers: ['周烨'], managers: ['战达', 'Hanya 韩亚'], reportSuperior: 'Hanya 韩亚', applicant: '周烨', user: '张可阿心', department: '客户服务部', lastUsed: '昨天', favorited: false },
+      { id: 4, name: '数据分析虾', avatar: '数据', avatarColor: '#7B61FF', space: '数据空间 (SP004)', status: 'active', statusLabel: '上岗', agentId: 'AGT004', employeeId: 'E100456', email: 'chenliang@xiaomi.com', mid: '18600186004', trainers: ['陈亮', 'Wei He 何伟'], managers: ['李建国', '战达'], reportSuperior: 'Wei He 何伟', applicant: 'Eric Deng 邓舟', user: 'Will 徐巍', department: '数据分析部', lastUsed: '3天前', favorited: false },
+      { id: 5, name: '培训助手', avatar: '培训', avatarColor: '#8C93B3', space: '培训空间 (SP005)', status: 'draft', statusLabel: '申请中', agentId: 'AGT005', employeeId: '', email: '', mid: '', trainers: ['Eric Deng 邓舟'], managers: ['郭瑞琪 Seven', '杨帆'], reportSuperior: '杨帆', applicant: 'Will 徐巍', user: '周烨', department: '培训发展部', lastUsed: '1周前', favorited: true },
+      { id: 6, name: '欧洲市场虾', avatar: '欧洲', avatarColor: '#2660FF', space: '欧洲空间 (SP006)', status: 'active', statusLabel: '上岗', agentId: 'AGT006', employeeId: 'E100678', email: 'guoruiqi@xiaomi.com', mid: '13800138006', trainers: ['郭瑞琪 Seven'], managers: ['Wei He 何伟', '李建国'], reportSuperior: 'Wei He 何伟', applicant: 'Joffrey 马俊淞', user: '战达', department: '国际业务部', lastUsed: '4小时前', favorited: false },
+      { id: 7, name: '拉美销售虾', avatar: '拉美', avatarColor: '#FF8800', space: '拉美空间 (SP007)', status: 'trial', statusLabel: '试运行', agentId: 'AGT007', employeeId: 'E100789', email: 'zhangkexin@xiaomi.com', mid: '13900139007', trainers: ['张可阿心', '周烨'], managers: ['Hanya 韩亚'], reportSuperior: '张可阿心', applicant: '陈亮', user: 'Wei He 何伟', department: '东南亚销售部', lastUsed: '2天前', favorited: false },
+      { id: 8, name: '产品培训虾', avatar: '产品', avatarColor: '#00B259', space: '培训空间 (SP005)', status: 'active', statusLabel: '上岗', agentId: 'AGT008', employeeId: 'E100890', email: 'yangfan@xiaomi.com', mid: '15000150008', trainers: ['杨帆'], managers: ['Eric Deng 邓舟', '郭瑞琪 Seven'], reportSuperior: 'Eric Deng 邓舟', applicant: '李建国', user: 'Will 徐巍', department: '培训发展部', lastUsed: '5天前', favorited: true },
+      { id: 9, name: '客服质检虾', avatar: '质检', avatarColor: '#FF4D4F', space: '客服空间 (SP003)', status: 'frozen', statusLabel: '冻结', agentId: 'AGT009', employeeId: 'E100901', email: 'zhanda@xiaomi.com', mid: '18600186009', trainers: ['战达'], managers: ['周烨', '张可阿心'], reportSuperior: '战达', applicant: 'Hanya 韩亚', user: '陈亮', department: '客户服务部', lastUsed: '1周前', favorited: false },
+      { id: 10, name: '数据报表虾', avatar: '报表', avatarColor: '#7B61FF', space: '数据空间 (SP004)', status: 'active', statusLabel: '上岗', agentId: 'AGT010', employeeId: 'E101012', email: 'lijianguo@xiaomi.com', mid: '17700177010', trainers: ['Wei He 何伟', '陈亮'], managers: ['战达', '李建国'], reportSuperior: '李建国', applicant: '杨帆', user: 'Joffrey 马俊淞', department: '数据分析部', lastUsed: '6小时前', favorited: false },
+      { id: 11, name: '智能推荐虾', avatar: '推荐', avatarColor: '#2660FF', space: '数据空间 (SP004)', status: 'active', statusLabel: '上岗', agentId: 'AGT011', employeeId: 'E101123', email: 'hewei2@xiaomi.com', mid: '13800138011', trainers: ['Eric Deng 邓舟'], managers: ['Wei He 何伟'], reportSuperior: 'Wei He 何伟', applicant: '周烨', user: '张可阿心', department: '数据分析部', lastUsed: '12小时前', favorited: false },
+      { id: 12, name: '销售话术虾', avatar: '话术', avatarColor: '#FF8800', space: '东南亚空间 (SP002)', status: 'draft', statusLabel: '申请中', agentId: 'AGT012', employeeId: '', email: '', mid: '', trainers: ['Will 徐巍', '张可阿心'], managers: ['杨帆'], reportSuperior: 'Will 徐巍', applicant: '李建国', user: 'Hanya 韩亚', department: '东南亚销售部', lastUsed: '3天前', favorited: false },
+      { id: 13, name: '合规审查虾', avatar: '合规', avatarColor: '#00B259', space: '国际业务 BP空间 (SP001)', status: 'active', statusLabel: '上岗', agentId: 'AGT013', employeeId: 'E101345', email: 'majunsong@xiaomi.com', mid: '15000150013', trainers: ['郭瑞琪 Seven', 'Joffrey 马俊淞'], managers: ['Wei He 何伟', '李建国'], reportSuperior: 'Wei He 何伟', applicant: '战达', user: '陈亮', department: '国际业务部', lastUsed: '8小时前', favorited: false },
+      { id: 14, name: '培训考核虾', avatar: '考核', avatarColor: '#8C93B3', space: '培训空间 (SP005)', status: 'trial', statusLabel: '试运行', agentId: 'AGT014', employeeId: 'E101456', email: 'zhouye2@xiaomi.com', mid: '18600186014', trainers: ['周烨'], managers: ['Eric Deng 邓舟', '郭瑞琪 Seven'], reportSuperior: '郭瑞琪 Seven', applicant: 'Will 徐巍', user: '杨帆', department: '培训发展部', lastUsed: '2天前', favorited: false },
+      { id: 15, name: '客诉处理虾', avatar: '客诉', avatarColor: '#FF4D4F', space: '客服空间 (SP003)', status: 'active', statusLabel: '上岗', agentId: 'AGT015', employeeId: 'E101567', email: 'hanya@xiaomi.com', mid: '17700177015', trainers: ['张可阿心', '周烨'], managers: ['Hanya 韩亚', '战达'], reportSuperior: '战达', applicant: '陈亮', user: 'Wei He 何伟', department: '客户服务部', lastUsed: '30分钟前', favorited: false },
+      { id: 16, name: '市场分析虾', avatar: '分析', avatarColor: '#2660FF', space: '欧洲空间 (SP006)', status: 'active', statusLabel: '上岗', agentId: 'AGT016', employeeId: 'E101678', email: 'lijianguo2@xiaomi.com', mid: '13800138016', trainers: ['李建国'], managers: ['Wei He 何伟', '郭瑞琪 Seven'], reportSuperior: '郭瑞琪 Seven', applicant: 'Eric Deng 邓舟', user: 'Will 徐巍', department: '国际业务部', lastUsed: '1天前', favorited: false },
+      { id: 17, name: '合同管理虾', avatar: '合同', avatarColor: '#00B259', space: '国际业务 BP空间 (SP001)', status: 'inactive', statusLabel: '下岗', agentId: 'AGT017', employeeId: 'E101789', email: 'zhanda2@xiaomi.com', mid: '13900139017', trainers: ['Joffrey 马俊淞'], managers: ['李建国', '战达'], reportSuperior: '李建国', applicant: '杨帆', user: 'Hanya 韩亚', department: '国际业务部', lastUsed: '2周前', favorited: false },
+      { id: 18, name: '竞品监控虾', avatar: '竞品', avatarColor: '#FF8800', space: '东南亚空间 (SP002)', status: 'active', statusLabel: '上岗', agentId: 'AGT018', employeeId: 'E101890', email: 'zhangkexin2@xiaomi.com', mid: '15000150018', trainers: ['Wei He 何伟', 'Will 徐巍'], managers: ['张可阿心'], reportSuperior: 'Will 徐巍', applicant: '周烨', user: '陈亮', department: '东南亚销售部', lastUsed: '45分钟前', favorited: false },
+      { id: 19, name: '知识库管理虾', avatar: '知识', avatarColor: '#7B61FF', space: '培训空间 (SP005)', status: 'active', statusLabel: '上岗', agentId: 'AGT019', employeeId: 'E101901', email: 'dengzhou2@xiaomi.com', mid: '18600186019', trainers: ['Eric Deng 邓舟', '杨帆'], managers: ['郭瑞琪 Seven', '周烨'], reportSuperior: 'Eric Deng 邓舟', applicant: '李建国', user: '张可阿心', department: '培训发展部', lastUsed: '3小时前', favorited: false },
+      { id: 20, name: '渠道对接虾', avatar: '渠道', avatarColor: '#2660FF', space: '东南亚空间 (SP002)', status: 'draft', statusLabel: '申请中', agentId: 'AGT020', employeeId: '', email: '', mid: '', trainers: ['张可阿心'], managers: ['杨帆', '李建国'], reportSuperior: '李建国', applicant: 'Wei He 何伟', user: 'Hanya 韩亚', department: '东南亚销售部', lastUsed: '5天前', favorited: false },
+      { id: 21, name: '员工培训虾', avatar: '员工', avatarColor: '#00B259', space: '培训空间 (SP005)', status: 'active', statusLabel: '上岗', agentId: 'AGT021', employeeId: 'E102123', email: 'chenliang2@xiaomi.com', mid: '13800138021', trainers: ['Will 徐巍', '周烨'], managers: ['Eric Deng 邓舟'], reportSuperior: 'Eric Deng 邓舟', applicant: '战达', user: '陈亮', department: '培训发展部', lastUsed: '1小时前', favorited: false },
+      { id: 22, name: '舆情监测虾', avatar: '舆情', avatarColor: '#FF4D4F', space: '国际业务 BP空间 (SP001)', status: 'active', statusLabel: '上岗', agentId: 'AGT022', employeeId: 'E102234', email: 'guoruiqi2@xiaomi.com', mid: '13900139022', trainers: ['郭瑞琪 Seven'], managers: ['Wei He 何伟', 'Joffrey 马俊淞'], reportSuperior: 'Wei He 何伟', applicant: '杨帆', user: '李建国', department: '国际业务部', lastUsed: '20分钟前', favorited: false },
+      { id: 23, name: '流程自动化虾', avatar: '自动', avatarColor: '#8C93B3', space: '客服空间 (SP003)', status: 'inactive', statusLabel: '下岗', agentId: 'AGT023', employeeId: 'E102345', email: 'majunsong2@xiaomi.com', mid: '15000150023', trainers: ['陈亮', 'Wei He 何伟'], managers: ['战达', 'Hanya 韩亚'], reportSuperior: 'Hanya 韩亚', applicant: '周烨', user: '张可阿心', department: '客户服务部', lastUsed: '3周前', favorited: false }
+    ];
+
+    // 状态颜色映射
+    const statusClassMap = {
+      active: 'success',
+      trial: 'warning',
+      draft: 'default',
+      frozen: 'primary',
+      inactive: 'danger'
+    };
+
+    // 分页状态
+    let currentPage = 1;
+    let pageSize = 10;
+    let currentQuickFilter = 'used';
+    let filteredShrimps = [...allShrimps];
+
+    // 快捷入口筛选
+    function handleQuickFilter(filter, el) {
+      currentQuickFilter = filter;
+      currentPage = 1;
+
+      // 更新卡片选中状态
+      document.querySelectorAll('.quick-entry-card').forEach(card => card.classList.remove('active'));
+      el.classList.add('active');
+
+      // 筛选数据
+      switch (filter) {
+        case 'used':
+          filteredShrimps = allShrimps.filter(s =>
+            s.trainers.includes(currentUser) ||
+            s.managers.includes(currentUser) ||
+            s.applicant === currentUser ||
+            s.user === currentUser
+          );
+          break;
+        case 'managed':
+          filteredShrimps = allShrimps.filter(s => s.managers.includes(currentUser));
+          break;
+        case 'trained':
+          filteredShrimps = allShrimps.filter(s => s.trainers.includes(currentUser));
+          break;
+        case 'applied':
+          filteredShrimps = allShrimps.filter(s => s.applicant === currentUser);
+          break;
+        case 'favorited':
+          filteredShrimps = allShrimps.filter(s => s.favorited);
+          break;
+      }
+
+      renderTable();
+      updateTableColumns();
+      renderPagination();
+    }
+
+    // 更新快捷入口计数
+    function updateQuickEntryCounts() {
+      document.getElementById('countUsed').textContent = allShrimps.filter(s =>
+        s.trainers.includes(currentUser) || s.managers.includes(currentUser) || s.applicant === currentUser || s.user === currentUser
+      ).length;
+      document.getElementById('countManaged').textContent = allShrimps.filter(s => s.managers.includes(currentUser)).length;
+      document.getElementById('countTrained').textContent = allShrimps.filter(s => s.trainers.includes(currentUser)).length;
+      document.getElementById('countApplied').textContent = allShrimps.filter(s => s.applicant === currentUser).length;
+      document.getElementById('countFavorited').textContent = allShrimps.filter(s => s.favorited).length;
+    }
+
+    // 渲染带截断的 Tag 列表
+    function renderTruncatedTags(arr, maxShow = 2) {
+      if (arr.length <= maxShow) {
+        return arr.map(name =>
+          `<span style="background: #E5ECFF; padding: 2px 8px; border-radius: 4px; font-size: 13px; white-space: nowrap;">${name}</span>`
+        ).join('');
+      }
+      const shown = arr.slice(0, maxShow);
+      const more = arr.length - maxShow;
+      const tagsHtml = shown.map(name =>
+        `<span style="background: #E5ECFF; padding: 2px 8px; border-radius: 4px; font-size: 13px; white-space: nowrap;">${name}</span>`
+      ).join('');
+      const popoverId = 'popover-' + Math.random().toString(36).slice(2, 8);
+      const moreHtml = `<span class="popover-trigger tag-more" data-popover-id="${popoverId}" data-names='${JSON.stringify(arr)}'>+${more}</span>`;
+      return tagsHtml + moreHtml;
+    }
+
+    // 渲染表格行
+    function renderRow(shrimp) {
+      return `<tr>
+        <td>
+          <div class="table-name">
+            <div class="table-avatar" style="background: ${shrimp.avatarColor};">${shrimp.avatar}</div>
+            <button class="table-link app-list-name-link" type="button" data-open-manage="${shrimp.agentId}">${shrimp.name}</button>
+          </div>
+        </td>
+        <td>
+          <div class="table-space">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9,22 9,12 15,12 15,22"/>
+            </svg>
+            <span>${shrimp.space}</span>
+          </div>
+        </td>
+        <td><span class="status-tag ${statusClassMap[shrimp.status]}">${shrimp.statusLabel}</span></td>
+        <td>${shrimp.agentId}</td>
+        <td>${shrimp.employeeId || '--'}</td>
+        <td>${shrimp.email || '--'}</td>
+        <td>${shrimp.mid || '--'}</td>
+        <td><div class="tag-container">${renderTruncatedTags(shrimp.trainers)}</div></td>
+        <td><div class="tag-container">${renderTruncatedTags(shrimp.managers)}</div></td>
+        <td>${shrimp.reportSuperior || '--'}</td>
+        <td>${shrimp.applicant}</td>
+        <td>${shrimp.user}</td>
+        <td>${shrimp.department}</td>
+        <td style="color: #8C93B3;">${shrimp.lastUsed}</td>
+        <td>
+          <div class="table-actions">
+            <span class="table-action">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+              </svg>
+              收藏
+            </span>
+            <span class="table-action">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              岗位说明
+            </span>
+          </div>
+        </td>
+      </tr>`;
+    }
+
+    // 渲染表格
+    function renderTable() {
+      const tbody = document.getElementById('tableBody');
+      const start = (currentPage - 1) * pageSize;
+      const end = start + pageSize;
+      const pageData = filteredShrimps.slice(start, end);
+      tbody.innerHTML = pageData.map(renderRow).join('');
+
+      // 绑定空间点击事件
+      tbody.querySelectorAll('.table-space').forEach(space => {
+        space.addEventListener('click', () => {
+          document.getElementById('spaceModal').classList.add('show');
+        });
+      });
+
+      // 重新渲染后更新 Popover
+      initPopovers();
+    }
+
+    // 渲染分页
+    function renderPagination() {
+      const total = filteredShrimps.length;
+      const totalPages = Math.ceil(total / pageSize);
+      const pagination = document.getElementById('pagination');
+
+      // 构建页码按钮
+      let pageButtons = '';
+
+      // 上一页
+      pageButtons += `<button class="pagination-btn ${currentPage === 1 ? 'disabled' : ''}" data-page="prev">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="15,18 9,12 15,6"/>
+        </svg>
+      </button>`;
+
+      // 页码
+      for (let i = 1; i <= totalPages; i++) {
+        if (i === currentPage) {
+          pageButtons += `<button class="pagination-btn active" data-page="${i}">${i}</button>`;
+        } else {
+          pageButtons += `<button class="pagination-btn" data-page="${i}">${i}</button>`;
+        }
+      }
+
+      // 下一页
+      pageButtons += `<button class="pagination-btn ${currentPage === totalPages ? 'disabled' : ''}" data-page="next">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="9,18 15,12 9,6"/>
+        </svg>
+      </button>`;
+
+      pagination.innerHTML = `
+        <span class="pagination-info">共 ${total} 条</span>
+        ${pageButtons}
+        <div class="pagination-size">
+          <span class="pagination-size-label">条/页</span>
+          <select class="pagination-size-select" id="pageSizeSelect">
+            <option value="10" ${pageSize === 10 ? 'selected' : ''}>10</option>
+            <option value="20" ${pageSize === 20 ? 'selected' : ''}>20</option>
+            <option value="50" ${pageSize === 50 ? 'selected' : ''}>50</option>
+          </select>
+        </div>
+      `;
+
+      // 绑定分页点击事件
+      pagination.querySelectorAll('.pagination-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const page = btn.getAttribute('data-page');
+          if (btn.classList.contains('disabled')) return;
+
+          if (page === 'prev') {
+            if (currentPage > 1) currentPage--;
+          } else if (page === 'next') {
+            if (currentPage < totalPages) currentPage++;
+          } else {
+            currentPage = parseInt(page);
+          }
+          renderTable();
+          renderPagination();
+          initPopovers();
+        });
+      });
+
+      // 绑定每页条数选择
+      document.getElementById('pageSizeSelect').addEventListener('change', (e) => {
+        pageSize = parseInt(e.target.value);
+        currentPage = 1;
+        renderTable();
+        renderPagination();
+        initPopovers();
+      });
+    }
+
+    // Popover 逻辑
+    let activePopover = null;
+
+    function initPopovers() {
+      document.querySelectorAll('.popover-trigger').forEach(trigger => {
+        trigger.addEventListener('mouseenter', (e) => {
+          e.stopPropagation();
+          // 关闭已有的 popover
+          if (activePopover) {
+            activePopover.classList.remove('show');
+            activePopover.remove();
+            activePopover = null;
+          }
+
+          const names = JSON.parse(trigger.getAttribute('data-names'));
+          const title = trigger.closest('.tag-container')?.previousElementSibling?.textContent?.includes('训虾员') ? '训虾员' : '管理者';
+
+          // 创建 popover
+          const popover = document.createElement('div');
+          popover.className = 'popover';
+          popover.innerHTML = `
+            <div class="popover-title">${title} (${names.length})</div>
+            <div class="popover-list">
+              ${names.map(name => `
+                <div class="popover-list-item">
+                  <div class="popover-list-item-avatar">${name.charAt(0)}</div>
+                  <span class="popover-list-item-name">${name}</span>
+                </div>
+              `).join('')}
+            </div>
+          `;
+          document.body.appendChild(popover);
+
+          // 定位 popover
+          const rect = trigger.getBoundingClientRect();
+          popover.style.left = rect.left + 'px';
+          popover.style.top = (rect.bottom + 4) + 'px';
+
+          // 确保不超出右边界
+          requestAnimationFrame(() => {
+            const popRect = popover.getBoundingClientRect();
+            if (popRect.right > window.innerWidth - 16) {
+              popover.style.left = (window.innerWidth - popRect.width - 16) + 'px';
+            }
+            if (popRect.bottom > window.innerHeight - 16) {
+              popover.style.top = (rect.top - popRect.height - 4) + 'px';
+            }
+            popover.classList.add('show');
+          });
+
+          activePopover = popover;
+        });
+
+        trigger.addEventListener('mouseleave', () => {
+          setTimeout(() => {
+            if (activePopover && !activePopover.matches(':hover')) {
+              activePopover.classList.remove('show');
+              activePopover.remove();
+              activePopover = null;
+            }
+          }, 100);
+        });
+      });
+
+      // popover 自身 hover 时保持显示
+      document.addEventListener('mouseenter', (e) => {
+        if (activePopover && activePopover.contains(e.target)) {
+          clearTimeout(activePopover._hideTimer);
+        }
+      }, true);
+    }
+
+    // 初始化
+    document.addEventListener('DOMContentLoaded', () => {
+      updateQuickEntryCounts();
+      renderTable();
+      renderPagination();
+      initPopovers();
+
+      // 空间弹窗
+      const spaceModal = document.getElementById('spaceModal');
+      const closeBtn = document.querySelector('.modal-close');
+      const enterSpaceBtn = document.querySelector('.modal-footer .btn-primary');
+      const overlay = document.querySelector('.modal-overlay');
+
+      closeBtn.addEventListener('click', () => spaceModal.classList.remove('show'));
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) spaceModal.classList.remove('show');
+      });
+      enterSpaceBtn.addEventListener('click', () => {
+        window.location.href = '/capability/spaceManagement';
+      });
+
+      // 筛选下拉
+      const filterItems = document.querySelectorAll('.filter-item[data-filter]');
+      const filterMap = {
+        'status': 'statusFilter', 'space': 'spaceFilter', 'employeeId': 'employeeIdFilter',
+        'mid': 'midFilter', 'department': 'departmentFilter', 'trainer': 'trainerFilter', 'manager': 'managerFilter'
+      };
+
+      filterItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const filterType = item.getAttribute('data-filter');
+          const dropdown = document.getElementById(filterMap[filterType]);
+          document.querySelectorAll('.filter-dropdown').forEach(d => { if (d !== dropdown) d.classList.remove('show'); });
+          document.querySelectorAll('.filter-item').forEach(fi => { if (fi !== item) fi.classList.remove('active'); });
+          dropdown.classList.toggle('show');
+          item.classList.toggle('active');
+        });
+      });
+
+      document.addEventListener('click', () => {
+        document.querySelectorAll('.filter-dropdown').forEach(d => d.classList.remove('show'));
+        document.querySelectorAll('.filter-item').forEach(fi => fi.classList.remove('active'));
+      });
+
+      document.querySelectorAll('.filter-dropdown').forEach(dropdown => {
+        dropdown.addEventListener('click', (e) => e.stopPropagation());
+      });
+
+      document.querySelectorAll('.filter-select-all').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const list = btn.closest('.filter-dropdown').querySelector('.filter-dropdown-list');
+          const checkboxes = list.querySelectorAll('input[type="checkbox"]');
+          const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+          checkboxes.forEach(cb => { cb.checked = !allChecked; });
+          btn.textContent = allChecked ? '全选' : '取消全选';
+        });
+      });
+
+      document.querySelectorAll('.filter-dropdown-search input').forEach(input => {
+        input.addEventListener('input', () => {
+          const searchTerm = input.value.toLowerCase();
+          const list = input.closest('.filter-dropdown').querySelector('.filter-dropdown-list');
+          list.querySelectorAll('.filter-dropdown-item').forEach(item => {
+            const label = item.querySelector('label').textContent.toLowerCase();
+            item.style.display = label.includes(searchTerm) ? 'flex' : 'none';
+          });
+        });
+      });
+
+      // 虾名称点击 → 通知父窗口打开配置页
+      document.addEventListener('click', (e) => {
+        const btn = e.target.closest('.app-list-name-link');
+        if (!btn) return;
+        const appId = btn.dataset.openManage;
+        if (!appId) return;
+        try {
+          window.parent.postMessage(
+            { type: 'job-shrimp-open-config', payload: { appId, section: 'baseinfo' } },
+            window.location.origin,
+          );
+        } catch (_) {
+          // standalone mode, ignore
+        }
+      });
+    });
+  </script>
+
+  <!-- 空间信息弹窗 -->
+  <div class="modal-overlay" id="spaceModal">
+    <div class="modal" style="width: 560px;">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title">空间管理</h3>
+          <p style="font-size: 14px; color: #8C93B3; margin-top: 4px;">查看 HW的虾米 的专属空间、模型与运行镜像。</p>
+        </div>
+        <button class="modal-close">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="space-info-grid">
+          <div class="space-info-item">
+            <span class="space-info-label">空间名称</span>
+            <div class="space-info-input">国际业务 BP空间 (SP001)</div>
+          </div>
+          <div class="space-info-item">
+            <span class="space-info-label">容器规格</span>
+            <div class="space-info-input">2核8G</div>
+          </div>
+        </div>
+        <div class="space-info-item" style="margin-top: 20px;">
+          <span class="space-info-label">模型</span>
+          <div class="space-info-input">xiaomi/mimo-v2-pro-mit</div>
+        </div>
+        <div class="space-info-item" style="margin-top: 20px;">
+          <span class="space-info-label">镜像</span>
+          <div class="space-info-input">micr.cloud.mioffice.cn/openclaw-images/miclaw:v0.18.0</div>
+        </div>
+        <div class="space-info-grid" style="margin-top: 20px;">
+          <div class="space-info-item">
+            <span class="space-info-label">更新日期</span>
+            <div class="space-info-input">2026-03-16 17:44</div>
+          </div>
+          <div class="space-info-item">
+            <span class="space-info-label">管理员</span>
+            <div class="space-info-input">郭琳</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-primary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15,3 21,3 21,9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+          进入空间管理
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 字段管理侧边栏 -->
+  <div class="drawer-overlay" id="fieldDrawerOverlay"></div>
+  <div class="drawer" id="fieldDrawer">
+    <div class="drawer-header">
+      <h3 class="drawer-title">字段管理</h3>
+      <button class="drawer-close" id="drawerClose">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="drawer-body">
+      <div class="field-list" id="fieldList">
+        <!-- 全部 -->
+        <div class="field-item field-all-item" data-field="all">
+          <input type="checkbox" id="field-all" checked />
+          <label for="field-all">全部</label>
+        </div>
+        <!-- 字段列表由JS动态生成 -->
+      </div>
+    </div>
+    <div class="drawer-footer">
+      <button class="btn-default" id="drawerCancel">取消</button>
+      <button class="btn-default" id="drawerReset">重置</button>
+      <button class="btn-primary" id="drawerConfirm">确定</button>
+    </div>
+  </div>
+
+  <script>
+    // 字段配置（顶层作用域，供 handleQuickFilter 等调用）
+    const defaultFields = [
+      { id: 'name', label: '岗位虾名称', visible: true },
+      { id: 'space', label: '所属空间', visible: true },
+      { id: 'status', label: '状态', visible: true },
+      { id: 'agentId', label: 'AgentID', visible: false },
+      { id: 'employeeId', label: '工号', visible: true },
+      { id: 'email', label: '邮箱', visible: false },
+      { id: 'mid', label: 'MID', visible: true },
+      { id: 'trainer', label: '训虾员', visible: true },
+      { id: 'manager', label: '管理者', visible: true },
+      { id: 'reportSuperior', label: '汇报上级', visible: false },
+      { id: 'applicant', label: '申请人', visible: false },
+      { id: 'user', label: '用虾人', visible: false },
+      { id: 'department', label: '所属部门', visible: true },
+      { id: 'lastUsed', label: '最近使用', visible: true },
+      { id: 'actions', label: '操作', visible: true }
+    ];
+    let currentFields = JSON.parse(JSON.stringify(defaultFields));
+
+    function updateTableColumns() {
+      const table = document.querySelector('table');
+      if (!table) return;
+      const thead = table.querySelector('thead tr');
+      const tbody = table.querySelector('tbody');
+      thead.innerHTML = '';
+      currentFields.forEach(field => {
+        if (field.visible) {
+          const th = document.createElement('th');
+          th.textContent = field.label;
+          thead.appendChild(th);
+        }
+      });
+      const allRows = tbody.querySelectorAll('tr');
+      allRows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        cells.forEach((cell, index) => {
+          if (currentFields[index]) {
+            cell.style.display = currentFields[index].visible ? '' : 'none';
+          }
+        });
+      });
+    }
+
+    // 字段管理功能
+    document.addEventListener('DOMContentLoaded', () => {
+      const fieldManageBtn = document.getElementById('fieldManageBtn');
+      const fieldDrawer = document.getElementById('fieldDrawer');
+      const fieldDrawerOverlay = document.getElementById('fieldDrawerOverlay');
+      const drawerClose = document.getElementById('drawerClose');
+      const drawerCancel = document.getElementById('drawerCancel');
+      const drawerReset = document.getElementById('drawerReset');
+      const drawerConfirm = document.getElementById('drawerConfirm');
+      const fieldList = document.getElementById('fieldList');
+      const fieldAllCheckbox = document.getElementById('field-all');
+
+      // 生成字段列表
+      function renderFieldList() {
+        // 保留"全部"项
+        const allItem = fieldList.querySelector('.field-all-item');
+        fieldList.innerHTML = '';
+        fieldList.appendChild(allItem);
+
+        // 更新"全部"复选框状态
+        const allChecked = currentFields.every(f => f.visible);
+        const someChecked = currentFields.some(f => f.visible);
+        fieldAllCheckbox.checked = allChecked;
+        fieldAllCheckbox.indeterminate = someChecked && !allChecked;
+
+        // 生成字段项
+        currentFields.forEach((field, index) => {
+          const item = document.createElement('div');
+          item.className = 'field-item';
+          item.setAttribute('data-field-id', field.id);
+          item.setAttribute('draggable', 'true');
+          item.innerHTML = `
+            <input type="checkbox" id="field-${field.id}" ${field.visible ? 'checked' : ''} />
+            <label for="field-${field.id}">${field.label}</label>
+            <div class="field-drag-handle">
+              <span class="drag-dot"></span>
+              <span class="drag-dot"></span>
+              <span class="drag-dot"></span>
+              <span class="drag-dot"></span>
+              <span class="drag-dot"></span>
+              <span class="drag-dot"></span>
+            </div>
+          `;
+          fieldList.appendChild(item);
+
+          // 复选框事件
+          const checkbox = item.querySelector('input[type="checkbox"]');
+          checkbox.addEventListener('change', () => {
+            currentFields[index].visible = checkbox.checked;
+            updateAllCheckbox();
+          });
+
+          // 拖拽事件
+          item.addEventListener('dragstart', (e) => {
+            item.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', index);
+          });
+
+          item.addEventListener('dragend', () => {
+            item.classList.remove('dragging');
+          });
+
+          item.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+          });
+
+          item.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const fromIndex = parseInt(e.dataTransfer.getData('text/plain'));
+            const toIndex = index;
+            if (fromIndex !== toIndex) {
+              const [movedItem] = currentFields.splice(fromIndex, 1);
+              currentFields.splice(toIndex, 0, movedItem);
+              renderFieldList();
+            }
+          });
+        });
+      }
+
+      // 更新"全部"复选框状态
+      function updateAllCheckbox() {
+        const allChecked = currentFields.every(f => f.visible);
+        const someChecked = currentFields.some(f => f.visible);
+        fieldAllCheckbox.checked = allChecked;
+        fieldAllCheckbox.indeterminate = someChecked && !allChecked;
+      }
+
+      // 全部复选框事件
+      fieldAllCheckbox.addEventListener('change', () => {
+        const checked = fieldAllCheckbox.checked;
+        currentFields.forEach(f => f.visible = checked);
+        renderFieldList();
+      });
+
+      // 打开侧边栏
+      fieldManageBtn.addEventListener('click', () => {
+        currentFields = JSON.parse(JSON.stringify(defaultFields));
+        renderFieldList();
+        fieldDrawer.classList.add('show');
+        fieldDrawerOverlay.classList.add('show');
+      });
+
+      // 关闭侧边栏
+      function closeDrawer() {
+        fieldDrawer.classList.remove('show');
+        fieldDrawerOverlay.classList.remove('show');
+      }
+
+      drawerClose.addEventListener('click', closeDrawer);
+      drawerCancel.addEventListener('click', closeDrawer);
+      fieldDrawerOverlay.addEventListener('click', closeDrawer);
+
+      // 重置
+      drawerReset.addEventListener('click', () => {
+        currentFields = JSON.parse(JSON.stringify(defaultFields));
+        renderFieldList();
+      });
+
+      // 确定
+      drawerConfirm.addEventListener('click', () => {
+        updateTableColumns();
+        closeDrawer();
+      });
+
+      // 初始渲染
+      renderFieldList();
+      updateTableColumns();
+    });
+  </script>
+
+  <!-- ====== 申请岗位虾 Drawer ====== -->
+  <div class="apply-drawer-overlay" id="applyDrawerOverlay" onclick="if(event.target===this)closeApplyDrawer()">
+    <div class="apply-drawer-panel">
+      <div class="apply-drawer-header">
+        <h2>申请岗位虾</h2>
+        <button class="apply-drawer-close" onclick="closeApplyDrawer()">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <div class="apply-drawer-body">
+        <!-- 基础信息 -->
+        <div class="apply-form-section">
+          <div class="apply-form-section-title">
+            <span class="dot"></span>
+            基础信息
+          </div>
+          <div class="apply-form-group">
+            <label class="apply-form-label">
+              <span class="required">*</span> 虾名
+            </label>
+            <input class="apply-form-input" id="applyShrimpName" placeholder="如：东南亚销售虾、门店巡检虾" oninput="validateApplyForm()" />
+            <div class="apply-form-hint">
+              <span class="hint-icon">i</span>
+              名称将在工作台和对话中展示，建议简洁明了
+            </div>
+          </div>
+          <div class="apply-form-group">
+            <label class="apply-form-label">
+              <span class="required">*</span> 所属空间
+            </label>
+            <select class="apply-form-select" id="applySpaceSelect" onchange="handleApplySpaceChange(); validateApplyForm()">
+              <option value="">请选择空间</option>
+              <option value="intl-bp">国际业务 BP 空间 (SP001)</option>
+              <option value="sea">东南亚空间 (SP002)</option>
+              <option value="eu">欧洲空间 (SP006)</option>
+              <option value="latam">拉美空间 (SP007)</option>
+              <option value="mea">中东非空间 (SP008)</option>
+              <option value="global">全球通用空间 (SP009)</option>
+            </select>
+            <div class="apply-form-hint">
+              <span class="hint-icon">i</span>
+              空间用于镜像、模型、配置共享及配额管理，选错会影响可用资源。不确定时可联系 huangrui19、guoying1 确认。
+            </div>
+          </div>
+          <div class="apply-form-group apply-form-group-tree">
+            <label class="apply-form-label">
+              <span class="required">*</span> 所属部门
+            </label>
+            <div class="apply-tree-trigger" id="applyDeptTrigger" onclick="toggleApplyDeptDropdown()">
+              <span class="placeholder" id="applyDeptPlaceholder">请选择部门</span>
+              <span class="arrow">
+                <svg width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+            </div>
+            <div class="apply-tree-dropdown" id="applyDeptDropdown">
+              <div class="apply-tree-search">
+                <input type="text" id="applyDeptSearch" placeholder="搜索部门名称..." oninput="filterApplyDeptTree()" />
+              </div>
+              <div class="apply-tree-breadcrumb" id="applyDeptBreadcrumb"></div>
+              <div class="apply-tree-flat-list" id="applyDeptFlatList"></div>
+              <div id="applyDeptSelectedArea"></div>
+            </div>
+            <div class="apply-form-hint">
+              <span class="hint-icon">i</span>
+              部门用于确定岗位虾的组织归属和管理权限
+            </div>
+          </div>
+          <div class="apply-form-group">
+            <label class="apply-form-label">汇报上级</label>
+            <input class="apply-form-input apply-form-input--readonly" id="applyReporter" placeholder="选择部门后自动带出" readonly />
+            <div class="apply-form-hint">
+              <span class="hint-icon">i</span>
+              根据所选部门自动确定，如需调整请联系管理员
+            </div>
+          </div>
+        </div>
+
+        <!-- 岗位说明 -->
+        <div class="apply-form-section">
+          <div class="apply-form-section-title">
+            <span class="dot"></span>
+            岗位说明
+          </div>
+          <div class="apply-form-group">
+            <label class="apply-form-label">
+              <span class="required">*</span> 一句话描述
+            </label>
+            <textarea
+              class="apply-form-textarea"
+              id="applyDescription"
+              rows="3"
+              placeholder="为一线销售提供实时报价查询和竞品对比，减少人工翻表时间 70%"
+              oninput="updateApplyCounter('applyDescription', 200); validateApplyForm()"
+            ></textarea>
+            <div class="apply-char-counter" id="applyDescriptionCounter">0 / 200</div>
+            <div class="apply-form-hint">
+              <span class="hint-icon">i</span>
+              回答两个问题：解决了什么问题？给谁带来了什么价值？
+            </div>
+          </div>
+          <div class="apply-form-group">
+            <label class="apply-form-label">
+              <span class="required">*</span> 职责
+            </label>
+            <textarea
+              class="apply-form-textarea tall"
+              id="applyResponsibilities"
+              rows="4"
+              placeholder="• 查询实时报价和库存&#10;• 生成客户对比报告&#10;• 推荐最优产品组合"
+              oninput="updateApplyCounter('applyResponsibilities', 500); validateApplyForm()"
+            ></textarea>
+            <div class="apply-char-counter" id="applyResponsibilitiesCounter">0 / 500</div>
+            <div class="apply-form-hint">
+              <span class="hint-icon">i</span>
+              具体列出这只虾要执行的工作任务，每条一行
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="apply-drawer-footer">
+        <div class="apply-drawer-footer-actions">
+          <button class="btn-default" onclick="closeApplyDrawer()">取消</button>
+          <button class="btn-primary" id="applySubmitBtn" disabled onclick="handleApplySubmit()">提交申请</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Apply Toast -->
+  <div class="apply-toast success" id="applyToast">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="vertical-align:-2px;margin-right:6px"><circle cx="8" cy="8" r="8" fill="#389e0d"/><path d="M4.5 8.2l2.2 2.2 4.8-4.8" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    已提交岗位虾申请
+  </div>
+
+  <script>
+    // ====== Apply Drawer Script ======
+    const applySpacePlaceholders = {
+      '': '为一线销售提供实时报价查询和竞品对比，减少人工翻表时间 70%',
+      'intl-bp': '为国际业务团队提供跨区域销售数据汇总和异常预警，提升决策效率',
+      'sea': '为东南亚一线销售提供实时报价查询和竞品对比，减少人工翻表时间 70%',
+      'eu': '为欧洲区域经理提供合规审查辅助和多语言客户沟通支持',
+      'latam': '为拉美渠道商提供本地化产品推荐和库存预警',
+      'mea': '为中东非市场团队提供阿拉伯语客户咨询和区域销售分析',
+      'global': '为全球运营团队提供跨区域数据聚合和统一报表生成',
+    };
+
+    const applyDeptTree = [
+      { id: 'phone', name: '手机部', children: [
+        { id: 'phone-product', name: '手机产品部' },
+        { id: 'phone-design', name: '手机设计部' },
+        { id: 'phone-software', name: '手机软件部' },
+      ]},
+      { id: 'intl', name: '国际业务部', children: [
+        { id: 'intl-weu', name: '西欧地区部' },
+        { id: 'intl-sasia', name: '南亚地区部' },
+        { id: 'intl-sea', name: '东南亚地区部' },
+        { id: 'intl-ea', name: '东亚地区部' },
+        { id: 'intl-af', name: '非洲地区部' },
+        { id: 'intl-latam', name: '拉美地区部' },
+        { id: 'intl-mea', name: '中东地区部' },
+      ]},
+      { id: 'auto', name: '汽车部', children: [
+        { id: 'auto-product', name: '汽车产品部' },
+        { id: 'auto-tech', name: '汽车技术部' },
+      ]},
+      { id: 'china', name: '中国区', children: [
+        { id: 'china-retail', name: '中国区零售部' },
+        { id: 'china-online', name: '中国区线上部' },
+      ]},
+      { id: 'internet', name: '互联网业务部', children: [
+        { id: 'internet-ads', name: '广告业务部' },
+        { id: 'internet-game', name: '游戏业务部' },
+      ]},
+      { id: 'committee', name: '集团技术委员会', children: [
+        { id: 'committee-ai', name: 'AI 实验室' },
+        { id: 'committee-cloud', name: '云平台部' },
+      ]},
+      { id: 'strategy', name: '策略运营部', children: [] },
+      { id: 'channel', name: '渠道零售部', children: [
+        { id: 'channel-retail-mgmt', name: '零售管理部' },
+        { id: 'channel-retail-support', name: '零售支持部' },
+        { id: 'channel-retail-market', name: '零售市场部' },
+        { id: 'channel-training', name: '培训管理部' },
+        { id: 'channel-xiaomi-net', name: '小米网' },
+        { id: 'channel-new-retail', name: '新零售部' },
+      ]},
+    ];
+
+    // mock: 部门ID → 汇报上级
+    const deptManagerMap = {
+      'phone': '郭琳',
+      'phone-product': 'Wei He 何伟',
+      'phone-design': 'Eric Deng 邓舟',
+      'phone-software': 'Will 徐巍',
+      'intl': '杨帆',
+      'intl-weu': 'Hanya 韩亚',
+      'intl-sasia': '张可阿心',
+      'intl-sea': '李建国',
+      'intl-ea': '周烨',
+      'intl-af': '陈亮',
+      'intl-latam': '战达',
+      'intl-mea': 'Seven',
+      'auto': 'Joffrey 马俊淞',
+      'auto-product': 'Wei He 何伟',
+      'auto-tech': 'Eric Deng 邓舟',
+      'china': '杨帆',
+      'china-retail': '郭琳',
+      'china-online': '李建国',
+      'internet': 'Will 徐巍',
+      'internet-ads': '张可阿心',
+      'internet-game': '周烨',
+      'committee': '陈亮',
+      'committee-ai': 'Seven',
+      'committee-cloud': '战达',
+      'strategy': 'Hanya 韩亚',
+      'channel': '杨帆',
+      'channel-retail-mgmt': '郭琳',
+      'channel-retail-support': '李建国',
+      'channel-retail-market': 'Joffrey 马俊淞',
+      'channel-training': 'Eric Deng 邓舟',
+      'channel-xiaomi-net': 'Wei He 何伟',
+      'channel-new-retail': '张可阿心',
+    };
+
+    let applySelectedDept = null;
+    let applyActiveColIndex = 0;
+    let applyActivePath = [];
+
+    function openApplyDrawer() {
+      const overlay = document.getElementById('applyDrawerOverlay');
+      overlay.classList.add('show');
+      overlay.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeApplyDrawer() {
+      const overlay = document.getElementById('applyDrawerOverlay');
+      overlay.classList.remove('show');
+      setTimeout(() => { overlay.style.display = 'none'; }, 300);
+      document.body.style.overflow = '';
+      closeApplyDeptDropdown();
+    }
+
+    function handleApplySpaceChange() {
+      const space = document.getElementById('applySpaceSelect').value;
+      const textarea = document.getElementById('applyDescription');
+      textarea.placeholder = applySpacePlaceholders[space] || applySpacePlaceholders[''];
+    }
+
+    function updateApplyCounter(fieldId, max) {
+      const field = document.getElementById(fieldId);
+      const counter = document.getElementById(fieldId + 'Counter');
+      const len = field.value.length;
+      counter.textContent = len + ' / ' + max;
+      counter.className = 'apply-char-counter' + (len > max ? ' over' : len > max * 0.8 ? ' warn' : '');
+    }
+
+    function validateApplyForm() {
+      const name = document.getElementById('applyShrimpName').value.trim();
+      const space = document.getElementById('applySpaceSelect').value;
+      const dept = applySelectedDept !== null;
+      const desc = document.getElementById('applyDescription').value.trim();
+      const resp = document.getElementById('applyResponsibilities').value.trim();
+      const btn = document.getElementById('applySubmitBtn');
+      btn.disabled = !(name && space && dept && desc && resp);
+    }
+
+    function handleApplySubmit() {
+      const name = document.getElementById('applyShrimpName').value.trim();
+      const space = document.getElementById('applySpaceSelect').value;
+      const dept = applySelectedDept;
+      const desc = document.getElementById('applyDescription').value.trim();
+      const resp = document.getElementById('applyResponsibilities').value.trim();
+      if (!name || !space || !dept || !desc || !resp) return;
+
+      closeApplyDrawer();
+
+      const toast = document.getElementById('applyToast');
+      toast.style.display = 'block';
+      setTimeout(() => { toast.style.display = 'none'; }, 3000);
+
+      // Reset form
+      document.getElementById('applyShrimpName').value = '';
+      document.getElementById('applySpaceSelect').value = '';
+      document.getElementById('applyDescription').value = '';
+      document.getElementById('applyResponsibilities').value = '';
+      clearApplyDept();
+      document.getElementById('applySubmitBtn').disabled = true;
+      updateApplyCounter('applyDescription', 200);
+      updateApplyCounter('applyResponsibilities', 500);
+    }
+
+    // Department Tree - Breadcrumb + Flat List
+    let applyCurrentLevelNodes = null;
+    let applyBreadcrumbPath = [];
+
+    function toggleApplyDeptDropdown() {
+      const dd = document.getElementById('applyDeptDropdown');
+      const trigger = document.getElementById('applyDeptTrigger');
+      if (dd.classList.contains('show')) {
+        closeApplyDeptDropdown();
+      } else {
+        dd.classList.add('show');
+        trigger.classList.add('active');
+        applyBreadcrumbPath = [];
+        applyCurrentLevelNodes = applyDeptTree;
+        renderApplyBreadcrumb();
+        renderApplyFlatList(applyCurrentLevelNodes);
+      }
+    }
+
+    function closeApplyDeptDropdown() {
+      document.getElementById('applyDeptDropdown').classList.remove('show');
+      document.getElementById('applyDeptTrigger').classList.remove('active');
+    }
+
+    function renderApplyBreadcrumb() {
+      const el = document.getElementById('applyDeptBreadcrumb');
+      let html = `<span class="apply-tree-breadcrumb-item" onclick="applyBreadcrumbClick(-1)">全部部门</span>`;
+      applyBreadcrumbPath.forEach((node, i) => {
+        html += `<span class="apply-tree-breadcrumb-sep">›</span>`;
+        const isLast = i === applyBreadcrumbPath.length - 1;
+        html += `<span class="apply-tree-breadcrumb-item${isLast ? '' : ''}" onclick="applyBreadcrumbClick(${i})">${node.name}</span>`;
+      });
+      el.innerHTML = html;
+    }
+
+    function applyBreadcrumbClick(index) {
+      const searchInput = document.getElementById('applyDeptSearch');
+      searchInput.value = '';
+      if (index === -1) {
+        applyBreadcrumbPath = [];
+        applyCurrentLevelNodes = applyDeptTree;
+      } else {
+        applyBreadcrumbPath = applyBreadcrumbPath.slice(0, index + 1);
+        const last = applyBreadcrumbPath[applyBreadcrumbPath.length - 1];
+        applyCurrentLevelNodes = last.children && last.children.length ? last.children : applyDeptTree;
+      }
+      renderApplyBreadcrumb();
+      renderApplyFlatList(applyCurrentLevelNodes);
+    }
+
+    function renderApplyFlatList(nodes, searchResults) {
+      const list = document.getElementById('applyDeptFlatList');
+      if (searchResults) {
+        if (!searchResults.length) {
+          list.innerHTML = '<div class="apply-tree-empty">未找到匹配的部门</div>';
+          return;
+        }
+        list.innerHTML = searchResults.map(r => {
+          const hasChildren = r.node.children && r.node.children.length > 0;
+          return `<div class="apply-tree-flat-item${hasChildren ? ' has-children' : ' is-leaf'}" onclick="event.stopPropagation(); applyFlatItemClick('${r.node.id}', '${r.path}')">
+            <div class="item-left">
+              <div class="item-icon">${r.node.name.charAt(0)}</div>
+              <div>
+                <div class="item-name">${r.node.name}</div>
+                <div class="apply-tree-search-path">${r.path}</div>
+              </div>
+            </div>
+            ${hasChildren ? '<span class="item-arrow">›</span>' : ''}
+          </div>`;
+        }).join('');
+        return;
+      }
+      if (!nodes || !nodes.length) {
+        list.innerHTML = '<div class="apply-tree-empty">该部门下没有子部门</div>';
+        return;
+      }
+      list.innerHTML = nodes.map(node => {
+        const hasChildren = node.children && node.children.length > 0;
+        return `<div class="apply-tree-flat-item${hasChildren ? ' has-children' : ' is-leaf'}" onclick="event.stopPropagation(); applyFlatItemClick('${node.id}')">
+          <div class="item-left">
+            <div class="item-icon">${node.name.charAt(0)}</div>
+            <span class="item-name">${node.name}</span>
+          </div>
+          ${hasChildren ? '<span class="item-arrow">›</span>' : ''}
+        </div>`;
+      }).join('');
+    }
+
+    function applyFlatItemClick(nodeId, searchPath) {
+      const node = applyFindNodeById(applyDeptTree, nodeId);
+      if (!node) return;
+      const hasChildren = node.children && node.children.length > 0;
+
+      if (searchPath) {
+        if (hasChildren) {
+          const parts = searchPath.split(' › ');
+          applyBreadcrumbPath = [];
+          let current = applyDeptTree;
+          for (let i = 0; i < parts.length; i++) {
+            const found = current.find(n => n.name === parts[i]);
+            if (!found) break;
+            applyBreadcrumbPath.push(found);
+            if (i < parts.length - 1) {
+              current = found.children || [];
+            }
+          }
+          applyCurrentLevelNodes = node.children;
+          renderApplyBreadcrumb();
+          renderApplyFlatList(applyCurrentLevelNodes);
+          document.getElementById('applyDeptSearch').value = '';
+        } else {
+          selectApplyDept(node);
+        }
+        return;
+      }
+
+      // Normal navigation
+      if (applyCurrentLevelNodes && applyCurrentLevelNodes.find(n => n.id === nodeId)) {
+        if (hasChildren) {
+          applyBreadcrumbPath.push(node);
+          applyCurrentLevelNodes = node.children;
+          renderApplyBreadcrumb();
+          renderApplyFlatList(applyCurrentLevelNodes);
+          document.getElementById('applyDeptSearch').value = '';
+        } else {
+          selectApplyDept(node);
+        }
+      } else {
+        if (hasChildren) {
+          applyBreadcrumbPath.push(node);
+          applyCurrentLevelNodes = node.children;
+          renderApplyBreadcrumb();
+          renderApplyFlatList(applyCurrentLevelNodes);
+          document.getElementById('applyDeptSearch').value = '';
+        } else {
+          selectApplyDept(node);
+        }
+      }
+    }
+
+    function applyFindNodeById(nodes, id) {
+      for (const n of nodes) {
+        if (n.id === id) return n;
+        if (n.children) {
+          const found = applyFindNodeById(n.children, id);
+          if (found) return found;
+        }
+      }
+      return null;
+    }
+
+    function selectApplyDept(node) {
+      applySelectedDept = node;
+      const path = applyGetFullPath(applyDeptTree, node.id);
+      const placeholder = document.getElementById('applyDeptPlaceholder');
+      placeholder.className = 'selected-text';
+      placeholder.textContent = path || node.name;
+      closeApplyDeptDropdown();
+      applyBreadcrumbPath = [];
+      updateApplyDeptSelectedArea();
+
+      // 自动带出汇报上级
+      const reporterInput = document.getElementById('applyReporter');
+      const manager = deptManagerMap[node.id] || '';
+      reporterInput.value = manager;
+      reporterInput.classList.toggle('apply-form-input--has-value', !!manager);
+
+      validateApplyForm();
+    }
+
+    function applyGetFullPath(nodes, targetId, currentPath) {
+      currentPath = currentPath || [];
+      for (const n of nodes) {
+        const newPath = [...currentPath, n.name];
+        if (n.id === targetId) return newPath.join(' > ');
+        if (n.children) {
+          const found = applyGetFullPath(n.children, targetId, newPath);
+          if (found) return found;
+        }
+      }
+      return null;
+    }
+
+    function clearApplyDept() {
+      applySelectedDept = null;
+      const placeholder = document.getElementById('applyDeptPlaceholder');
+      placeholder.className = 'placeholder';
+      placeholder.textContent = '请选择部门';
+      applyBreadcrumbPath = [];
+      updateApplyDeptSelectedArea();
+
+      // 清空汇报上级
+      const reporterInput = document.getElementById('applyReporter');
+      reporterInput.value = '';
+      reporterInput.classList.remove('apply-form-input--has-value');
+
+      validateApplyForm();
+    }
+
+    function updateApplyDeptSelectedArea() {
+      const area = document.getElementById('applyDeptSelectedArea');
+      if (applySelectedDept) {
+        area.innerHTML = `<div class="apply-tree-selected-tag">
+          ${applySelectedDept.name}
+          <span class="tag-remove" onclick="clearApplyDept()">x</span>
+        </div>`;
+      } else {
+        area.innerHTML = '';
+      }
+    }
+
+    function filterApplyDeptTree() {
+      const q = document.getElementById('applyDeptSearch').value.trim();
+      if (!q) {
+        renderApplyFlatList(applyCurrentLevelNodes);
+        return;
+      }
+      const results = [];
+      const query = q.toLowerCase();
+      function search(nodes, path) {
+        nodes.forEach(n => {
+          const p = path ? path + ' › ' + n.name : n.name;
+          if (n.name.toLowerCase().includes(query)) {
+            results.push({ node: n, path: p });
+          }
+          if (n.children) search(n.children, p);
+        });
+      }
+      search(applyDeptTree, '');
+      renderApplyFlatList(null, results);
+    }
+
+    document.addEventListener('click', (e) => {
+      const tree = document.querySelector('.apply-form-group-tree');
+      if (tree && !tree.contains(e.target)) {
+        closeApplyDeptDropdown();
+      }
+    });
+
+    // Bind apply button
+    document.querySelector('.page-header .btn-primary').addEventListener('click', openApplyDrawer);
+  </script>
+</body>
+</html>
