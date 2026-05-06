@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>岗位虾创建流程 — 产品设计方案</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif; background: #f5f6f7; color: #1f2329; line-height: 1.6; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 40px 32px; }
+
+  /* Header */
+  .header { text-align: center; margin-bottom: 48px; }
+  .header h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+  .header .subtitle { font-size: 15px; color: #86909c; }
+  .header .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; margin-bottom: 12px; }
+
+  /* Section */
+  .section { background: #fff; border-radius: 12px; border: 1px solid #e5e6eb; padding: 32px; margin-bottom: 24px; }
+  .section-title { font-size: 18px; font-weight: 600; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+  .section-desc { font-size: 13px; color: #86909c; margin-bottom: 20px; }
+
+  /* Problem Cards */
+  .problem-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+  .problem-card { padding: 20px; border-radius: 10px; border: 1px solid #e5e6eb; }
+  .problem-card .num { font-size: 32px; font-weight: 700; color: #f54a45; margin-bottom: 4px; }
+  .problem-card .label { font-size: 13px; color: #86909c; margin-bottom: 8px; }
+  .problem-card .detail { font-size: 13px; color: #4e5969; }
+
+  /* Flow Comparison */
+  .flow-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .flow-box { border-radius: 10px; padding: 24px; }
+  .flow-box.old { background: #fff2f0; border: 1px solid #ffccc7; }
+  .flow-box.new { background: #f6ffed; border: 1px solid #b7eb8f; }
+  .flow-box h4 { font-size: 14px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+  .flow-box .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; }
+  .flow-box.old .tag { background: #fff1f0; color: #cf1322; }
+  .flow-box.new .tag { background: #f6ffed; color: #389e0d; }
+  .flow-item { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; font-size: 13px; }
+  .flow-item .icon { flex-shrink: 0; width: 20px; text-align: center; }
+  .flow-item .text { color: #4e5969; }
+  .flow-item .text strong { color: #1f2329; }
+  .flow-divider { height: 1px; background: rgba(0,0,0,0.06); margin: 8px 0; }
+
+  /* Architecture Diagram */
+  .arch-diagram { display: flex; align-items: stretch; gap: 0; margin: 20px 0; }
+  .arch-layer { flex: 1; padding: 20px; border-radius: 10px; position: relative; }
+  .arch-layer h5 { font-size: 13px; font-weight: 600; margin-bottom: 12px; text-align: center; }
+  .arch-layer.business { background: #e8f0ff; border: 1px solid #bddcff; }
+  .arch-layer.ai { background: #f0f0ff; border: 1px solid #d0d0ff; }
+  .arch-layer.platform { background: #e8f8e5; border: 1px solid #b7eb8f; }
+  .arch-layer.output { background: #fff7e8; border: 1px solid #ffd591; }
+  .arch-arrow { display: flex; align-items: center; justify-content: center; width: 40px; flex-shrink: 0; font-size: 20px; color: #c9cdd4; }
+  .arch-item { padding: 6px 10px; background: rgba(255,255,255,0.7); border-radius: 6px; font-size: 12px; margin-bottom: 4px; color: #4e5969; }
+  .arch-item.highlight { background: rgba(255,255,255,0.95); border: 1px solid rgba(0,0,0,0.08); font-weight: 500; color: #1f2329; }
+
+  /* New Mapping Table */
+  .map-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .map-table th { background: #f7f8fa; padding: 10px 12px; text-align: left; font-weight: 500; color: #86909c; border-bottom: 1px solid #e5e6eb; }
+  .map-table td { padding: 10px 12px; border-bottom: 1px solid #f0f1f5; vertical-align: top; }
+  .map-table tr:last-child td { border-bottom: none; }
+  .map-table .col-input { background: #f0f7ff; }
+  .map-table .col-auto { background: #f6fff0; }
+  .map-table .col-output { background: #fffdf0; }
+  .pill { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; margin-right: 4px; margin-bottom: 2px; }
+  .pill.blue { background: #e8f0ff; color: #3370ff; }
+  .pill.green { background: #e8f8e5; color: #237f3f; }
+  .pill.orange { background: #fff7e8; color: #d46b08; }
+  .pill.gray { background: #f2f3f5; color: #86909c; }
+  .pill.purple { background: #f0f0ff; color: #5b5fc7; }
+
+  /* Step Flow */
+  .step-flow { display: flex; gap: 12px; margin: 20px 0; }
+  .step-card { flex: 1; padding: 16px; border-radius: 10px; border: 1px solid #e5e6eb; text-align: center; position: relative; }
+  .step-card .step-num { width: 28px; height: 28px; border-radius: 50%; background: #3370ff; color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+  .step-card .step-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .step-card .step-desc { font-size: 11px; color: #86909c; }
+  .step-card.ai-step { border-color: #b7b0ff; background: #faf9ff; }
+  .step-card.ai-step .step-num { background: #7c5cfc; }
+  .step-arrow { display: flex; align-items: center; color: #c9cdd4; font-size: 16px; flex-shrink: 0; }
+
+  /* Mock UI */
+  .mock-ui { border: 1px solid #e5e6eb; border-radius: 12px; overflow: hidden; margin: 20px 0; }
+  .mock-header { padding: 12px 16px; background: #f7f8fa; border-bottom: 1px solid #e5e6eb; display: flex; align-items: center; gap: 8px; }
+  .mock-header .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .mock-body { padding: 20px; }
+  .mock-chat { display: flex; flex-direction: column; gap: 12px; }
+  .chat-bubble { max-width: 80%; padding: 10px 14px; border-radius: 10px; font-size: 13px; line-height: 1.6; }
+  .chat-bubble.ai { background: #f0f1f5; align-self: flex-start; border-bottom-left-radius: 2px; }
+  .chat-bubble.user { background: #3370ff; color: #fff; align-self: flex-end; border-bottom-right-radius: 2px; }
+  .chat-bubble .label { font-size: 11px; color: #86909c; margin-bottom: 4px; }
+  .chat-bubble.user .label { color: rgba(255,255,255,0.7); }
+  .quick-replies { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .quick-reply { padding: 6px 14px; border-radius: 16px; border: 1px solid #3370ff; background: #fff; color: #3370ff; font-size: 12px; cursor: pointer; }
+  .quick-reply.filled { background: #3370ff; color: #fff; }
+
+  /* Summary */
+  .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .summary-card { text-align: center; padding: 20px; border-radius: 10px; border: 1px solid #e5e6eb; }
+  .summary-card .big { font-size: 28px; font-weight: 700; }
+  .summary-card .desc { font-size: 12px; color: #86909c; margin-top: 4px; }
+  .summary-card.blue .big { color: #3370ff; }
+  .summary-card.green .big { color: #34c724; }
+  .summary-card.orange .big { color: #d46b08; }
+  .summary-card.purple .big { color: #7c5cfc; }
+
+  /* Callout */
+  .callout { padding: 16px 20px; border-radius: 8px; margin: 16px 0; font-size: 13px; display: flex; gap: 10px; align-items: flex-start; }
+  .callout.info { background: #e8f0ff; border: 1px solid #bddcff; }
+  .callout.warn { background: #fff7e8; border: 1px solid #ffd591; }
+  .callout .callout-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .callout .callout-text { color: #4e5969; }
+  .callout .callout-text strong { color: #1f2329; }
+
+  /* Decision Matrix */
+  .decision-matrix { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+  .decision-card { padding: 16px; border-radius: 8px; border: 1px solid #e5e6eb; }
+  .decision-card h5 { font-size: 13px; font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .decision-card ul { list-style: none; padding: 0; }
+  .decision-card li { padding: 4px 0; font-size: 12px; color: #4e5969; display: flex; align-items: center; gap: 6px; }
+  .decision-card li::before { content: ''; width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .decision-card.auto li::before { background: #34c724; }
+  .decision-card.manual li::before { background: #3370ff; }
+  .decision-card.ai-suggest li::before { background: #7c5cfc; }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="badge">AI 驱动</div>
+    <h1>岗位虾创建流程 — 产品设计方案</h1>
+    <p class="subtitle">从"业务填 8 项"到"业务选 2 项 + AI 推导 6 项"的智能化升级</p>
+  </div>
+
+  <!-- Problem Statement -->
+  <div class="section">
+    <div class="section-title">一、现状问题</div>
+    <div class="section-desc">当前方案要求业务团队做 8 项决策，认知负担重，且很多配置业务团队并不专业</div>
+
+    <div class="problem-grid">
+      <div class="problem-card">
+        <div class="num">8</div>
+        <div class="label">业务需决策的配置项</div>
+        <div class="detail">容器档位、岗位说明书、服务对象、会话模式、记忆策略、知识库、Skill包、试运行人群</div>
+      </div>
+      <div class="problem-card">
+        <div class="num">60%+</div>
+        <div class="label">配置项超出业务能力</div>
+        <div class="detail">会话策略、记忆策略、Skill包选择等需要技术背景，业务团队难以准确判断</div>
+      </div>
+      <div class="problem-card">
+        <div class="num">3-5天</div>
+        <div class="label">平均配置耗时</div>
+        <div class="detail">反复沟通确认、多次修改，拉长了从需求到上线的周期</div>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <span class="callout-icon">⚠️</span>
+      <span class="callout-text">
+        <strong>核心矛盾</strong>：业务最懂"要什么"（岗位场景），平台最懂"怎么配"（技术参数）。当前方案让业务做了平台该做的事。
+      </span>
+    </div>
+  </div>
+
+  <!-- Design Principle -->
+  <div class="section">
+    <div class="section-title">二、设计原则</div>
+    <div class="section-desc">业务只填"业务语言"，平台自动翻译为"技术配置"</div>
+
+    <div class="arch-diagram">
+      <div class="arch-layer business">
+        <h5>🧑‍💼 业务填写</h5>
+        <div class="arch-item highlight">岗位说明书</div>
+        <div class="arch-item highlight">容器档位</div>
+        <div class="arch-item" style="opacity:0.5; text-decoration: line-through;">~~服务对象~~</div>
+        <div class="arch-item" style="opacity:0.5; text-decoration: line-through;">~~会话模式~~</div>
+        <div class="arch-item" style="opacity:0.5; text-decoration: line-through;">~~记忆策略~~</div>
+        <div class="arch-item" style="opacity:0.5; text-decoration: line-through;">~~知识库~~</div>
+        <div class="arch-item" style="opacity:0.5; text-decoration: line-through;">~~Skill包~~</div>
+        <div class="arch-item" style="opacity:0.5; text-decoration: line-through;">~~试运行人群~~</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-layer ai">
+        <h5>🤖 AI 推导</h5>
+        <div class="arch-item highlight">解析岗位说明书</div>
+        <div class="arch-item highlight">提取核心场景</div>
+        <div class="arch-item highlight">匹配知识库</div>
+        <div class="arch-item highlight">推荐 Skill 包</div>
+        <div class="arch-item highlight">生成权限策略</div>
+        <div class="arch-item highlight">生成试运行方案</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-layer platform">
+        <h5>⚙️ 平台执行</h5>
+        <div class="arch-item">分配容器资源</div>
+        <div class="arch-item">创建岗位空间</div>
+        <div class="arch-item">生成 Agent Card</div>
+        <div class="arch-item">配置会话策略</div>
+        <div class="arch-item">建立知识索引</div>
+        <div class="arch-item">挂载 Skill</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-layer output">
+        <h5>📦 产出物</h5>
+        <div class="arch-item">岗位虾实例</div>
+        <div class="arch-item">上岗校验清单</div>
+        <div class="arch-item">试运行面板</div>
+        <div class="arch-item">运营看板</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- New Flow -->
+  <div class="section">
+    <div class="section-title">三、新流程：3 步完成创建</div>
+    <div class="section-desc">业务只需提供"岗位说明书 + 容器档位"，其余全部由 AI 推导 + 平台自动生成</div>
+
+    <div class="step-flow">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-title">提交岗位说明书</div>
+        <div class="step-desc">业务用自然语言描述岗位职责、场景、价值</div>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step-card ai-step">
+        <div class="step-num">✦</div>
+        <div class="step-title">AI 智能推导</div>
+        <div class="step-desc">解析文本 → 提取场景 → 匹配配置 → 生成方案</div>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-title">确认 & 微调</div>
+        <div class="step-desc">业务审核 AI 方案，可调整容器档位和可见范围</div>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-title">一键创建</div>
+        <div class="step-desc">平台自动分配资源、创建空间、生成配置</div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <span class="callout-icon">💡</span>
+      <span class="callout-text">
+        <strong>关键变化</strong>：从"8 项决策"简化为"2 项决策 + 1 次确认"。业务只需回答"这个虾干什么"和"给谁用"，技术配置由 AI + 平台自动完成。
+      </span>
+    </div>
+  </div>
+
+  <!-- Detailed Mapping -->
+  <div class="section">
+    <div class="section-title">四、字段映射：业务填 → AI 推 → 平台做</div>
+    <div class="section-desc">每个配置项的来源和生成逻辑</div>
+
+    <table class="map-table">
+      <thead>
+        <tr>
+          <th style="width:20%">配置项</th>
+          <th style="width:15%">来源</th>
+          <th style="width:30%">生成逻辑</th>
+          <th style="width:20%">业务可调整</th>
+          <th style="width:15%">优先级</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>岗位说明书</strong></td>
+          <td><span class="pill blue">业务填写</span></td>
+          <td>业务用自然语言描述岗位职责、场景、价值、能力边界</td>
+          <td>必填，不可跳过</td>
+          <td><span class="pill orange">P0</span></td>
+        </tr>
+        <tr>
+          <td><strong>容器档位</strong></td>
+          <td><span class="pill blue">业务选择</span></td>
+          <td>根据岗位复杂度推荐默认值，业务可调整</td>
+          <td>可调整（推荐：专属版）</td>
+          <td><span class="pill orange">P0</span></td>
+        </tr>
+        <tr>
+          <td><strong>所属部门</strong></td>
+          <td><span class="pill blue">业务选择</span></td>
+          <td>从组织架构树选择，自动关联成本中心</td>
+          <td>可调整</td>
+          <td><span class="pill orange">P0</span></td>
+        </tr>
+        <tr>
+          <td><strong>核心场景</strong></td>
+          <td><span class="pill purple">AI 推导</span></td>
+          <td>从岗位说明书中提取关键场景标签（如：需求评审、代码审查、数据分析）</td>
+          <td>可增删改</td>
+          <td><span class="pill green">P1</span></td>
+        </tr>
+        <tr>
+          <td><strong>服务对象</strong></td>
+          <td><span class="pill purple">AI 推导</span></td>
+          <td>从"覆盖人数"、"汇报对象"等字段推导，默认为本部门全员</td>
+          <td>可调整范围</td>
+          <td><span class="pill green">P1</span></td>
+        </tr>
+        <tr>
+          <td><strong>可见人群</strong></td>
+          <td><span class="pill blue">业务选择</span></td>
+          <td>默认"全部成员"，业务可缩小范围</td>
+          <td>可调整</td>
+          <td><span class="pill green">P1</span></td>
+        </tr>
+        <tr>
+          <td><strong>会话策略</strong></td>
+          <td><span class="pill purple">AI 推导</span></td>
+          <td>根据岗位类型自动选择：独立岗位→隔离模式，协作岗位→共享模式</td>
+          <td>高级设置中可调整</td>
+          <td><span class="pill gray">P2</span></td>
+        </tr>
+        <tr>
+          <td><strong>记忆策略</strong></td>
+          <td><span class="pill purple">AI 推导</span></td>
+          <td>默认开启岗位记忆+会话记忆，根据岗位复杂度决定是否开启事实轨迹</td>
+          <td>高级设置中可调整</td>
+          <td><span class="pill gray">P2</span></td>
+        </tr>
+        <tr>
+          <td><strong>知识库</strong></td>
+          <td><span class="pill purple">AI 推导</span></td>
+          <td>根据岗位类型匹配预置知识包（如：HR虾→劳动法知识包，财务虾→报销规则知识包）</td>
+          <td>可追加上传</td>
+          <td><span class="pill green">P1</span></td>
+        </tr>
+        <tr>
+          <td><strong>Skill 包</strong></td>
+          <td><span class="pill purple">AI 推导</span></td>
+          <td>根据核心场景匹配 Skill（如：代码审查场景→GitLab Skill + 代码规范 Skill）</td>
+          <td>可增删</td>
+          <td><span class="pill green">P1</span></td>
+        </tr>
+        <tr>
+          <td><strong>试运行人群</strong></td>
+          <td><span class="pill purple">AI 推导</span></td>
+          <td>默认：申请人 + 汇报对象 + 部门内 3-5 人，业务可调整</td>
+          <td>可调整</td>
+          <td><span class="pill green">P1</span></td>
+        </tr>
+        <tr>
+          <td><strong>汇报对象</strong></td>
+          <td><span class="pill blue">业务选择</span></td>
+          <td>默认为申请人，可修改</td>
+          <td>可调整</td>
+          <td><span class="pill green">P1</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- AI Chat Mock -->
+  <div class="section">
+    <div class="section-title">五、交互原型：AI 对话建虾</div>
+    <div class="section-desc">业务通过自然语言对话完成创建，AI 自动解析并生成配置方案</div>
+
+    <div class="mock-ui">
+      <div class="mock-header">
+        <div class="dot" style="background:#ff5f57;"></div>
+        <div class="dot" style="background:#febc2e;"></div>
+        <div class="dot" style="background:#28c840;"></div>
+        <span style="margin-left:8px;font-size:13px;color:#86909c;">AI 对话建虾 — 客服小虾</span>
+      </div>
+      <div class="mock-body">
+        <div class="mock-chat">
+          <div class="chat-bubble ai">
+            <div class="label">🦐 AI 助手</div>
+            你好！我是建虾助手。请告诉我你想创建什么样的岗位虾？可以用一段话描述它的职责和场景。
+          </div>
+
+          <div class="chat-bubble user">
+            <div class="label">你</div>
+            我需要一个客服虾，负责处理用户的问题咨询和投诉。主要场景是：回答产品使用问题、处理退换货申请、记录用户反馈。需要对接工单系统和知识库。
+          </div>
+
+          <div class="chat-bubble ai">
+            <div class="label">🦐 AI 助手</div>
+            已解析你的需求，为你生成以下配置方案：<br><br>
+            <strong>📋 核心场景</strong><br>
+            · 产品咨询应答<br>
+            · 退换货流程处理<br>
+            · 用户反馈记录<br><br>
+            <strong>🧠 知识库</strong><br>
+            · 产品使用手册（自动匹配）<br>
+            · 退换货政策（自动匹配）<br>
+            · FAQ 常见问题（自动匹配）<br><br>
+            <strong>⚡ Skill 包</strong><br>
+            · 工单系统对接 Skill<br>
+            · 知识库检索 Skill<br>
+            · 情绪识别 Skill<br><br>
+            <strong>⚙️ 运行策略</strong><br>
+            · 会话模式：隔离模式（客服独立处理）<br>
+            · 记忆策略：岗位记忆 ✓ + 会话记忆 ✓<br>
+            · 试运行：建议 7 天，覆盖客服组全员
+
+            <div class="quick-replies">
+              <span class="quick-reply filled">✓ 确认创建</span>
+              <span class="quick-reply">✏️ 修改配置</span>
+              <span class="quick-reply">🔄 重新生成</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Decision Matrix -->
+  <div class="section">
+    <div class="section-title">六、决策矩阵：谁决定什么</div>
+    <div class="section-desc">明确业务、AI、平台三方的职责边界</div>
+
+    <div class="decision-matrix">
+      <div class="decision-card manual">
+        <h5><span style="color:#3370ff;">●</span> 业务团队决定（2 项）</h5>
+        <ul>
+          <li>岗位说明书 — 这个虾干什么</li>
+          <li>容器档位 — 给多少算力</li>
+          <li>所属部门 — 归哪个部门管</li>
+          <li>可见人群 — 谁能用（可选）</li>
+        </ul>
+      </div>
+      <div class="decision-card ai-suggest">
+        <h5><span style="color:#7c5cfc;">●</span> AI 推导生成（6 项）</h5>
+        <ul>
+          <li>核心场景 — 从说明书中提取</li>
+          <li>服务对象 — 从组织架构推导</li>
+          <li>知识库 — 按岗位类型匹配</li>
+          <li>Skill 包 — 按场景需求匹配</li>
+          <li>会话策略 — 按岗位模式选择</li>
+          <li>记忆策略 — 按复杂度配置</li>
+        </ul>
+      </div>
+      <div class="decision-card auto">
+        <h5><span style="color:#34c724;">●</span> 平台自动执行（8 项）</h5>
+        <ul>
+          <li>分配容器资源</li>
+          <li>创建岗位空间</li>
+          <li>生成 Agent Card 初稿</li>
+          <li>生成上岗校验清单</li>
+          <li>生成访问白名单</li>
+          <li>建立知识域与索引</li>
+          <li>挂载 Skill 并走审核</li>
+          <li>签发试运行状态</li>
+        </ul>
+      </div>
+      <div class="decision-card" style="background:#fffdf0;border-color:#ffe58f;">
+        <h5><span style="color:#d46b08;">●</span> 业务确认（1 次）</h5>
+        <ul>
+          <li>审核 AI 生成的配置方案</li>
+          <li>可逐项调整或一键确认</li>
+          <li>确认后平台立即执行</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="section">
+    <div class="section-title">七、效果对比</div>
+
+    <div class="flow-compare">
+      <div class="flow-box old">
+        <h4><span class="tag">旧方案</span> 业务驱动配置</h4>
+        <div class="flow-item"><span class="icon">1️⃣</span><span class="text">填写<strong>岗位说明书</strong></span></div>
+        <div class="flow-item"><span class="icon">2️⃣</span><span class="text">选择<strong>容器档位</strong></span></div>
+        <div class="flow-item"><span class="icon">3️⃣</span><span class="text">配置<strong>服务对象</strong>和组织范围</span></div>
+        <div class="flow-divider"></div>
+        <div class="flow-item"><span class="icon">4️⃣</span><span class="text">选择<strong>会话模式</strong>（需技术背景）</span></div>
+        <div class="flow-item"><span class="icon">5️⃣</span><span class="text">选择<strong>记忆策略</strong>（需技术背景）</span></div>
+        <div class="flow-item"><span class="icon">6️⃣</span><span class="text">挂接<strong>知识库</strong>（需了解内容结构）</span></div>
+        <div class="flow-item"><span class="icon">7️⃣</span><span class="text">选择<strong>Skill 包</strong>（需了解能力矩阵）</span></div>
+        <div class="flow-item"><span class="icon">8️⃣</span><span class="text">设置<strong>试运行人群</strong></span></div>
+        <div class="flow-divider"></div>
+        <div class="flow-item"><span class="icon">⏱️</span><span class="text" style="color:#cf1322;"><strong>预计 3-5 天</strong>，需反复沟通</span></div>
+      </div>
+
+      <div class="flow-box new">
+        <h4><span class="tag">新方案</span> AI 推导配置</h4>
+        <div class="flow-item"><span class="icon">1️⃣</span><span class="text">填写<strong>岗位说明书</strong>（自然语言）</span></div>
+        <div class="flow-item"><span class="icon">2️⃣</span><span class="text">选择<strong>容器档位</strong>（AI 推荐默认值）</span></div>
+        <div class="flow-item"><span class="icon">3️⃣</span><span class="text">选择<strong>所属部门</strong></span></div>
+        <div class="flow-divider"></div>
+        <div class="flow-item"><span class="icon">🤖</span><span class="text"><strong>AI 自动推导</strong>：场景、知识库、Skill、策略...</span></div>
+        <div class="flow-item"><span class="icon">👀</span><span class="text"><strong>业务审核确认</strong>：查看 AI 方案，微调后确认</span></div>
+        <div class="flow-divider"></div>
+        <div class="flow-item"><span class="icon">✅</span><span class="text" style="color:#237f3f;"><strong>预计 10 分钟</strong>，一次对话完成</span></div>
+      </div>
+    </div>
+
+    <div style="margin-top:24px;">
+      <div class="summary-grid">
+        <div class="summary-card blue">
+          <div class="big">8 → 2</div>
+          <div class="desc">业务决策项</div>
+        </div>
+        <div class="summary-card green">
+          <div class="big">3-5天 → 10分钟</div>
+          <div class="desc">创建耗时</div>
+        </div>
+        <div class="summary-card orange">
+          <div class="big">0 → 6</div>
+          <div class="desc">AI 自动推导项</div>
+        </div>
+        <div class="summary-card purple">
+          <div class="big">0 → 8</div>
+          <div class="desc">平台自动执行项</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Technical Notes -->
+  <div class="section">
+    <div class="section-title">八、技术实现要点</div>
+
+    <div class="callout info">
+      <span class="callout-icon">🔧</span>
+      <span class="callout-text">
+        <strong>AI 推导引擎</strong>：基于岗位说明书文本，使用 LLM 提取结构化信息（场景、能力、受众），然后通过规则引擎匹配预置的知识库和 Skill 包。推导结果需要人工确认，避免 AI 幻觉导致错误配置。
+      </span>
+    </div>
+
+    <table class="map-table" style="margin-top:16px;">
+      <thead>
+        <tr>
+          <th>模块</th>
+          <th>技术方案</th>
+          <th>关键点</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>文本解析</strong></td>
+          <td>LLM + Prompt Engineering</td>
+          <td>从自然语言中提取：场景列表、能力要求、受众范围、复杂度评级</td>
+        </tr>
+        <tr>
+          <td><strong>知识匹配</strong></td>
+          <td>向量检索 + 标签匹配</td>
+          <td>根据岗位类型和场景，从知识库中检索最相关的预置知识包</td>
+        </tr>
+        <tr>
+          <td><strong>Skill 推荐</strong></td>
+          <td>规则引擎 + 场景映射</td>
+          <td>建立"场景→Skill"映射表，根据提取的场景自动推荐 Skill 包</td>
+        </tr>
+        <tr>
+          <td><strong>策略生成</strong></td>
+          <td>规则引擎 + 默认值</td>
+          <td>根据岗位复杂度（简单/中等/复杂）选择会话策略和记忆策略</td>
+        </tr>
+        <tr>
+          <td><strong>试运行方案</strong></td>
+          <td>组织架构 + 规则</td>
+          <td>默认选择申请人所在部门的 3-5 人，业务可调整</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- AI Derivation Engine Design -->
+  <div class="section">
+    <div class="section-title">九、AI 推导引擎设计</div>
+    <div class="section-desc">从岗位说明书到完整配置方案的智能推导逻辑</div>
+
+    <!-- Architecture -->
+    <div class="callout info">
+      <span class="callout-icon">🧠</span>
+      <span class="callout-text">
+        <strong>核心思路</strong>：LLM 负责"理解语义"（提取场景、能力、受众），规则引擎负责"匹配配置"（知识库、Skill、策略）。两者结合，既保证理解深度，又保证配置准确性。
+      </span>
+    </div>
+
+    <div style="margin:20px 0; padding:20px; background:#f7f8fa; border-radius:10px; font-family:monospace; font-size:12px; line-height:2; color:#4e5969;">
+      <div style="text-align:center; font-family:inherit; font-size:14px; font-weight:600; color:#1f2329; margin-bottom:12px;">推导流水线（Pipeline）</div>
+      <div style="display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap;">
+        <span style="padding:6px 12px; background:#e8f0ff; border-radius:6px; color:#3370ff; font-weight:500;">岗位说明书</span>
+        <span style="color:#c9cdd4;">→</span>
+        <span style="padding:6px 12px; background:#f0f0ff; border-radius:6px; color:#7c5cfc; font-weight:500;">LLM 语义解析</span>
+        <span style="color:#c9cdd4;">→</span>
+        <span style="padding:6px 12px; background:#fff7e8; border-radius:6px; color:#d46b08; font-weight:500;">结构化输出</span>
+        <span style="color:#c9cdd4;">→</span>
+        <span style="padding:6px 12px; background:#e8f8e5; border-radius:6px; color:#237f3f; font-weight:500;">规则匹配</span>
+        <span style="color:#c9cdd4;">→</span>
+        <span style="padding:6px 12px; background:#f3eeff; border-radius:6px; color:#764ba2; font-weight:500;">配置方案</span>
+      </div>
+    </div>
+
+    <!-- Module 1: LLM Parsing -->
+    <div style="margin-bottom:24px;">
+      <h4 style="font-size:15px; font-weight:600; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+        <span style="display:inline-flex; width:28px; height:28px; border-radius:50%; background:#7c5cfc; color:#fff; align-items:center; justify-content:center; font-size:13px;">1</span>
+        LLM 语义解析层
+      </h4>
+      <p style="font-size:13px; color:#646a73; margin-bottom:12px;">将自然语言岗位说明书解析为结构化 JSON，提取 6 个维度的信息</p>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+        <div style="padding:14px; background:#f7f8fa; border-radius:8px; border-left:3px solid #7c5cfc;">
+          <div style="font-size:13px; font-weight:600; color:#1f2329; margin-bottom:4;">输入：自然语言文本</div>
+          <div style="font-size:12px; color:#646a73; font-family:monospace; background:#fff; padding:8px; border-radius:4px; margin-top:6px;">
+            "我需要一个客服虾，负责处理用户问题咨询和投诉，主要场景是回答产品使用问题、处理退换货申请..."
+          </div>
+        </div>
+        <div style="padding:14px; background:#f7f8fa; border-radius:8px; border-left:3px solid #34c724;">
+          <div style="font-size:13px; font-weight:600; color:#1f2329; margin-bottom:4;">输出：结构化 JSON</div>
+          <div style="font-size:12px; color:#646a73; font-family:monospace; background:#fff; padding:8px; border-radius:4px; margin-top:6px;">
+            {<br>
+            &nbsp;&nbsp;"name": "客服虾",<br>
+            &nbsp;&nbsp;"scenarios": ["产品咨询", "退换货", "投诉处理"],<br>
+            &nbsp;&nbsp;"capabilities": ["问答", "工单", "情绪识别"],<br>
+            &nbsp;&nbsp;"complexity": "medium",<br>
+            &nbsp;&nbsp;"serviceScope": "customer_service_team"<br>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px; padding:14px; background:#fff; border:1px solid #e5e6eb; border-radius:8px;">
+        <div style="font-size:13px; font-weight:600; color:#1f2329; margin-bottom:8;">Prompt 设计要点</div>
+        <div style="font-size:12px; color:#646a73; line-height:1.8;">
+          <div>• <strong>角色设定</strong>：你是岗位虾配置专家，负责从岗位说明书中提取关键信息</div>
+          <div>• <strong>输出格式</strong>：严格输出 JSON，包含 name / scenarios / capabilities / complexity / serviceScope</div>
+          <div>• <strong>scenarios 提取</strong>：从"职责描述"、"工作场景"、"主要任务"等段落中提取动宾短语（如"处理投诉"、"审核文档"）</div>
+          <div>• <strong>capabilities 推导</strong>：根据场景推导所需能力（如"投诉"→情绪识别+工单处理，"审核"→规则校验+文本分析）</div>
+          <div>• <strong>complexity 评级</strong>：根据场景数量、能力复杂度、是否涉及多系统联动，输出 simple / medium / complex</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Module 2: Knowledge Matching -->
+    <div style="margin-bottom:24px;">
+      <h4 style="font-size:15px; font-weight:600; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+        <span style="display:inline-flex; width:28px; height:28px; border-radius:50%; background:#3370ff; color:#fff; align-items:center; justify-content:center; font-size:13px;">2</span>
+        知识库匹配引擎
+      </h4>
+      <p style="font-size:13px; color:#646a73; margin-bottom:12px;">根据岗位类型和场景，从预置知识库中检索最相关的知识包</p>
+
+      <table class="map-table">
+        <thead>
+          <tr>
+            <th>匹配策略</th>
+            <th>逻辑</th>
+            <th>示例</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="pill purple">岗位类型匹配</span></td>
+            <td>根据 LLM 提取的岗位类型（客服/HR/财务/研发），匹配预置的岗位知识包</td>
+            <td>客服虾 → 产品手册 + 退换话术 + FAQ</td>
+          </tr>
+          <tr>
+            <td><span class="pill blue">场景关键词匹配</span></td>
+            <td>对每个场景做关键词提取，与知识库标签做交集匹配</td>
+            <td>"退换货" → 匹配"退换货政策"知识库</td>
+          </tr>
+          <tr>
+            <td><span class="pill green">向量相似度匹配</span></td>
+            <td>将场景描述做 embedding，与知识库摘要做余弦相似度排序，取 top-N</td>
+            <td>场景描述与"劳动法知识"相似度 0.82 → 推荐</td>
+          </tr>
+          <tr>
+            <td><span class="pill orange">部门知识继承</span></td>
+            <td>自动继承所在部门/空间的共享知识库</td>
+            <td>集团信息技术部 → 自动继承"IT规范"知识库</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout warn" style="margin-top:12px;">
+        <span class="callout-icon">⚠️</span>
+        <span class="callout-text">
+          <strong>兜底策略</strong>：如果匹配结果为 0，AI 应主动询问"是否需要上传专属知识库？"，而不是静默跳过。知识库是虾的核心能力来源，不可省略。
+        </span>
+      </div>
+    </div>
+
+    <!-- Module 3: Skill Recommendation -->
+    <div style="margin-bottom:24px;">
+      <h4 style="font-size:15px; font-weight:600; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+        <span style="display:inline-flex; width:28px; height:28px; border-radius:50%; background:#d46b08; color:#fff; align-items:center; justify-content:center; font-size:13px;">3</span>
+        Skill 推荐引擎
+      </h4>
+      <p style="font-size:13px; color:#646a73; margin-bottom:12px;">建立"场景 → Skill"映射表，根据提取的场景自动推荐 Skill 包</p>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+        <div>
+          <div style="font-size:13px; font-weight:600; color:#1f2329; margin-bottom:8;">映射表示例</div>
+          <table class="map-table" style="font-size:12px;">
+            <thead>
+              <tr><th>场景关键词</th><th>推荐 Skill</th><th>优先级</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>咨询/问答/回答</td><td>智能问答 Skill</td><td><span class="pill orange">必选</span></td></tr>
+              <tr><td>投诉/情绪/不满</td><td>情绪识别 Skill</td><td><span class="pill green">推荐</span></td></tr>
+              <tr><td>工单/流程/审批</td><td>工单系统对接 Skill</td><td><span class="pill orange">必选</span></td></tr>
+              <tr><td>文档/报告/生成</td><td>文档生成 Skill</td><td><span class="pill green">推荐</span></td></tr>
+              <tr><td>数据/分析/SQL</td><td>数据分析 Skill</td><td><span class="pill green">推荐</span></td></tr>
+              <tr><td>代码/审查/PR</td><td>代码审查 Skill</td><td><span class="pill orange">必选</span></td></tr>
+              <tr><td>检索/搜索/查找</td><td>知识检索 Skill</td><td><span class="pill orange">必选</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <div style="font-size:13px; font-weight:600; color:#1f2329; margin-bottom:8;">推荐策略</div>
+          <div style="font-size:12px; color:#646a73; line-height:1.8;">
+            <div style="margin-bottom:8px;"><strong>必选 Skill</strong>：场景强相关的 Skill，不勾选会影响核心功能</div>
+            <div style="margin-bottom:8px;"><strong>推荐 Skill</strong>：场景弱相关但能增强体验的 Skill</div>
+            <div style="margin-bottom:8px;"><strong>通识 Skill</strong>：所有虾默认挂载（如：智能问答、知识检索）</div>
+            <div><strong>上限控制</strong>：单虾最多挂载 8 个 Skill，避免能力冲突</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Module 4: Strategy Generation -->
+    <div style="margin-bottom:24px;">
+      <h4 style="font-size:15px; font-weight:600; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+        <span style="display:inline-flex; width:28px; height:28px; border-radius:50%; background:#237f3f; color:#fff; align-items:center; justify-content:center; font-size:13px;">4</span>
+        运行策略生成
+      </h4>
+      <p style="font-size:13px; color:#646a73; margin-bottom:12px;">根据岗位复杂度和场景特征，自动生成会话策略和记忆策略</p>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+        <div style="padding:16px; background:#f7f8fa; border-radius:8px;">
+          <div style="font-size:13px; font-weight:600; color:#1f2329; margin-bottom:10px;">会话策略决策树</div>
+          <div style="font-size:12px; color:#646a73; line-height:2;">
+            <div>if 场景包含"群聊协作":</div>
+            <div style="padding-left:16px;">→ <span class="pill blue">共享模式</span></div>
+            <div>elif 岗位类型 in [客服, HR, 财务]:</div>
+            <div style="padding-left:16px;">→ <span class="pill blue">隔离模式</span>（独立处理）</div>
+            <div>elif complexity == "complex":</div>
+            <div style="padding-left:16px;">→ <span class="pill blue">混合模式</span></div>
+            <div>else:</div>
+            <div style="padding-left:16px;">→ <span class="pill blue">隔离模式</span>（默认）</div>
+          </div>
+        </div>
+        <div style="padding:16px; background:#f7f8fa; border-radius:8px;">
+          <div style="font-size:13px; font-weight:600; color:#1f2329; margin-bottom:10px;">记忆策略决策树</div>
+          <div style="font-size:12px; color:#646a73; line-height:2;">
+            <div><strong>岗位记忆</strong>（长期）：</div>
+            <div style="padding-left:16px;">→ 默认 <span style="color:#34c724;">开启</span>（所有虾都需要积累经验）</div>
+            <div><strong>会话记忆</strong>（短期）：</div>
+            <div style="padding-left:16px;">→ 默认 <span style="color:#34c724;">开启</span>（保持对话连贯性）</div>
+            <div><strong>事实轨迹</strong>（治理）：</div>
+            <div style="padding-left:16px;">if 岗位涉及"审批/决策/合规":</div>
+            <div style="padding-left:32px;">→ <span style="color:#34c724;">开启</span>（需审计追溯）</div>
+            <div style="padding-left:16px;">else:</div>
+            <div style="padding-left:32px;">→ <span style="color:#86909c;">关闭</span>（减少存储开销）</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Module 5: Trial Plan -->
+    <div style="margin-bottom:24px;">
+      <h4 style="font-size:15px; font-weight:600; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+        <span style="display:inline-flex; width:28px; height:28px; border-radius:50%; background:#764ba2; color:#fff; align-items:center; justify-content:center; font-size:13px;">5</span>
+        试运行方案生成
+      </h4>
+      <p style="font-size:13px; color:#646a73; margin-bottom:12px;">根据岗位类型和部门规模，自动生成试运行配置</p>
+
+      <table class="map-table">
+        <thead>
+          <tr>
+            <th>参数</th>
+            <th>生成逻辑</th>
+            <th>默认值</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>试运行时长</strong></td>
+            <td>根据 complexity 决定：simple=3天, medium=7天, complex=14天</td>
+            <td><span class="pill blue">7 天</span></td>
+          </tr>
+          <tr>
+            <td><strong>试运行人群</strong></td>
+            <td>默认：申请人 + 汇报对象 + 同部门 3-5 人</td>
+            <td><span class="pill blue">5 人</span></td>
+          </tr>
+          <tr>
+            <td><strong>反馈收集</strong></td>
+            <td>默认开启，试运行结束后自动收集群成员反馈</td>
+            <td><span class="pill green">开启</span></td>
+          </tr>
+          <tr>
+            <td><strong>达标标准</strong></td>
+            <td>准确率 ≥ 80% + 用户满意度 ≥ 3.5/5 + 无 P0 故障</td>
+            <td><span class="pill orange">自动评估</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Confidence & Fallback -->
+    <div style="margin-bottom:16px;">
+      <h4 style="font-size:15px; font-weight:600; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+        <span style="display:inline-flex; width:28px; height:28px; border-radius:50%; background:#f54a45; color:#fff; align-items:center; justify-content:center; font-size:13px;">6</span>
+        置信度评分 & 兜底策略
+      </h4>
+      <p style="font-size:13px; color:#646a73; margin-bottom:12px;">每个推导结果附带置信度评分，低置信度项需人工确认</p>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+        <div style="padding:16px; background:#f7f8fa; border-radius:8px;">
+          <div style="font-size:13px; font-weight:600; color:#1f2329; margin-bottom:8;">置信度评分规则</div>
+          <div style="font-size:12px; color:#646a73; line-height:1.8;">
+            <div><span style="color:#34c724; font-weight:600;">高 (≥80%)</span>：直接展示，标记"AI 推荐"</div>
+            <div><span style="color:#d46b08; font-weight:600;">中 (50-79%)</span>：展示但标记"建议确认"</div>
+            <div><span style="color:#f54a45; font-weight:600;">低 (&lt;50%)</span>：标记"需手动选择"，不自动填充</div>
+          </div>
+        </div>
+        <div style="padding:16px; background:#f7f8fa; border-radius:8px;">
+          <div style="font-size:13px; font-weight:600; color:#1f2329; margin-bottom:8;">兜底策略</div>
+          <div style="font-size:12px; color:#646a73; line-height:1.8;">
+            <div>• 说明书过短（&lt;50字）→ 提示"请补充岗位职责描述"</div>
+            <div>• 无法提取场景 → 使用通用 Skill 包 + 询问用户</div>
+            <div>• 知识库匹配为 0 → 询问"是否需要上传专属知识库？"</div>
+            <div>• 部门信息缺失 → 默认"全部成员"可见</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data Flow Diagram -->
+    <div style="padding:20px; background:#f7f8fa; border-radius:10px; margin-top:20px;">
+      <div style="font-size:14px; font-weight:600; color:#1f2329; margin-bottom:16px; text-align:center;">完整数据流</div>
+      <div style="display:grid; grid-template-columns:1fr auto 1fr auto 1fr auto 1fr; gap:0; align-items:center;">
+        <div style="padding:12px; background:#e8f0ff; border-radius:8px; text-align:center;">
+          <div style="font-size:12px; font-weight:600; color:#3370ff;">输入层</div>
+          <div style="font-size:11px; color:#646a73; margin-top:4px;">岗位说明书<br>部门信息<br>容器档位</div>
+        </div>
+        <div style="text-align:center; padding:0 4px; color:#c9cdd4; font-size:16px;">→</div>
+        <div style="padding:12px; background:#f0f0ff; border-radius:8px; text-align:center;">
+          <div style="font-size:12px; font-weight:600; color:#7c5cfc;">LLM 解析</div>
+          <div style="font-size:11px; color:#646a73; margin-top:4px;">场景提取<br>能力推导<br>复杂度评级</div>
+        </div>
+        <div style="text-align:center; padding:0 4px; color:#c9cdd4; font-size:16px;">→</div>
+        <div style="padding:12px; background:#fff7e8; border-radius:8px; text-align:center;">
+          <div style="font-size:12px; font-weight:600; color:#d46b08;">规则匹配</div>
+          <div style="font-size:11px; color:#646a73; margin-top:4px;">知识库匹配<br>Skill 推荐<br>策略生成</div>
+        </div>
+        <div style="text-align:center; padding:0 4px; color:#c9cdd4; font-size:16px;">→</div>
+        <div style="padding:12px; background:#e8f8e5; border-radius:8px; text-align:center;">
+          <div style="font-size:12px; font-weight:600; color:#237f3f;">置信度评估</div>
+          <div style="font-size:11px; color:#646a73; margin-top:4px;">评分排序<br>低分标记<br>兜底处理</div>
+        </div>
+      </div>
+      <div style="text-align:center; margin-top:12px;">
+        <div style="display:inline-block; padding:12px 24px; background:#fff; border-radius:8px; border:2px solid #3370ff;">
+          <div style="font-size:13px; font-weight:600; color:#3370ff;">📦 配置方案</div>
+          <div style="font-size:11px; color:#646a73;">含置信度标签，业务一键确认</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Next Steps -->
+  <div class="section" style="background:linear-gradient(135deg, #667eea11, #764ba211); border-color:#d0d0ff;">
+    <div class="section-title">十、下一步行动</div>
+    <div class="section-desc">建议分阶段落地</div>
+
+    <div style="display:grid; grid-template-columns: repeat(3,1fr); gap:16px;">
+      <div style="padding:16px; background:#fff; border-radius:8px; border:1px solid #e5e6eb;">
+        <div style="font-size:12px; color:#3370ff; font-weight:600; margin-bottom:8px;">Phase 1（2周）</div>
+        <div style="font-size:13px; font-weight:600; margin-bottom:4px;">AI 推导 MVP</div>
+        <div style="font-size:12px; color:#86909c;">岗位说明书 → 场景提取 → 知识库匹配 → Skill 推荐</div>
+      </div>
+      <div style="padding:16px; background:#fff; border-radius:8px; border:1px solid #e5e6eb;">
+        <div style="font-size:12px; color:#d46b08; font-weight:600; margin-bottom:8px;">Phase 2（2周）</div>
+        <div style="font-size:13px; font-weight:600; margin-bottom:4px;">策略自动生成</div>
+        <div style="font-size:12px; color:#86909c;">会话策略 + 记忆策略 + 试运行方案自动生成</div>
+      </div>
+      <div style="padding:16px; background:#fff; border-radius:8px; border:1px solid #e5e6eb;">
+        <div style="font-size:12px; color:#237f3f; font-weight:600; margin-bottom:8px;">Phase 3（2周）</div>
+        <div style="font-size:13px; font-weight:600; margin-bottom:4px;">一键创建闭环</div>
+        <div style="font-size:12px; color:#86909c;">平台自动执行 + 资源分配 + 空间创建 + 上线</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
