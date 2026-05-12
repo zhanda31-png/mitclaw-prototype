@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>岗位虾配置台 - Cron 管理 MVP 草图</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --panel: #ffffff;
+      --line: #e6ebf2;
+      --line-strong: #d9e1ed;
+      --text: #1f2329;
+      --subtext: #667085;
+      --blue: #3370ff;
+      --blue-soft: #edf3ff;
+      --green: #16a34a;
+      --green-soft: #edfdf3;
+      --orange: #f59e0b;
+      --orange-soft: #fff7e8;
+      --red: #e5484d;
+      --red-soft: #fff1f1;
+      --shadow: 0 14px 32px rgba(31, 35, 41, 0.06);
+      --radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(51, 112, 255, 0.08), transparent 24%),
+        linear-gradient(180deg, #f7f9fc 0%, #f2f5fa 100%);
+    }
+
+    .page {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 72px 248px 1fr;
+    }
+
+    .primary-nav {
+      background: #111827;
+      color: rgba(255, 255, 255, 0.74);
+      padding: 18px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .primary-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .primary-item {
+      width: 48px;
+      border-radius: 14px;
+      padding: 10px 0 8px;
+      text-align: center;
+      font-size: 11px;
+      line-height: 1.25;
+      cursor: default;
+    }
+
+    .primary-item strong {
+      display: block;
+      font-size: 18px;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .primary-item.is-active {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+    }
+
+    .secondary-nav {
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(16px);
+      border-right: 1px solid rgba(217, 225, 237, 0.9);
+      padding: 24px 18px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .agent-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      padding: 16px;
+      box-shadow: 0 10px 22px rgba(51, 112, 255, 0.06);
+    }
+
+    .agent-card .label {
+      font-size: 12px;
+      color: var(--subtext);
+      margin-bottom: 8px;
+    }
+
+    .agent-card .name {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .agent-card .desc {
+      font-size: 13px;
+      color: var(--subtext);
+      line-height: 1.6;
+    }
+
+    .nav-group-title {
+      font-size: 12px;
+      color: #8a94a6;
+      margin-bottom: 10px;
+      padding-left: 10px;
+    }
+
+    .nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      color: #445066;
+      font-size: 14px;
+      background: transparent;
+    }
+
+    .nav-item .left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-item .icon {
+      width: 18px;
+      text-align: center;
+      opacity: 0.78;
+    }
+
+    .nav-item.is-active {
+      background: var(--blue-soft);
+      color: var(--blue);
+      font-weight: 600;
+    }
+
+    .nav-item .tag {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #eef2f7;
+      color: #6b7280;
+    }
+
+    .content {
+      padding: 24px;
+      overflow: auto;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .topbar h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      line-height: 1.15;
+    }
+
+    .topbar p {
+      margin: 0;
+      color: var(--subtext);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .topbar-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.04);
+    }
+
+    .btn-primary {
+      border-color: var(--blue);
+      background: var(--blue);
+      color: #fff;
+    }
+
+    .guide-strip {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .guide-pill {
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 13px;
+      color: #445066;
+      box-shadow: 0 8px 18px rgba(31, 35, 41, 0.04);
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .metric-card {
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px 18px 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .metric-card .label {
+      font-size: 12px;
+      color: var(--subtext);
+      margin-bottom: 10px;
+    }
+
+    .metric-card .value {
+      font-size: 30px;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .metric-card .tip {
+      font-size: 12px;
+      color: #738096;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.6fr) minmax(360px, 0.94fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 18px;
+      border-bottom: 1px solid #eef2f7;
+    }
+
+    .panel-head h2 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .panel-head p {
+      margin: 4px 0 0;
+      font-size: 12px;
+      color: var(--subtext);
+    }
+
+    .filters {
+      padding: 14px 18px;
+      display: grid;
+      grid-template-columns: 1.3fr repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      border-bottom: 1px solid #eef2f7;
+      background: #fbfcfe;
+    }
+
+    .field,
+    .select {
+      width: 100%;
+      border: 1px solid var(--line-strong);
+      background: #fff;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      text-align: left;
+      font-size: 12px;
+      color: #778397;
+      font-weight: 600;
+      padding: 12px 18px;
+      border-bottom: 1px solid #eef2f7;
+      background: #fbfcfe;
+    }
+
+    tbody tr {
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    tbody tr:hover {
+      background: #fafcff;
+    }
+
+    tbody tr.is-active {
+      background: #f4f8ff;
+    }
+
+    tbody td {
+      padding: 16px 18px;
+      border-bottom: 1px solid #f1f4f8;
+      vertical-align: top;
+      font-size: 13px;
+    }
+
+    .task-name {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .task-sub {
+      font-size: 12px;
+      color: var(--subtext);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .badge-running {
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .badge-stopped {
+      background: #f4f5f7;
+      color: #667085;
+    }
+
+    .badge-register-ok {
+      background: var(--blue-soft);
+      color: var(--blue);
+    }
+
+    .badge-register-fail {
+      background: var(--red-soft);
+      color: var(--red);
+    }
+
+    .badge-register-wait {
+      background: var(--orange-soft);
+      color: #b7791f;
+    }
+
+    .row-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .mini-btn {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: #445066;
+      border-radius: 10px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .side-scroll {
+      padding: 16px 18px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .section {
+      border: 1px solid #eef2f7;
+      border-radius: 14px;
+      padding: 14px;
+      background: #fff;
+    }
+
+    .section h3 {
+      margin: 0 0 10px;
+      font-size: 14px;
+    }
+
+    .kv-grid {
+      display: grid;
+      grid-template-columns: 96px 1fr;
+      gap: 10px 12px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .kv-grid .k {
+      color: #7b8797;
+    }
+
+    .step-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 10px;
+      align-items: start;
+    }
+
+    .step-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      font-weight: 700;
+      background: #eef2ff;
+      color: var(--blue);
+      margin-top: 2px;
+    }
+
+    .step-dot.success {
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .step-dot.fail {
+      background: var(--red-soft);
+      color: var(--red);
+    }
+
+    .step-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .step-meta {
+      font-size: 12px;
+      color: var(--subtext);
+      line-height: 1.65;
+    }
+
+    .run-table {
+      width: 100%;
+      border: 1px solid #eef2f7;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .run-table th,
+    .run-table td {
+      padding: 10px 12px;
+      font-size: 12px;
+      border-bottom: 1px solid #f1f4f8;
+    }
+
+    .run-table th {
+      background: #fbfcfe;
+      color: #788496;
+      text-align: left;
+    }
+
+    .drawer-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .drawer-title .title-wrap h2 {
+      margin: 0 0 6px;
+      font-size: 18px;
+    }
+
+    .drawer-title .title-wrap p {
+      margin: 0;
+      color: var(--subtext);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--blue-soft);
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .form-item {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-item.is-full {
+      grid-column: 1 / -1;
+    }
+
+    .form-item label {
+      font-size: 12px;
+      color: #758195;
+      font-weight: 600;
+    }
+
+    .textarea {
+      min-height: 92px;
+      resize: vertical;
+    }
+
+    .register-banner {
+      border: 1px solid #fee7c8;
+      background: linear-gradient(180deg, #fff9f0 0%, #fffdf8 100%);
+      border-radius: 14px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .register-banner strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 13px;
+    }
+
+    .register-banner span {
+      font-size: 12px;
+      color: #8a6731;
+      line-height: 1.6;
+    }
+
+    .drawer-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .status-good {
+      color: var(--green);
+      font-weight: 600;
+    }
+
+    .status-bad {
+      color: var(--red);
+      font-weight: 600;
+    }
+
+    @media (max-width: 1420px) {
+      .metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 1100px) {
+      .page {
+        grid-template-columns: 72px 220px 1fr;
+      }
+
+      .filters {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <aside class="primary-nav">
+      <div class="primary-logo">虾</div>
+      <div class="primary-item">
+        <strong>⌂</strong>
+        首页
+      </div>
+      <div class="primary-item">
+        <strong>◎</strong>
+        高管虾
+      </div>
+      <div class="primary-item">
+        <strong>◌</strong>
+        个人虾
+      </div>
+      <div class="primary-item is-active">
+        <strong>🦐</strong>
+        岗位虾
+      </div>
+      <div class="primary-item">
+        <strong>✦</strong>
+        技能市场
+      </div>
+      <div class="primary-item">
+        <strong>⌘</strong>
+        开发者
+      </div>
+    </aside>
+
+    <aside class="secondary-nav">
+      <div class="agent-card">
+        <div class="label">当前岗位虾</div>
+        <div class="name">训虾员</div>
+        <div class="desc">面向岗位训练与运营协作的企业所属岗位虾，当前处于试运行阶段。</div>
+      </div>
+
+      <div>
+        <div class="nav-group-title">基础配置</div>
+        <div class="nav-list">
+          <div class="nav-item">
+            <div class="left"><span class="icon">▣</span><span>基础信息</span></div>
+          </div>
+          <div class="nav-item">
+            <div class="left"><span class="icon">▤</span><span>岗位说明书</span></div>
+          </div>
+          <div class="nav-item">
+            <div class="left"><span class="icon">◫</span><span>个性化配置</span></div>
+          </div>
+          <div class="nav-item">
+            <div class="left"><span class="icon">◍</span><span>协作者管理</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="nav-group-title">能力配置</div>
+        <div class="nav-list">
+          <div class="nav-item">
+            <div class="left"><span class="icon">✦</span><span>Skill 管理</span></div>
+          </div>
+          <div class="nav-item is-active">
+            <div class="left"><span class="icon">⏲</span><span>Cron 管理</span></div>
+            <span class="tag">MVP</span>
+          </div>
+          <div class="nav-item">
+            <div class="left"><span class="icon">⬢</span><span>容器管理</span></div>
+          </div>
+          <div class="nav-item">
+            <div class="left"><span class="icon">⚙</span><span>策略管理</span></div>
+          </div>
+          <div class="nav-item">
+            <div class="left"><span class="icon">☰</span><span>知识库</span></div>
+          </div>
+          <div class="nav-item">
+            <div class="left"><span class="icon">🛡</span><span>网络白名单</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="nav-group-title">版本配置</div>
+        <div class="nav-list">
+          <div class="nav-item">
+            <div class="left"><span class="icon">◎</span><span>调试记录</span></div>
+          </div>
+          <div class="nav-item">
+            <div class="left"><span class="icon">↥</span><span>发布管理</span></div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="content">
+      <div class="topbar">
+        <div>
+          <h1>Cron 管理</h1>
+          <p>管理当前岗位虾的定时任务、注册状态和最近执行结果。MVP 先覆盖列表查看、新建编辑、保存并注册、最近执行排查。</p>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn">查看注册记录</button>
+          <button class="btn btn-primary" id="createBtn">新建 Cron</button>
+        </div>
+      </div>
+
+      <div class="guide-strip">
+        <div class="guide-pill">1. 新建任务并填写基础信息</div>
+        <div class="guide-pill">2. 校验 Cron 表达式和参数</div>
+        <div class="guide-pill">3. 保存并注册到调度系统</div>
+        <div class="guide-pill">4. 回看最近执行结果</div>
+      </div>
+
+      <section class="metrics">
+        <div class="metric-card">
+          <div class="label">任务总数</div>
+          <div class="value">12</div>
+          <div class="tip">当前岗位虾下已登记 12 条 cron 任务</div>
+        </div>
+        <div class="metric-card">
+          <div class="label">运行中</div>
+          <div class="value">8</div>
+          <div class="tip">含 2 条待重新注册任务</div>
+        </div>
+        <div class="metric-card">
+          <div class="label">注册失败</div>
+          <div class="value">2</div>
+          <div class="tip">建议优先处理卡在注册阶段的任务</div>
+        </div>
+        <div class="metric-card">
+          <div class="label">24h 成功率</div>
+          <div class="value">91%</div>
+          <div class="tip">按最近执行结果汇总，便于快速巡检</div>
+        </div>
+      </section>
+
+      <section class="main-grid">
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>Cron 列表</h2>
+              <p>默认先看全量任务，再决定编辑、启停或重新注册。</p>
+            </div>
+            <button class="btn" id="refreshBtn">刷新状态</button>
+          </div>
+
+          <div class="filters">
+            <input class="field" type="text" value="日报" aria-label="关键词搜索">
+            <select class="select" aria-label="任务状态">
+              <option>全部状态</option>
+              <option selected>运行中</option>
+              <option>已停用</option>
+            </select>
+            <select class="select" aria-label="注册状态">
+              <option>全部注册状态</option>
+              <option selected>注册成功</option>
+              <option>待注册</option>
+              <option>注册失败</option>
+            </select>
+            <select class="select" aria-label="任务类型">
+              <option>全部类型</option>
+              <option selected>日报汇总</option>
+              <option>巡检任务</option>
+              <option>同步任务</option>
+            </select>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 24%;">任务名称</th>
+                <th style="width: 11%;">类型</th>
+                <th style="width: 11%;">任务状态</th>
+                <th style="width: 16%;">Cron 表达式</th>
+                <th style="width: 12%;">注册状态</th>
+                <th style="width: 12%;">最近执行</th>
+                <th style="width: 14%;">操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="is-active">
+                <td>
+                  <div class="task-name">训练日报汇总</div>
+                  <div class="task-sub">每天 09:30 汇总前一日训练完成情况</div>
+                </td>
+                <td>日报汇总</td>
+                <td><span class="badge badge-running">运行中</span></td>
+                <td>30 9 * * *</td>
+                <td><span class="badge badge-register-ok">注册成功</span></td>
+                <td>
+                  <div>今天 09:30</div>
+                  <div class="task-sub status-good">成功</div>
+                </td>
+                <td>
+                  <div class="row-actions">
+                    <button class="mini-btn">编辑</button>
+                    <button class="mini-btn">停用</button>
+                    <button class="mini-btn">重注册</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="task-name">知识库增量同步</div>
+                  <div class="task-sub">每 30 分钟扫描新增训练资料并回写索引</div>
+                </td>
+                <td>同步任务</td>
+                <td><span class="badge badge-running">运行中</span></td>
+                <td>*/30 * * * *</td>
+                <td><span class="badge badge-register-fail">注册失败</span></td>
+                <td>
+                  <div>今天 11:00</div>
+                  <div class="task-sub status-bad">失败</div>
+                </td>
+                <td>
+                  <div class="row-actions">
+                    <button class="mini-btn">编辑</button>
+                    <button class="mini-btn">重注册</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="task-name">每周规则巡检</div>
+                  <div class="task-sub">每周一检查策略配置和容器配额</div>
+                </td>
+                <td>巡检任务</td>
+                <td><span class="badge badge-stopped">已停用</span></td>
+                <td>0 10 * * 1</td>
+                <td><span class="badge badge-register-wait">待注册</span></td>
+                <td>
+                  <div>本周一 10:00</div>
+                  <div class="task-sub">未执行</div>
+                </td>
+                <td>
+                  <div class="row-actions">
+                    <button class="mini-btn">编辑</button>
+                    <button class="mini-btn">启用</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="task-name">训练失败补偿</div>
+                  <div class="task-sub">每天 22:30 补跑白天失败的训练任务</div>
+                </td>
+                <td>补偿任务</td>
+                <td><span class="badge badge-running">运行中</span></td>
+                <td>30 22 * * *</td>
+                <td><span class="badge badge-register-ok">注册成功</span></td>
+                <td>
+                  <div>昨天 22:30</div>
+                  <div class="task-sub status-good">成功</div>
+                </td>
+                <td>
+                  <div class="row-actions">
+                    <button class="mini-btn">编辑</button>
+                    <button class="mini-btn">停用</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <aside class="panel" id="detailPanel">
+          <div class="side-scroll" id="detailView">
+            <div class="drawer-title">
+              <div class="title-wrap">
+                <h2>训练日报汇总</h2>
+                <p>当前选中任务的详情草图。MVP 里在同一侧栏完成查看、编辑和注册过程确认。</p>
+              </div>
+              <span class="pill">已注册</span>
+            </div>
+
+            <section class="section">
+              <h3>基础信息</h3>
+              <div class="kv-grid">
+                <div class="k">任务类型</div><div>日报汇总</div>
+                <div class="k">任务描述</div><div>汇总前一日训练完成情况并推送给训虾员。</div>
+                <div class="k">最近更新</div><div>2026-05-08 10:26 · 王小米</div>
+                <div class="k">下次执行</div><div>2026-05-09 09:30</div>
+              </div>
+            </section>
+
+            <section class="section">
+              <h3>调度规则</h3>
+              <div class="kv-grid">
+                <div class="k">Cron 表达式</div><div><code>30 9 * * *</code></div>
+                <div class="k">时区</div><div>Asia/Shanghai</div>
+                <div class="k">任务状态</div><div><span class="status-good">运行中</span></div>
+                <div class="k">重试策略</div><div>失败后 10 分钟重试 2 次</div>
+              </div>
+            </section>
+
+            <section class="section">
+              <h3>注册过程</h3>
+              <div class="step-list">
+                <div class="step">
+                  <div class="step-dot success">1</div>
+                  <div>
+                    <div class="step-title">参数校验</div>
+                    <div class="step-meta">已通过 · 2026-05-08 10:25<br>任务名称、Cron 表达式、参数结构均校验通过。</div>
+                  </div>
+                </div>
+                <div class="step">
+                  <div class="step-dot success">2</div>
+                  <div>
+                    <div class="step-title">生成注册请求</div>
+                    <div class="step-meta">已完成 · 2026-05-08 10:25<br>生成调度中心需要的任务描述、时区和参数快照。</div>
+                  </div>
+                </div>
+                <div class="step">
+                  <div class="step-dot success">3</div>
+                  <div>
+                    <div class="step-title">提交调度系统</div>
+                    <div class="step-meta">已成功 · 2026-05-08 10:26<br>返回调度任务 ID：jobshrimp-train-report-0926。</div>
+                  </div>
+                </div>
+                <div class="step">
+                  <div class="step-dot success">4</div>
+                  <div>
+                    <div class="step-title">结果回写</div>
+                    <div class="step-meta">已完成 · 2026-05-08 10:26<br>列表状态已更新为“注册成功”。</div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="section">
+              <h3>最近执行</h3>
+              <table class="run-table">
+                <thead>
+                  <tr>
+                    <th>执行时间</th>
+                    <th>结果</th>
+                    <th>耗时</th>
+                    <th>摘要</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>今天 09:30</td>
+                    <td class="status-good">成功</td>
+                    <td>12s</td>
+                    <td>已推送日报给 3 位训虾员</td>
+                  </tr>
+                  <tr>
+                    <td>昨天 09:30</td>
+                    <td class="status-good">成功</td>
+                    <td>11s</td>
+                    <td>日报生成并入库</td>
+                  </tr>
+                  <tr>
+                    <td>前天 09:30</td>
+                    <td class="status-bad">失败</td>
+                    <td>5s</td>
+                    <td>知识库连接超时，已自动重试</td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+          </div>
+
+          <div class="side-scroll" id="createView" style="display:none;">
+            <div class="drawer-title">
+              <div class="title-wrap">
+                <h2>新建 Cron</h2>
+                <p>新建流程保持最短闭环：填写基础信息、设置调度规则、补充必要参数，然后保存并注册。</p>
+              </div>
+              <span class="pill">MVP 抽屉</span>
+            </div>
+
+            <section class="section">
+              <h3>基础信息</h3>
+              <div class="form-grid">
+                <div class="form-item">
+                  <label>任务名称</label>
+                  <input class="field" value="训练日报汇总（新）">
+                </div>
+                <div class="form-item">
+                  <label>任务类型</label>
+                  <select class="select">
+                    <option selected>日报汇总</option>
+                    <option>巡检任务</option>
+                    <option>同步任务</option>
+                  </select>
+                </div>
+                <div class="form-item is-full">
+                  <label>任务描述</label>
+                  <textarea class="field textarea">汇总前一日训练结果，并在工作日早晨推送给训虾员。</textarea>
+                </div>
+              </div>
+            </section>
+
+            <section class="section">
+              <h3>调度规则</h3>
+              <div class="form-grid">
+                <div class="form-item">
+                  <label>Cron 表达式</label>
+                  <input class="field" value="30 9 * * 1-5">
+                </div>
+                <div class="form-item">
+                  <label>时区</label>
+                  <select class="select">
+                    <option selected>Asia/Shanghai</option>
+                    <option>UTC</option>
+                    <option>Asia/Singapore</option>
+                  </select>
+                </div>
+                <div class="form-item">
+                  <label>任务状态</label>
+                  <select class="select">
+                    <option selected>启用</option>
+                    <option>先保存为停用</option>
+                  </select>
+                </div>
+                <div class="form-item">
+                  <label>重试策略</label>
+                  <select class="select">
+                    <option selected>失败后重试 2 次</option>
+                    <option>失败后重试 1 次</option>
+                    <option>不自动重试</option>
+                  </select>
+                </div>
+              </div>
+            </section>
+
+            <section class="section">
+              <h3>任务参数</h3>
+              <div class="form-grid">
+                <div class="form-item is-full">
+                  <label>执行目标</label>
+                  <input class="field" value="训虾员日报群">
+                </div>
+                <div class="form-item is-full">
+                  <label>输入参数</label>
+                  <textarea class="field textarea">{
+  "reportScope": "yesterday",
+  "pushChannel": "training-report",
+  "includeFailureSummary": true
+}</textarea>
+                </div>
+              </div>
+              <div class="register-banner">
+                <div>
+                  <strong>注册前提示</strong>
+                  <span>点击“保存并注册”后，会依次触发参数校验、注册请求生成、调度系统提交和结果回写。</span>
+                </div>
+                <button class="mini-btn">校验</button>
+              </div>
+            </section>
+
+            <div class="drawer-actions">
+              <button class="btn" id="backBtn">返回详情</button>
+              <button class="btn">保存草稿</button>
+              <button class="btn btn-primary">保存并注册</button>
+            </div>
+          </div>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const createBtn = document.getElementById("createBtn");
+    const backBtn = document.getElementById("backBtn");
+    const refreshBtn = document.getElementById("refreshBtn");
+    const detailView = document.getElementById("detailView");
+    const createView = document.getElementById("createView");
+
+    createBtn.addEventListener("click", () => {
+      detailView.style.display = "none";
+      createView.style.display = "flex";
+    });
+
+    backBtn.addEventListener("click", () => {
+      createView.style.display = "none";
+      detailView.style.display = "flex";
+    });
+
+    refreshBtn.addEventListener("click", () => {
+      refreshBtn.textContent = "刚刚刷新";
+      window.setTimeout(() => {
+        refreshBtn.textContent = "刷新状态";
+      }, 1200);
+    });
+  </script>
+</body>
+</html>

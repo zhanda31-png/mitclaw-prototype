@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>个人虾龙虾链路</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="trace-page">
+      <section class="trace-layout">
+        <section class="trace-card">
+          <div class="trace-toolbar">
+            <div class="trace-toolbar__left">
+              <div class="toolbar-field toolbar-field--agent">
+                <span class="toolbar-label">龙虾列表：</span>
+
+                <button class="toolbar-select" type="button">
+                  <span class="toolbar-select__tag">岗位虾</span>
+                  <span class="toolbar-select__value">当前岗位虾</span>
+                  <span class="toolbar-select__caret">⌄</span>
+                </button>
+              </div>
+
+              <div class="toolbar-field toolbar-field--trace-id">
+                <span class="toolbar-label toolbar-label--strong">TraceID:</span>
+
+                <label class="toolbar-input toolbar-input--trace">
+                  <input type="text" value="输入32位TraceID进行搜索..." readonly />
+                  <span class="toolbar-input__icon">⌕</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="trace-toolbar__right">
+              <button class="toolbar-date" type="button">
+                <span>2026-04-01</span>
+                <span class="toolbar-date__icon">◫</span>
+              </button>
+
+              <button class="toolbar-primary" type="button">最近20条Trace</button>
+            </div>
+          </div>
+
+          <div class="trace-empty-state">
+            <div class="trace-empty-state__icon" aria-hidden="true">
+              <svg viewBox="0 0 88 88" fill="none">
+                <path
+                  d="M27.5 31.5h17.8l6.7-9.4a6.8 6.8 0 0 1 5.6-2.9h11.7c5.1 0 9.2 4.1 9.2 9.2v30.8c0 5.1-4.1 9.2-9.2 9.2H31.7c-5.1 0-9.2-4.1-9.2-9.2V40.7c0-5.1 4.1-9.2 9.2-9.2Z"
+                  fill="#ECEFF4"
+                  stroke="#C8CED8"
+                  stroke-width="1.8"
+                />
+                <path
+                  d="M47.2 31.5 55 23c1.6-1.8 4-2.8 6.4-2.8h8.7"
+                  stroke="#C8CED8"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                />
+                <path d="m35.6 18.9 2.6 6.3M25.4 24.4l6.4 3.2M49.8 14.8v6.9" stroke="#D2D7E0" stroke-width="2" stroke-linecap="round" />
+              </svg>
+            </div>
+
+            <p>请输入 TraceID 进行搜索</p>
+          </div>
+        </section>
+      </section>
+    </main>
+  </body>
+</html>

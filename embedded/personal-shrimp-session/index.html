@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>个人虾会话</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="session-page">
+      <section class="session-layout">
+        <header class="session-page__header">
+          <h1>会话</h1>
+        </header>
+
+        <section class="session-card session-toolbar-card">
+          <div class="session-toolbar-card__top">
+            <div class="session-toolbar-card__filters">
+              <button class="toolbar-select toolbar-select--wide" type="button">
+                <span class="toolbar-select__tag">个人虾</span>
+                <span class="toolbar-select__value">Wei He 何伟的虾军</span>
+                <span class="toolbar-select__caret">⌄</span>
+              </button>
+
+              <label class="toolbar-search">
+                <span class="toolbar-search__icon">⌕</span>
+                <input type="text" value="搜索会话..." readonly />
+              </label>
+
+              <button class="toolbar-select toolbar-select--compact" type="button">
+                <span class="toolbar-select__clock">◔</span>
+                <span class="toolbar-select__value">最近 24 小时</span>
+              </button>
+
+              <button class="toolbar-refresh" type="button" aria-label="刷新">⟳</button>
+
+              <button class="toolbar-select toolbar-select--compact toolbar-select--ghost" type="button">
+                <span class="toolbar-select__value">关...</span>
+                <span class="toolbar-select__caret">⌄</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="session-toolbar-card__bottom">
+            <div class="session-toolbar-card__actions">
+              <button class="small-action small-action--primary" type="button">↗ 导出</button>
+              <button class="small-action" type="button">⇅ 时间倒序</button>
+              <button class="small-action" type="button">💬 进入容器</button>
+            </div>
+
+            <div class="session-toolbar-card__meta">共 1 条 · 15:36:31</div>
+          </div>
+        </section>
+
+        <section class="session-card session-selector-card">
+          <div class="session-selector-card__header">
+            <div class="session-selector-card__title">
+              <span class="session-selector-card__bubble">◔</span>
+              <span>会话选择</span>
+              <span class="session-selector-card__count">54 个</span>
+            </div>
+          </div>
+
+          <label class="toolbar-search toolbar-search--full">
+            <span class="toolbar-search__icon">⌕</span>
+            <input type="text" value="搜索 session ID 或内容..." readonly />
+          </label>
+
+          <div class="session-chip-grid">
+            <button class="session-chip session-chip--active" type="button">
+              <strong>[cron:9d18...<br />b186b2d8</strong>
+              <span>04/28 15:14</span>
+            </button>
+            <button class="session-chip" type="button">
+              <strong>[cron:9d18...<br />ffe6b1f0</strong>
+              <span>04/28 14:44</span>
+            </button>
+            <button class="session-chip" type="button">
+              <strong>[cron:9d18...<br />c76def73</strong>
+              <span>04/28 14:14</span>
+            </button>
+            <button class="session-chip" type="button">
+              <strong>[cron:9d18...<br />20bdbd6b</strong>
+              <span>04/28 13:34</span>
+            </button>
+            <button class="session-chip" type="button">
+              <strong>介绍下你触发词是展...<br />020fc5dd</strong>
+              <span>04/28 13:34</span>
+            </button>
+            <button class="session-chip" type="button">
+              <strong>[cron:9d18...<br />1e3e27b</strong>
+              <span>04/28 13:14</span>
+            </button>
+            <button class="session-chip" type="button">
+              <strong>[cron:9d18...<br />f84e37d9</strong>
+              <span>04/28 12:44</span>
+            </button>
+            <button class="session-chip" type="button">
+              <strong>[cron:9d18...<br />9ecb8080</strong>
+              <span>04/28 12:14</span>
+            </button>
+            <button class="session-chip" type="button">
+              <strong>[cron:9d18...<br />e0b3ccba</strong>
+              <span>04/28 11:44</span>
+            </button>
+            <button class="session-chip" type="button">
+              <strong>[cron:9d18...<br />f0c9fde8</strong>
+              <span>04/28 11:14</span>
+            </button>
+          </div>
+
+          <div class="session-chip-grid__ghost-row" aria-hidden="true">
+            <span>◔</span>
+            <span>◔</span>
+            <span>◔</span>
+            <span>◔</span>
+            <span>◔</span>
+            <span>◔</span>
+            <span>◔</span>
+            <span>◔</span>
+            <span>◔</span>
+            <span>◔</span>
+          </div>
+
+          <button class="session-show-all" type="button">显示全部 54 个 ˅</button>
+        </section>
+
+        <article class="session-card session-detail-card">
+          <div class="session-detail-card__main">
+            <div class="session-detail-card__badge">#1</div>
+
+            <div class="session-detail-card__content">
+              <h2>[cron:9d185442-7e3c-4180-9c0c-71cb040498f3 心跳迁移（可按需保留）]- 检查命令：pgrep -f "scheduler.py"</h2>
+
+              <div class="session-detail-card__meta">
+                <span>2026/04/28 15:14:29.921</span>
+                <span>· 4 步骤</span>
+                <span>· 4.9s</span>
+                <a href="#">去日志</a>
+                <a href="#">去链路</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="session-detail-card__tags">
+            <span class="tag tag--user">User</span>
+            <span class="tag tag--assistant">Assistant</span>
+            <span class="tag tag--result">Tool Result</span>
+            <span class="tag tag--exec">exec</span>
+          </div>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>

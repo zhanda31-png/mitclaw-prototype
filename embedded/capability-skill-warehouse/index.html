@@ -1,0 +1,1740 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>岗位虾管理后台 - Skill仓库</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; background: #f5f6f7; color: #1f2329; }
+  .layout { display: flex; min-height: 100vh; }
+
+  /* Sidebar */
+  .sidebar { width: 240px; background: #fff; border-right: 1px solid #e5e6e8; padding: 16px 0; flex-shrink: 0; }
+  .sidebar-logo { padding: 0 20px 20px; border-bottom: 1px solid #e5e6e8; display: flex; align-items: center; gap: 10px; }
+  .sidebar-logo .logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #3370ff, #7b67ee); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 16px; }
+  .sidebar-logo .logo-text { font-size: 15px; font-weight: 600; }
+  .sidebar-section { padding: 16px 0 8px; }
+  .sidebar-section-title { padding: 0 20px; font-size: 12px; color: #8f959e; margin-bottom: 8px; }
+  .sidebar-item { padding: 8px 20px; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 8px; color: #646a73; transition: all .15s; }
+  .sidebar-item:hover { background: #f5f6f7; color: #1f2329; }
+  .sidebar-item.active { background: #e8f0fe; color: #3370ff; font-weight: 500; }
+  .sidebar-item .icon { width: 18px; text-align: center; }
+
+  .main { flex: 1; display: flex; flex-direction: column; }
+  .header { background: #fff; border-bottom: 1px solid #e5e6e8; padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; }
+  .header-left { display: flex; align-items: center; gap: 12px; }
+  .header-left h1 { font-size: 18px; font-weight: 600; }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+
+  .position-selector { display: flex; align-items: center; gap: 8px; padding: 6px 12px; border: 1px solid #dee0e3; border-radius: 8px; cursor: pointer; background: #fff; }
+  .position-selector:hover { border-color: #3370ff; }
+  .position-selector .label { font-size: 13px; color: #8f959e; }
+  .position-selector .value { font-size: 14px; font-weight: 500; color: #1f2329; }
+  .position-selector .arrow { font-size: 10px; color: #8f959e; }
+
+  .content { padding: 24px 32px; flex: 1; min-width: 0; }
+
+  .filter-bar { background: #fff; border-radius: 12px; padding: 14px 20px; border: 1px solid #e5e6e8; margin-bottom: 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .search-box { position: relative; flex: 1; min-width: 200px; }
+  .search-box input { width: 100%; padding: 8px 12px 8px 36px; border: 1px solid #dee0e3; border-radius: 8px; font-size: 14px; outline: none; }
+  .search-box input:focus { border-color: #3370ff; }
+  .search-box .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #8f959e; }
+  .filter-select { padding: 8px 12px; border: 1px solid #dee0e3; border-radius: 8px; font-size: 14px; background: #fff; outline: none; cursor: pointer; }
+
+  .btn { padding: 8px 16px; border-radius: 8px; font-size: 14px; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 6px; transition: all .15s; font-weight: 500; }
+  .btn-primary { background: #3370ff; color: #fff; }
+  .btn-primary:hover { background: #2860e1; }
+  .btn-secondary { background: #f5f6f7; color: #1f2329; border: 1px solid #dee0e3; }
+  .btn-secondary:hover { background: #e5e6e8; }
+  .btn-ghost { background: transparent; color: #3370ff; padding: 4px 8px; }
+  .btn-ghost:hover { background: #e8f0fe; }
+  .btn-sm { padding: 4px 10px; font-size: 12px; }
+
+  .table-wrapper { background: #fff; border-radius: 12px; border: 1px solid #e5e6e8; overflow: auto; }
+  table { width: 100%; min-width: 1120px; border-collapse: collapse; }
+  thead { background: #f8f9fa; }
+  th { padding: 12px 14px; text-align: left; font-size: 13px; font-weight: 500; color: #646a73; border-bottom: 1px solid #e5e6e8; white-space: nowrap; }
+  td { padding: 13px 14px; font-size: 14px; border-bottom: 1px solid #f0f1f2; vertical-align: middle; }
+  tr:hover { background: #f8f9fa; }
+  tr:last-child td { border-bottom: none; }
+
+  .skill-name { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .skill-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .skill-icon.blue { background: #e8f0fe; }
+  .skill-icon.green { background: #e8f8e8; }
+  .skill-icon.orange { background: #fff5e6; }
+  .skill-icon.purple { background: #f0e8fe; }
+  .skill-icon.red { background: #fff0f0; }
+  .skill-info { min-width: 0; }
+  .skill-info .name { font-weight: 500; }
+  .skill-info .desc { font-size: 12px; color: #8f959e; margin-top: 2px; }
+
+  .status { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+  .status-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .status-active { background: #e8f8e8; color: #1e7e34; }
+  .status-active .status-dot { background: #34c759; }
+  .status-inactive { background: #f0f1f2; color: #646a73; }
+  .status-inactive .status-dot { background: #8f959e; }
+
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+  .tag-version { background: #f0f1f2; color: #646a73; }
+
+  .actions { display: flex; gap: 4px; flex-wrap: wrap; }
+
+  .pagination { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-top: 1px solid #e5e6e8; }
+  .pagination .info { font-size: 13px; color: #8f959e; }
+  .pagination .pages { display: flex; gap: 4px; }
+  .pagination .page { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-size: 13px; cursor: pointer; border: 1px solid #dee0e3; background: #fff; }
+  .pagination .page.active { background: #3370ff; color: #fff; border-color: #3370ff; }
+
+  /* Dropdown */
+  .dropdown { position: relative; }
+  .dropdown-menu { position: absolute; top: 100%; right: 0; margin-top: 4px; background: #fff; border: 1px solid #e5e6e8; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,.1); min-width: 200px; z-index: 100; display: none; }
+  .dropdown-menu.show { display: block; }
+  .dropdown-item { padding: 10px 16px; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+  .dropdown-item:hover { background: #f5f6f7; }
+  .dropdown-item.active { color: #3370ff; background: #e8f0fe; }
+  .dropdown-item .check { margin-left: auto; color: #3370ff; }
+
+  /* Modal */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: none; align-items: center; justify-content: center; z-index: 1000; }
+  .modal-overlay.show { display: flex; }
+  .modal { background: #fff; border-radius: 16px; width: 560px; max-height: 85vh; overflow-y: auto; box-shadow: 0 12px 40px rgba(0,0,0,.15); }
+  .modal-header { padding: 20px 24px 0; display: flex; align-items: center; justify-content: space-between; }
+  .modal-header h2 { font-size: 18px; font-weight: 600; }
+  .modal-close { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer; font-size: 18px; color: #8f959e; }
+  .modal-close:hover { background: #f5f6f7; }
+  .modal-body { padding: 20px 24px; }
+  .modal-footer { padding: 16px 24px; border-top: 1px solid #e5e6e8; display: flex; justify-content: flex-end; gap: 8px; }
+  .form-group { margin-bottom: 16px; }
+  .form-label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+  .form-label .required { color: #ff3b30; margin-left: 2px; }
+  .form-input { width: 100%; padding: 8px 12px; border: 1px solid #dee0e3; border-radius: 8px; font-size: 14px; outline: none; }
+  .form-input:focus { border-color: #3370ff; }
+  .form-hint { font-size: 12px; color: #8f959e; margin-top: 4px; }
+  .form-textarea { min-height: 80px; resize: vertical; }
+  .upload-area { border: 2px dashed #dee0e3; border-radius: 12px; padding: 40px; text-align: center; cursor: pointer; transition: all .15s; }
+  .upload-area:hover { border-color: #3370ff; background: #f8faff; }
+  .upload-area .upload-icon { font-size: 36px; margin-bottom: 12px; }
+  .upload-area .upload-text { font-size: 14px; color: #646a73; }
+  .upload-area .upload-hint { font-size: 12px; color: #8f959e; margin-top: 4px; }
+
+  /* Detail Page */
+  .detail-page { display: none; }
+  .detail-page.show { display: block; }
+  .detail-back { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; color: #646a73; cursor: pointer; margin-bottom: 20px; padding: 6px 0; }
+  .detail-back:hover { color: #3370ff; }
+  .detail-card { background: #fff; border-radius: 12px; border: 1px solid #e5e6e8; margin-bottom: 20px; }
+  .detail-card-header { padding: 16px 20px; border-bottom: 1px solid #e5e6e8; display: flex; align-items: center; justify-content: space-between; }
+  .detail-card-header h3 { font-size: 16px; font-weight: 600; }
+  .detail-card-body { padding: 20px; }
+  .detail-field { display: flex; margin-bottom: 14px; }
+  .detail-field:last-child { margin-bottom: 0; }
+  .detail-field .field-label { width: 100px; font-size: 13px; color: #8f959e; flex-shrink: 0; padding-top: 1px; }
+  .detail-field .field-value { font-size: 14px; color: #1f2329; flex: 1; }
+
+  /* Version Timeline */
+  .version-list { position: relative; }
+  .version-item { position: relative; padding-left: 28px; padding-bottom: 24px; border-left: 2px solid #e5e6e8; margin-left: 8px; }
+  .version-item:last-child { border-left-color: transparent; padding-bottom: 0; }
+  .version-item::before { content: ''; position: absolute; left: -7px; top: 2px; width: 12px; height: 12px; border-radius: 50%; background: #3370ff; border: 2px solid #fff; box-shadow: 0 0 0 2px #3370ff; }
+  .version-item.old::before { background: #dee0e3; box-shadow: 0 0 0 2px #dee0e3; }
+  .version-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .version-header .ver-name { font-size: 15px; font-weight: 600; }
+  .version-header .ver-tag { padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; }
+  .ver-tag-current { background: #e8f8e8; color: #1e7e34; }
+  .ver-tag-old { background: #f0f1f2; color: #8f959e; }
+  .version-meta { display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 10px; }
+  .version-meta-item { font-size: 13px; color: #646a73; display: flex; align-items: center; gap: 4px; }
+  .version-meta-item .meta-label { color: #8f959e; }
+  .version-file { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: #f5f6f7; border-radius: 8px; font-size: 13px; color: #3370ff; cursor: pointer; margin-bottom: 10px; }
+  .version-file:hover { background: #e8f0fe; }
+  .version-agents { margin-top: 8px; }
+  .version-agents-title { font-size: 13px; color: #8f959e; margin-bottom: 6px; }
+  .agent-tag { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; background: #f5f6f7; border-radius: 6px; font-size: 12px; margin-right: 6px; margin-bottom: 4px; }
+  .agent-tag .agent-dot { width: 6px; height: 6px; border-radius: 50%; background: #34c759; }
+  .agent-tag .agent-dot.offline { background: #8f959e; }
+
+  /* Stats */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px; }
+  .stat-card { background: #fff; border-radius: 12px; padding: 18px 20px; border: 1px solid #e5e6e8; }
+
+  /* More Dropdown */
+  .more-wrap { position: relative; display: inline-block; }
+  .more-menu { display: none; position: absolute; right: 0; top: 28px; background: #fff; border: 1px solid #e5e6e8; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,.1); z-index: 100; min-width: 180px; padding: 4px; }
+  .more-wrap.open .more-menu { display: block; }
+  .more-item { padding: 9px 14px; font-size: 13px; color: #1f2329; cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 8px; }
+  .more-item:hover { background: #f5f6f7; }
+
+  /* Agent Skill Page */
+  .agent-skill-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+  .agent-skill-header .agent-avatar { width: 52px; height: 52px; background: linear-gradient(135deg, #3370ff, #7b67ee); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #fff; }
+  .agent-skill-header .agent-meta .name { font-size: 20px; font-weight: 600; }
+  .agent-skill-header .agent-meta .meta-row { display: flex; gap: 16px; margin-top: 6px; font-size: 13px; color: #646a73; }
+  .history-timeline { position: relative; padding-left: 24px; }
+  .history-timeline::before { content: ''; position: absolute; left: 7px; top: 0; bottom: 0; width: 2px; background: #e5e6e8; }
+  .history-item { position: relative; padding-bottom: 20px; }
+  .history-item:last-child { padding-bottom: 0; }
+  .history-item::before { content: ''; position: absolute; left: -20px; top: 4px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 2px #3370ff; background: #3370ff; }
+  .history-item.op-update::before { background: #ff9500; box-shadow: 0 0 0 2px #ff9500; }
+  .history-item.op-delete::before { background: #ff3b30; box-shadow: 0 0 0 2px #ff3b30; }
+  .history-item .history-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .history-item .history-skill { font-weight: 500; font-size: 14px; }
+  .history-item .history-op { padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; }
+  .history-item .history-op.install { background: #e8f8e8; color: #1e7e34; }
+  .history-item .history-op.update { background: #fff5e6; color: #e88a00; }
+  .history-item .history-op.delete { background: #fff0f0; color: #e84040; }
+  .history-item .history-meta { font-size: 12px; color: #8f959e; display: flex; gap: 16px; }
+  .history-item .history-detail { font-size: 13px; color: #646a73; margin-top: 4px; }
+
+  /* Embedded capability iframe mode */
+  body.embedded-capability-skill-warehouse-mode {
+    background: #f5f8fc;
+  }
+  body.embedded-capability-skill-warehouse-mode .layout {
+    display: block;
+    min-height: 100vh;
+  }
+  body.embedded-capability-skill-warehouse-mode .sidebar,
+  body.embedded-capability-skill-warehouse-mode #page-position,
+  body.embedded-capability-skill-warehouse-mode #page-agent,
+  body.embedded-capability-skill-warehouse-mode #page-agent-skill {
+    display: none !important;
+  }
+  body.embedded-capability-skill-warehouse-mode .main {
+    width: 100%;
+    min-height: 100vh;
+  }
+  body.embedded-capability-skill-warehouse-mode .header {
+    padding: 16px 24px;
+  }
+  body.embedded-capability-skill-warehouse-mode .content {
+    padding: 16px 24px 24px;
+  }
+  body.embedded-capability-skill-warehouse-mode #page-skill {
+    display: block !important;
+  }
+  body.embedded-capability-skill-warehouse-mode #page-list {
+    display: block !important;
+  }
+  @media (max-width: 1200px) {
+    .header {
+      padding: 14px 20px;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: flex-start;
+    }
+    .header-right {
+      width: 100%;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+    .content {
+      padding: 20px;
+    }
+  }
+  @media (max-width: 900px) {
+    .content {
+      padding: 16px 12px;
+    }
+    .filter-bar {
+      padding: 12px;
+      gap: 10px;
+    }
+    .search-box {
+      min-width: 0;
+      flex-basis: 100%;
+    }
+    .filter-select,
+    .filter-bar .btn {
+      flex: 1 1 160px;
+      justify-content: center;
+    }
+    body.embedded-capability-skill-warehouse-mode .header {
+      padding: 12px;
+    }
+    body.embedded-capability-skill-warehouse-mode .content {
+      padding: 12px;
+    }
+  }
+  @media (max-width: 640px) {
+    .position-selector {
+      width: 100%;
+      justify-content: space-between;
+    }
+    .filter-select,
+    .filter-bar .btn {
+      flex-basis: 100%;
+      width: 100%;
+    }
+    .pagination {
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">🦐</div>
+      <div class="logo-text">岗位虾管理后台</div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">业务空间</div>
+      <div class="sidebar-item"><span class="icon">📊</span> 空间概览</div>
+      <div class="sidebar-item" data-page="position" onclick="switchPage('position')"><span class="icon">👥</span> 岗位管理</div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">岗位空间</div>
+      <div class="sidebar-item" data-page="agent" onclick="switchPage('agent')"><span class="icon">🤖</span> 岗位Agent</div>
+      <div class="sidebar-item active" data-page="skill" onclick="switchPage('skill')"><span class="icon">📦</span> Skill仓库</div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">审批与审计</div>
+      <div class="sidebar-item"><span class="icon">✅</span> 审批中心</div>
+      <div class="sidebar-item"><span class="icon">📝</span> 审计日志</div>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="header">
+      <div class="header-left">
+        <h1>Skill仓库</h1>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ========== 岗位管理页 ========== -->
+      <div id="page-position" style="display:none">
+        <div class="filter-bar">
+          <div class="search-box"><span class="search-icon">🔍</span><input type="text" placeholder="搜索岗位名称、负责人..." /></div>
+          <button class="btn btn-primary">＋ 新增岗位</button>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:60px">ID</th>
+                <th>岗位名称</th>
+                <th>岗位负责人</th>
+                <th>岗位管理员</th>
+                <th>Agent数量</th>
+                <th>关联技能</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-size:12px;color:#8f959e">P001</td>
+                <td><div class="skill-name"><div class="skill-icon blue">🎯</div><div class="skill-info"><div class="name">协同产品经理</div><div class="desc">负责协同产品规划与落地</div></div></div></td>
+                <td><span style="font-size:13px">张三</span></td>
+                <td><span style="font-size:13px">张三、李四</span></td>
+                <td><span class="tag" style="background:#e8f0fe;color:#3370ff">8个</span></td>
+                <td><span style="font-size:13px">合同查询、差旅费用管理、会议纪要生成 等5个</span></td>
+                <td><div class="actions"><button class="btn btn-ghost btn-sm">详情</button><button class="btn btn-ghost btn-sm">编辑</button></div></td>
+              </tr>
+              <tr>
+                <td style="font-size:12px;color:#8f959e">P002</td>
+                <td><div class="skill-name"><div class="skill-icon green">💻</div><div class="skill-info"><div class="name">前端开发工程师</div><div class="desc">负责前端页面开发与维护</div></div></div></td>
+                <td><span style="font-size:13px">王五</span></td>
+                <td><span style="font-size:13px">王五、赵六</span></td>
+                <td><span class="tag" style="background:#e8f0fe;color:#3370ff">5个</span></td>
+                <td><span style="font-size:13px">合同查询、审批流程处理 等3个</span></td>
+                <td><div class="actions"><button class="btn btn-ghost btn-sm">详情</button><button class="btn btn-ghost btn-sm">编辑</button></div></td>
+              </tr>
+              <tr>
+                <td style="font-size:12px;color:#8f959e">P003</td>
+                <td><div class="skill-name"><div class="skill-icon orange">🧪</div><div class="skill-info"><div class="name">测试工程师</div><div class="desc">负责产品质量保障与测试</div></div></div></td>
+                <td><span style="font-size:13px">孙七</span></td>
+                <td><span style="font-size:13px">孙七</span></td>
+                <td><span class="tag" style="background:#e8f0fe;color:#3370ff">3个</span></td>
+                <td><span style="font-size:13px">合同查询、会议纪要生成 等2个</span></td>
+                <td><div class="actions"><button class="btn btn-ghost btn-sm">详情</button><button class="btn btn-ghost btn-sm">编辑</button></div></td>
+              </tr>
+              <tr>
+                <td style="font-size:12px;color:#8f959e">P004</td>
+                <td><div class="skill-name"><div class="skill-icon purple">📋</div><div class="skill-info"><div class="name">项目经理</div><div class="desc">负责项目推进与资源协调</div></div></div></td>
+                <td><span style="font-size:13px">周八</span></td>
+                <td><span style="font-size:13px">周八、吴九</span></td>
+                <td><span class="tag" style="background:#e8f0fe;color:#3370ff">6个</span></td>
+                <td><span style="font-size:13px">差旅费用管理、合同智能审核、审批流程处理 等4个</span></td>
+                <td><div class="actions"><button class="btn btn-ghost btn-sm">详情</button><button class="btn btn-ghost btn-sm">编辑</button></div></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="pagination">
+            <div class="info">共 4 条记录</div>
+            <div class="pages">
+              <div class="page active">1</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== 岗位Agent页 ========== -->
+      <div id="page-agent" style="display:none">
+        <div class="stats">
+          <div class="stat-card"><div class="label">总Agent数</div><div class="value" style="font-size:28px;font-weight:600;color:#3370ff">8</div><div style="font-size:12px;color:#8f959e;margin-top:4px">协同产品经理岗位</div></div>
+          <div class="stat-card"><div class="label">运行中</div><div class="value" style="font-size:28px;font-weight:600;color:#34c759">6</div><div style="font-size:12px;color:#8f959e;margin-top:4px">今日活跃会话 156</div></div>
+          <div class="stat-card"><div class="label">今日调用</div><div class="value" style="font-size:28px;font-weight:600">1,832</div><div style="font-size:12px;color:#8f959e;margin-top:4px">较昨日 +15%</div></div>
+          <div class="stat-card"><div class="label">今日费用</div><div class="value" style="font-size:28px;font-weight:600;color:#ff9500">¥127.6</div><div style="font-size:12px;color:#8f959e;margin-top:4px">平均 ¥0.07/次</div></div>
+        </div>
+
+        <div class="filter-bar">
+          <div class="search-box"><span class="search-icon">🔍</span><input type="text" placeholder="搜索Agent名称..." /></div>
+          <select class="filter-select"><option>全部状态</option><option>运行中</option><option>已停用</option><option>已关闭</option></select>
+          <button class="btn btn-primary">＋ 创建Agent</button>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:30px"><input type="checkbox" /></th>
+                <th>Agent名称</th>
+                <th>状态</th>
+                <th>模型</th>
+                <th>已安装技能</th>
+                <th>可见范围</th>
+                <th>费用</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><input type="checkbox" /></td>
+                <td><div class="skill-name"><div class="skill-icon blue">🤖</div><div class="skill-info"><div class="name">协同产品经理Agent-A</div><div class="desc">主力Agent，全技能覆盖</div></div></div></td>
+                <td><span class="status status-active"><span class="status-dot"></span>运行中</span></td>
+                <td><span class="tag" style="background:#e8f0fe;color:#3370ff">Claude Sonnet</span></td>
+                <td>8个技能</td>
+                <td><span style="font-size:13px">集团信息技术部</span></td>
+                <td>¥24.5</td>
+                <td><div class="actions"><button class="btn btn-ghost btn-sm">编辑</button><button class="btn btn-ghost btn-sm" onclick="showAgentSkill('协同产品经理Agent-A')">技能</button><button class="btn btn-ghost btn-sm">可见范围</button><div class="more-wrap" onclick="toggleMore(this)"><button class="btn btn-ghost btn-sm">⋯</button><div class="more-menu"><div class="more-item">🧠 模型</div><div class="more-item">🪞 镜像版本</div><div class="more-item">🎨 个性化设置</div><div class="more-item">📚 知识库</div><div class="more-item">🔐 权限</div><div class="more-item">📋 日志</div><div class="more-item">💰 费用</div><div style="height:1px;background:#f0f1f2;margin:4px 0"></div><div class="more-item" style="color:#ff3b30">🔻 下架</div></div></div></div></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" /></td>
+                <td><div class="skill-name"><div class="skill-icon blue">🤖</div><div class="skill-info"><div class="name">协同产品经理Agent-B</div><div class="desc">主力Agent，全技能覆盖</div></div></div></td>
+                <td><span class="status status-active"><span class="status-dot"></span>运行中</span></td>
+                <td><span class="tag" style="background:#e8f0fe;color:#3370ff">Claude Sonnet</span></td>
+                <td>8个技能</td>
+                <td><span style="font-size:13px">zhouye1, zhouye2</span></td>
+                <td>¥18.7</td>
+                <td><div class="actions"><button class="btn btn-ghost btn-sm">编辑</button><button class="btn btn-ghost btn-sm" onclick="showAgentSkill('协同产品经理Agent-B')">技能</button><button class="btn btn-ghost btn-sm">可见范围</button><div class="more-wrap" onclick="toggleMore(this)"><button class="btn btn-ghost btn-sm">⋯</button><div class="more-menu"><div class="more-item">🧠 模型</div><div class="more-item">🪞 镜像版本</div><div class="more-item">🎨 个性化设置</div><div class="more-item">📚 知识库</div><div class="more-item">🔐 权限</div><div class="more-item">📋 日志</div><div class="more-item">💰 费用</div><div style="height:1px;background:#f0f1f2;margin:4px 0"></div><div class="more-item" style="color:#ff3b30">🔻 下架</div></div></div></div></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" /></td>
+                <td><div class="skill-name"><div class="skill-icon blue">🤖</div><div class="skill-info"><div class="name">协同产品经理Agent-C</div><div class="desc">主力Agent，全技能覆盖</div></div></div></td>
+                <td><span class="status status-active"><span class="status-dot"></span>运行中</span></td>
+                <td><span class="tag" style="background:#f0e8fe;color:#7b3aed">Claude Opus</span></td>
+                <td>7个技能</td>
+                <td><span style="font-size:13px">集团信息技术部</span></td>
+                <td>¥28.6</td>
+                <td><div class="actions"><button class="btn btn-ghost btn-sm">编辑</button><button class="btn btn-ghost btn-sm" onclick="showAgentSkill('协同产品经理Agent-C')">技能</button><button class="btn btn-ghost btn-sm">可见范围</button><div class="more-wrap" onclick="toggleMore(this)"><button class="btn btn-ghost btn-sm">⋯</button><div class="more-menu"><div class="more-item">🧠 模型</div><div class="more-item">🪞 镜像版本</div><div class="more-item">🎨 个性化设置</div><div class="more-item">📚 知识库</div><div class="more-item">🔐 权限</div><div class="more-item">📋 日志</div><div class="more-item">💰 费用</div><div style="height:1px;background:#f0f1f2;margin:4px 0"></div><div class="more-item" style="color:#ff3b30">🔻 下架</div></div></div></div></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" /></td>
+                <td><div class="skill-name"><div class="skill-icon blue">🤖</div><div class="skill-info"><div class="name">协同产品经理Agent-D</div><div class="desc">辅助Agent，轻量任务</div></div></div></td>
+                <td><span class="status status-active"><span class="status-dot"></span>运行中</span></td>
+                <td><span class="tag" style="background:#e8f0fe;color:#3370ff">Claude Sonnet</span></td>
+                <td>6个技能</td>
+                <td><span style="font-size:13px">zhouye1, zhouye3, zhouye4</span></td>
+                <td>¥9.8</td>
+                <td><div class="actions"><button class="btn btn-ghost btn-sm">编辑</button><button class="btn btn-ghost btn-sm" onclick="showAgentSkill('协同产品经理Agent-D')">技能</button><button class="btn btn-ghost btn-sm">可见范围</button><div class="more-wrap" onclick="toggleMore(this)"><button class="btn btn-ghost btn-sm">⋯</button><div class="more-menu"><div class="more-item">🧠 模型</div><div class="more-item">🪞 镜像版本</div><div class="more-item">🎨 个性化设置</div><div class="more-item">📚 知识库</div><div class="more-item">🔐 权限</div><div class="more-item">📋 日志</div><div class="more-item">💰 费用</div><div style="height:1px;background:#f0f1f2;margin:4px 0"></div><div class="more-item" style="color:#ff3b30">🔻 下架</div></div></div></div></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" /></td>
+                <td><div class="skill-name"><div class="skill-icon blue">🤖</div><div class="skill-info"><div class="name">协同产品经理Agent-E</div><div class="desc">辅助Agent，轻量任务</div></div></div></td>
+                <td><span class="status status-active"><span class="status-dot"></span>运行中</span></td>
+                <td><span class="tag" style="background:#e8f0fe;color:#3370ff">Claude Sonnet</span></td>
+                <td>6个技能</td>
+                <td><span style="font-size:13px">集团信息技术部</span></td>
+                <td>¥14.2</td>
+                <td><div class="actions"><button class="btn btn-ghost btn-sm">编辑</button><button class="btn btn-ghost btn-sm" onclick="showAgentSkill('协同产品经理Agent-E')">技能</button><button class="btn btn-ghost btn-sm">可见范围</button><div class="more-wrap" onclick="toggleMore(this)"><button class="btn btn-ghost btn-sm">⋯</button><div class="more-menu"><div class="more-item">🧠 模型</div><div class="more-item">🪞 镜像版本</div><div class="more-item">🎨 个性化设置</div><div class="more-item">📚 知识库</div><div class="more-item">🔐 权限</div><div class="more-item">📋 日志</div><div class="more-item">💰 费用</div><div style="height:1px;background:#f0f1f2;margin:4px 0"></div><div class="more-item" style="color:#ff3b30">🔻 下架</div></div></div></div></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" /></td>
+                <td><div class="skill-name"><div class="skill-icon orange">🦞</div><div class="skill-info"><div class="name">训虾员</div><div class="desc">Agent训练、提示词优化、效果评估</div></div></div></td>
+                <td><span class="status status-active"><span class="status-dot"></span>运行中</span></td>
+                <td><span class="tag" style="background:#f0e8fe;color:#7b3aed">Claude Opus</span></td>
+                <td>5个技能</td>
+                <td><span style="font-size:13px">仅管理员</span></td>
+                <td>¥8.3</td>
+                <td><div class="actions"><button class="btn btn-ghost btn-sm">编辑</button><button class="btn btn-ghost btn-sm" onclick="showAgentSkill('训虾员')">技能</button><button class="btn btn-ghost btn-sm">可见范围</button><div class="more-wrap" onclick="toggleMore(this)"><button class="btn btn-ghost btn-sm">⋯</button><div class="more-menu"><div class="more-item">🧠 模型</div><div class="more-item">🪞 镜像版本</div><div class="more-item">🎨 个性化设置</div><div class="more-item">📚 知识库</div><div class="more-item">🔐 权限</div><div class="more-item">📋 日志</div><div class="more-item">💰 费用</div><div style="height:1px;background:#f0f1f2;margin:4px 0"></div><div class="more-item" style="color:#ff3b30">🔻 下架</div></div></div></div></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" /></td>
+                <td><div class="skill-name"><div class="skill-icon" style="background:#f0f1f2">📦</div><div class="skill-info"><div class="name">成本中心</div><div class="desc">成本核算、费用分摊、预算管控</div></div></div></td>
+                <td><span class="status status-inactive"><span class="status-dot"></span>已停用</span></td>
+                <td><span class="tag" style="background:#e8f0fe;color:#3370ff">Claude Sonnet</span></td>
+                <td>3个技能</td>
+                <td><span style="font-size:13px">集团财务部</span></td>
+                <td>—</td>
+                <td><div class="actions"><button class="btn btn-ghost btn-sm">编辑</button><button class="btn btn-ghost btn-sm" onclick="showAgentSkill('成本中心')">技能</button><button class="btn btn-ghost btn-sm">可见范围</button><div class="more-wrap" onclick="toggleMore(this)"><button class="btn btn-ghost btn-sm">⋯</button><div class="more-menu"><div class="more-item">🧠 模型</div><div class="more-item">🪞 镜像版本</div><div class="more-item">🎨 个性化设置</div><div class="more-item">📚 知识库</div><div class="more-item">🔐 权限</div><div class="more-item">📋 日志</div><div class="more-item">💰 费用</div><div style="height:1px;background:#f0f1f2;margin:4px 0"></div><div class="more-item" style="color:#ff3b30">🔻 下架</div></div></div></div></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" /></td>
+                <td><div class="skill-name"><div class="skill-icon" style="background:#fff0f0">📝</div><div class="skill-info"><div class="name">行政助理</div><div class="desc">会议室预定、资产管理、采购审批</div></div></div></td>
+                <td><span class="status" style="background:#fff0f0;color:#e84040"><span class="status-dot" style="background:#e84040"></span>已关闭</span></td>
+                <td><span class="tag" style="background:#fff5e6;color:#e88a00">MiMo Pro</span></td>
+                <td>2个技能</td>
+                <td><span style="font-size:13px">集团行政部</span></td>
+                <td>—</td>
+                <td><div class="actions"><button class="btn btn-ghost btn-sm">编辑</button><button class="btn btn-ghost btn-sm" onclick="showAgentSkill('行政助理')">技能</button><button class="btn btn-ghost btn-sm">可见范围</button><div class="more-wrap" onclick="toggleMore(this)"><button class="btn btn-ghost btn-sm">⋯</button><div class="more-menu"><div class="more-item">🧠 模型</div><div class="more-item">🪞 镜像版本</div><div class="more-item">🎨 个性化设置</div><div class="more-item">📚 知识库</div><div class="more-item">🔐 权限</div><div class="more-item">📋 日志</div><div class="more-item">💰 费用</div><div style="height:1px;background:#f0f1f2;margin:4px 0"></div><div class="more-item" style="color:#ff3b30">🔻 下架</div></div></div></div></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="pagination"><div class="info">共 8 条记录</div><div class="pages"><div class="page active">1</div></div></div>
+        </div>
+      </div>
+
+    
+  <!-- ========== Agent技能管理页 ========== -->
+  <div id="page-agent-skill" style="display:none">
+    <div class="detail-back" onclick="backToAgentList()">← 返回岗位Agent</div>
+
+    <!-- Agent 基础信息 -->
+    <div style="background:#fff;border:1px solid #e5e6e8;border-radius:12px;padding:16px 20px;margin-bottom:20px">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div class="agent-skill-header" style="margin-bottom:0">
+        <div class="agent-avatar">🤖</div>
+        <div class="agent-meta">
+          <div class="name" id="askAgentName">协同产品经理Agent-A</div>
+          <div class="meta-row">
+            <span>状态：<span class="status status-active" style="font-size:12px"><span class="status-dot"></span>运行中</span></span>
+            <span>模型：Claude Sonnet</span>
+            <span>可见范围：集团信息技术部</span>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-secondary" onclick="showHistoryModal()">📋 技能操作记录</button>
+      </div>
+    </div>
+
+    <!-- 双栏布局 -->
+    <div style="display:grid;grid-template-columns:1fr 2fr;gap:20px">
+
+      <!-- 左栏：已安装技能 -->
+      <div>
+        <div style="background:#fff;border:1px solid #e5e6e8;border-radius:12px;padding:16px 20px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <div style="font-size:15px;font-weight:600">已安装技能（<span id="installedCount">5</span>）</div>
+            <div style="position:relative;width:180px">
+              <input type="text" placeholder="搜索已安装技能..." style="width:100%;padding:6px 10px 6px 30px;border:1px solid #dee0e3;border-radius:6px;font-size:13px;outline:none" oninput="filterInstalledSkills(this.value)" />
+              <span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:12px;color:#8f959e">🔍</span>
+            </div>
+          </div>
+          <div id="installedSkillCards" style="display:flex;flex-direction:column;gap:10px">
+
+          <!-- 合同查询 - 有新版本 -->
+          <div style="background:#fff;border:1px solid #e5e6e8;border-radius:10px;padding:14px 16px;position:relative">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between">
+              <div style="display:flex;align-items:center;gap:10px">
+                <div class="skill-icon green" style="width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px">📋</div>
+                <div>
+                  <div style="font-weight:500;font-size:14px">合同查询</div>
+                  <code style="font-size:11px;color:#8f959e">oa-contract</code>
+                </div>
+              </div>
+              <span style="background:#fff5e6;color:#e88a00;font-size:11px;font-weight:500;padding:2px 8px;border-radius:4px">有新版本</span>
+            </div>
+            <div style="font-size:12px;color:#646a73;margin:8px 0">查询合同系统中的合同信息与状态</div>
+            <div style="font-size:11px;color:#8f959e;margin-bottom:6px">安装时间：2026-04-20 09:15</div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span class="tag tag-version" style="font-size:12px">v1.3.2</span>
+              <div style="display:flex;gap:6px">
+                <button class="btn btn-ghost btn-sm" style="color:#ff9500;font-size:12px">更新</button>
+                <button class="btn btn-ghost btn-sm" style="color:#ff3b30;font-size:12px">删除</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 差旅费用管理 - 已安装无新版本 -->
+          <div style="background:#fff;border:1px solid #e5e6e8;border-radius:10px;padding:14px 16px">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between">
+              <div style="display:flex;align-items:center;gap:10px">
+                <div class="skill-icon orange" style="width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px">🧮</div>
+                <div>
+                  <div style="font-weight:500;font-size:14px">差旅费用管理</div>
+                  <code style="font-size:11px;color:#8f959e">oa-mi-travel-fee</code>
+                </div>
+              </div>
+            </div>
+            <div style="font-size:12px;color:#646a73;margin:8px 0">差旅申请、火车票预订、费用报销</div>
+            <div style="font-size:11px;color:#8f959e;margin-bottom:6px">安装时间：2026-04-23 10:00</div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span class="tag tag-version" style="font-size:12px">v3.0.1</span>
+              <div style="display:flex;gap:6px">
+                <button class="btn btn-ghost btn-sm" style="color:#ff3b30;font-size:12px">删除</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 合同智能审核 - 有新版本 -->
+          <div style="background:#fff;border:1px solid #e5e6e8;border-radius:10px;padding:14px 16px">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between">
+              <div style="display:flex;align-items:center;gap:10px">
+                <div class="skill-icon blue" style="width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px">📄</div>
+                <div>
+                  <div style="font-weight:500;font-size:14px">合同智能审核</div>
+                  <code style="font-size:11px;color:#8f959e">seal-center-review</code>
+                </div>
+              </div>
+              <span style="background:#fff5e6;color:#e88a00;font-size:11px;font-weight:500;padding:2px 8px;border-radius:4px">有新版本</span>
+            </div>
+            <div style="font-size:12px;color:#646a73;margin:8px 0">合同预审、条款检查、风险识别</div>
+            <div style="font-size:11px;color:#8f959e;margin-bottom:6px">安装时间：2026-04-22 16:00</div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span class="tag tag-version" style="font-size:12px">v2.0.0</span>
+              <div style="display:flex;gap:6px">
+                <button class="btn btn-ghost btn-sm" style="color:#ff9500;font-size:12px">更新</button>
+                <button class="btn btn-ghost btn-sm" style="color:#ff3b30;font-size:12px">删除</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 会议纪要生成 - 已安装无新版本 -->
+          <div style="background:#fff;border:1px solid #e5e6e8;border-radius:10px;padding:14px 16px">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between">
+              <div style="display:flex;align-items:center;gap:10px">
+                <div class="skill-icon purple" style="width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px">📊</div>
+                <div>
+                  <div style="font-weight:500;font-size:14px">会议纪要生成</div>
+                  <code style="font-size:11px;color:#8f959e">oa-meeting-minutes</code>
+                </div>
+              </div>
+            </div>
+            <div style="font-size:12px;color:#646a73;margin:8px 0">基于飞书妙记生成结构化会议纪要</div>
+            <div style="font-size:11px;color:#8f959e;margin-bottom:6px">安装时间：2026-04-23 15:20</div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span class="tag tag-version" style="font-size:12px">v1.0.0</span>
+              <div style="display:flex;gap:6px">
+                <button class="btn btn-ghost btn-sm" style="color:#ff3b30;font-size:12px">删除</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 审批流程处理 - 已安装无新版本 -->
+          <div style="background:#fff;border:1px solid #e5e6e8;border-radius:10px;padding:14px 16px">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between">
+              <div style="display:flex;align-items:center;gap:10px">
+                <div class="skill-icon red" style="width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px">⚠️</div>
+                <div>
+                  <div style="font-weight:500;font-size:14px">审批流程处理</div>
+                  <code style="font-size:11px;color:#8f959e">bpm-approval</code>
+                </div>
+              </div>
+            </div>
+            <div style="font-size:12px;color:#646a73;margin:8px 0">BPM审批单查询、同意、拒绝操作</div>
+            <div style="font-size:11px;color:#8f959e;margin-bottom:6px">安装时间：2026-04-18 09:00</div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span class="tag tag-version" style="font-size:12px">v1.1.0</span>
+              <div style="display:flex;gap:6px">
+                <button class="btn btn-ghost btn-sm" style="color:#ff3b30;font-size:12px">删除</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+          <div id="installedPagination" style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid #f0f1f2">
+            <span style="font-size:12px;color:#8f959e">共 5 条</span>
+            <div style="display:flex;gap:4px">
+              <span style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:12px;background:#3370ff;color:#fff;cursor:pointer">1</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 右栏：技能仓库 -->
+      <div>
+        <div style="background:#fff;border:1px solid #e5e6e8;border-radius:12px;padding:16px 20px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <div style="font-size:15px;font-weight:600">技能仓库</div>
+          <div style="position:relative;width:200px">
+            <input type="text" placeholder="搜索技能..." style="width:100%;padding:6px 10px 6px 30px;border:1px solid #dee0e3;border-radius:6px;font-size:13px;outline:none" oninput="filterWarehouseSkills(this.value)" />
+            <span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:12px;color:#8f959e">🔍</span>
+          </div>
+        </div>
+        <div id="warehouseSkillCards" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+
+          <!-- 合同查询 - 已安装无新版本 → 已安装 -->
+          <div class="warehouse-card" data-name="合同查询 oa-contract" style="background:#fff;border:1px solid #e5e6e8;border-radius:10px;padding:14px 16px;display:flex;flex-direction:column">
+            <div style="display:flex;align-items:center;gap:10px">
+                <div class="skill-icon green" style="width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px">📋</div>
+                <div>
+                  <div style="font-weight:500;font-size:13px">合同查询</div>
+                  <code style="font-size:10px;color:#8f959e">oa-contract</code>
+                </div>
+              </div>
+            <div style="font-size:11px;color:#646a73;margin:6px 0;line-height:1.4">查询合同系统中的合同信息与状态</div>
+            <div style="margin-top:auto"><div style="font-size:10px;color:#8f959e;margin-bottom:6px">最近更新：2026-04-20 09:15</div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span class="tag tag-version" style="font-size:11px">v1.3.2</span>
+              <button class="btn btn-sm" style="background:#f0f1f2;color:#8f959e;cursor:default;font-size:11px;padding:3px 10px">已安装</button>
+            </div></div>
+          </div>
+
+          <!-- 差旅费用管理 - 已安装无新版本 → 已安装 -->
+          <div class="warehouse-card" data-name="差旅费用管理 oa-mi-travel-fee" style="background:#fff;border:1px solid #e5e6e8;border-radius:10px;padding:14px 16px;display:flex;flex-direction:column">
+            <div style="display:flex;align-items:center;gap:10px">
+                <div class="skill-icon orange" style="width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px">🧮</div>
+                <div>
+                  <div style="font-weight:500;font-size:13px">差旅费用管理</div>
+                  <code style="font-size:10px;color:#8f959e">oa-mi-travel-fee</code>
+                </div>
+              </div>
+            <div style="font-size:11px;color:#646a73;margin:6px 0;line-height:1.4">差旅申请、火车票预订、费用报销</div>
+            <div style="margin-top:auto"><div style="font-size:10px;color:#8f959e;margin-bottom:6px">最近更新：2026-04-23 10:00</div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span class="tag tag-version" style="font-size:11px">v3.0.1</span>
+              <button class="btn btn-sm" style="background:#f0f1f2;color:#8f959e;cursor:default;font-size:11px;padding:3px 10px">已安装</button>
+            </div></div>
+          </div>
+
+          <!-- 合同智能审核 - 已安装有新版本 → 更新 -->
+          <div class="warehouse-card" data-name="合同智能审核 seal-center-review" style="background:#fff;border:1px solid #e5e6e8;border-radius:10px;padding:14px 16px;display:flex;flex-direction:column">
+            <div style="display:flex;align-items:center;gap:10px">
+                <div class="skill-icon blue" style="width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px">📄</div>
+                <div>
+                  <div style="font-weight:500;font-size:13px">合同智能审核</div>
+                  <code style="font-size:10px;color:#8f959e">seal-center-review</code>
+                </div>
+              </div>
+            <div style="font-size:11px;color:#646a73;margin:6px 0;line-height:1.4">合同预审、条款检查、风险识别</div>
+            <div style="margin-top:auto"><div style="font-size:10px;color:#8f959e;margin-bottom:6px">最近更新：2026-04-23 11:00</div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span class="tag tag-version" style="font-size:11px">v2.1.0</span>
+              <button class="btn btn-primary btn-sm" style="font-size:11px;padding:3px 10px">更新</button>
+            </div></div>
+          </div>
+
+          <!-- 会议纪要生成 - 已安装无新版本 → 已安装 -->
+          <div class="warehouse-card" data-name="会议纪要生成 oa-meeting-minutes" style="background:#fff;border:1px solid #e5e6e8;border-radius:10px;padding:14px 16px;display:flex;flex-direction:column">
+            <div style="display:flex;align-items:center;gap:10px">
+                <div class="skill-icon purple" style="width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px">📊</div>
+                <div>
+                  <div style="font-weight:500;font-size:13px">会议纪要生成</div>
+                  <code style="font-size:10px;color:#8f959e">oa-meeting-minutes</code>
+                </div>
+              </div>
+            <div style="font-size:11px;color:#646a73;margin:6px 0;line-height:1.4">基于飞书妙记生成结构化会议纪要</div>
+            <div style="margin-top:auto"><div style="font-size:10px;color:#8f959e;margin-bottom:6px">最近更新：2026-04-23 15:20</div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span class="tag tag-version" style="font-size:11px">v1.0.0</span>
+              <button class="btn btn-sm" style="background:#f0f1f2;color:#8f959e;cursor:default;font-size:11px;padding:3px 10px">已安装</button>
+            </div></div>
+          </div>
+
+          <!-- 审批流程处理 - 已安装无新版本 → 已安装 -->
+          <div class="warehouse-card" data-name="审批流程处理 bpm-approval" style="background:#fff;border:1px solid #e5e6e8;border-radius:10px;padding:14px 16px;display:flex;flex-direction:column">
+            <div style="display:flex;align-items:center;gap:10px">
+                <div class="skill-icon red" style="width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px">⚠️</div>
+                <div>
+                  <div style="font-weight:500;font-size:13px">审批流程处理</div>
+                  <code style="font-size:10px;color:#8f959e">bpm-approval</code>
+                </div>
+              </div>
+            <div style="font-size:11px;color:#646a73;margin:6px 0;line-height:1.4">BPM审批单查询、同意、拒绝操作</div>
+            <div style="margin-top:auto"><div style="font-size:10px;color:#8f959e;margin-bottom:6px">最近更新：2026-04-18 09:00</div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span class="tag tag-version" style="font-size:11px">v1.1.0</span>
+              <button class="btn btn-sm" style="background:#f0f1f2;color:#8f959e;cursor:default;font-size:11px;padding:3px 10px">已安装</button>
+            </div></div>
+          </div>
+
+          <!-- 信息检索 - 未安装 → 安装 -->
+          <div class="warehouse-card" data-name="信息检索 info-retrieval" style="background:#fff;border:1px solid #e5e6e8;border-radius:10px;padding:14px 16px;display:flex;flex-direction:column">
+            <div style="display:flex;align-items:center;gap:10px">
+                <div class="skill-icon" style="width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;background:#e8f0fe">🔍</div>
+                <div>
+                  <div style="font-weight:500;font-size:13px">信息检索</div>
+                  <code style="font-size:10px;color:#8f959e">info-retrieval</code>
+                </div>
+              </div>
+            <div style="font-size:11px;color:#646a73;margin:6px 0;line-height:1.4">多源信息搜索与聚合，支持飞书文档、知识库、网页</div>
+            <div style="margin-top:auto"><div style="font-size:10px;color:#8f959e;margin-bottom:6px">最近更新：2026-04-28 14:00</div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span class="tag tag-version" style="font-size:11px">v1.5.0</span>
+              <button class="btn btn-primary btn-sm" style="font-size:11px;padding:3px 10px" onclick="alert('✅ 已提交安装请求')">安装</button>
+            </div></div>
+          </div>
+
+          <!-- 价格计算 - 未安装 → 安装 -->
+          <div class="warehouse-card" data-name="价格计算 price-calc" style="background:#fff;border:1px solid #e5e6e8;border-radius:10px;padding:14px 16px;display:flex;flex-direction:column">
+            <div style="display:flex;align-items:center;gap:10px">
+                <div class="skill-icon" style="width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;background:#fdf1d7">💰</div>
+                <div>
+                  <div style="font-weight:500;font-size:13px">价格计算</div>
+                  <code style="font-size:10px;color:#8f959e">price-calc</code>
+                </div>
+              </div>
+            <div style="font-size:11px;color:#646a73;margin:6px 0;line-height:1.4">多币种、多档位国际定价计算，内置汇率换算</div>
+            <div style="margin-top:auto"><div style="font-size:10px;color:#8f959e;margin-bottom:6px">最近更新：2026-04-20 10:00</div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span class="tag tag-version" style="font-size:11px">v2.3.0</span>
+              <button class="btn btn-primary btn-sm" style="font-size:11px;padding:3px 10px" onclick="alert('✅ 已提交安装请求')">安装</button>
+            </div></div>
+          </div>
+
+          <!-- 数据报表 - 未安装 → 安装 -->
+          <div class="warehouse-card" data-name="数据报表 data-report" style="background:#fff;border:1px solid #e5e6e8;border-radius:10px;padding:14px 16px;display:flex;flex-direction:column">
+            <div style="display:flex;align-items:center;gap:10px">
+                <div class="skill-icon" style="width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;background:#f0e8fe">📈</div>
+                <div>
+                  <div style="font-weight:500;font-size:13px">数据报表</div>
+                  <code style="font-size:10px;color:#8f959e">data-report</code>
+                </div>
+              </div>
+            <div style="font-size:11px;color:#646a73;margin:6px 0;line-height:1.4">自动生成各类业务报表，支持多维度数据透视</div>
+            <div style="margin-top:auto"><div style="font-size:10px;color:#8f959e;margin-bottom:6px">最近更新：2026-04-15 16:30</div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span class="tag tag-version" style="font-size:11px">v1.2.0</span>
+              <button class="btn btn-primary btn-sm" style="font-size:11px;padding:3px 10px" onclick="alert('✅ 已提交安装请求')">安装</button>
+            </div></div>
+          </div>
+
+        </div>
+          <div id="warehousePagination" style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid #f0f1f2">
+            <span style="font-size:12px;color:#8f959e">共 8 条</span>
+            <div style="display:flex;gap:4px">
+              <span style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:12px;background:#3370ff;color:#fff;cursor:pointer">1</span>
+              <span style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:12px;border:1px solid #dee0e3;cursor:pointer">2</span>
+              <span style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:12px;border:1px solid #dee0e3;cursor:pointer">3</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 技能操作记录弹窗 -->
+  <div class="modal-overlay" id="historyModal">
+    <div class="modal" style="width:640px;max-height:80vh">
+      <div class="modal-header">
+        <h2>技能操作记录</h2>
+        <div class="modal-close" onclick="closeHistoryModal()">✕</div>
+      </div>
+      <div class="modal-body" style="max-height:60vh;overflow-y:auto">
+        <div class="history-timeline">
+          <div class="history-item">
+            <div class="history-row">
+              <span class="history-skill">会议纪要生成</span>
+              <span class="history-op install">安装</span>
+            </div>
+            <div class="history-meta">
+              <span>版本：v1.0.0</span>
+              <span>操作人：王五</span>
+              <span>操作时间：2026-04-23 15:20</span>
+            </div>
+          </div>
+          <div class="history-item op-update">
+            <div class="history-row">
+              <span class="history-skill">差旅费用管理</span>
+              <span class="history-op update">更新</span>
+            </div>
+            <div class="history-meta">
+              <span>版本：v2.1.0 → v3.0.1</span>
+              <span>操作人：李四</span>
+              <span>操作时间：2026-04-23 10:00</span>
+            </div>
+          </div>
+          <div class="history-item op-update">
+            <div class="history-row">
+              <span class="history-skill">合同查询</span>
+              <span class="history-op update">更新</span>
+            </div>
+            <div class="history-meta">
+              <span>版本：v1.3.0 → v1.3.2</span>
+              <span>操作人：张三</span>
+              <span>操作时间：2026-04-20 09:15</span>
+            </div>
+          </div>
+          <div class="history-item">
+            <div class="history-row">
+              <span class="history-skill">合同智能审核</span>
+              <span class="history-op install">安装</span>
+            </div>
+            <div class="history-meta">
+              <span>版本：v2.0.0</span>
+              <span>操作人：张三</span>
+              <span>操作时间：2026-04-22 16:00</span>
+            </div>
+          </div>
+          <div class="history-item op-delete">
+            <div class="history-row">
+              <span class="history-skill">审批流程处理</span>
+              <span class="history-op delete">移除</span>
+            </div>
+            <div class="history-meta">
+              <span>版本：v1.1.0</span>
+              <span>操作人：张三</span>
+              <span>操作时间：2026-04-18 09:00</span>
+            </div>
+            <div class="history-detail">已从该Agent移除，技能仓库中仍保留</div>
+          </div>
+          <div class="history-item">
+            <div class="history-row">
+              <span class="history-skill">合同查询</span>
+              <span class="history-op install">安装</span>
+            </div>
+            <div class="history-meta">
+              <span>版本：v1.2.0</span>
+              <span>操作人：张三</span>
+              <span>操作时间：2026-04-10 09:00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeHistoryModal()">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== Skill仓库页（原版不动） ========== -->
+      <div id="page-skill">
+
+      <!-- ========== 列表页 ========== -->
+      <div id="page-list">
+        <div class="filter-bar">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" placeholder="搜索Skill名称..." />
+          </div>
+          <select class="filter-select">
+            <option>全部状态</option>
+            <option>已上架</option>
+            <option>已下架</option>
+          </select>
+          <button class="btn btn-primary" onclick="showUploadModal()">➕ 上传Skill</button>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:30px"><input type="checkbox" /></th>
+                <th>技能名称</th>
+                <th>skill-name</th>
+                <th>最新版本</th>
+                <th>版本类型</th>
+                <th>状态</th>
+                <th>下发Agent</th>
+                <th>上传人</th>
+                <th>上传时间</th>
+                <th>最后更新</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><input type="checkbox" /></td>
+                <td>
+                  <div class="skill-name">
+                    <div class="skill-icon green">📋</div>
+                    <div class="skill-info">
+                      <div class="name">合同查询</div>
+                      <div class="desc">查询合同系统中的合同信息与状态</div>
+                    </div>
+                  </div>
+                </td>
+                <td><code style="font-size:12px;color:#646a73">oa-contract</code></td>
+                <td><span class="tag tag-version">v1.3.2</span></td>
+                <td><span class="tag" style="background:#e8f8e8;color:#1e7e34">正式版</span></td>
+                <td><span class="status status-active"><span class="status-dot"></span>已上架</span></td>
+                <td>3个Agent</td>
+                <td>张三</td>
+                <td>04-10 09:00</td>
+                <td>04-20 09:15</td>
+                <td>
+                  <div class="actions">
+                    <button class="btn btn-ghost btn-sm" onclick="showDetail('contract')">详情</button>
+                    <button class="btn btn-ghost btn-sm" onclick="showUpdate('contract')">更新</button>
+                    <button class="btn btn-ghost btn-sm" style="color:#ff3b30">下架</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" /></td>
+                <td>
+                  <div class="skill-name">
+                    <div class="skill-icon orange">🧮</div>
+                    <div class="skill-info">
+                      <div class="name">差旅费用管理</div>
+                      <div class="desc">差旅申请、火车票预订、费用报销</div>
+                    </div>
+                  </div>
+                </td>
+                <td><code style="font-size:12px;color:#646a73">oa-mi-travel-fee</code></td>
+                <td><span class="tag tag-version">v3.0.1</span></td>
+                <td><span class="tag" style="background:#e8f8e8;color:#1e7e34">正式版</span></td>
+                <td><span class="status status-active"><span class="status-dot"></span>已上架</span></td>
+                <td>全部(8)</td>
+                <td>李四</td>
+                <td>03-20 14:00</td>
+                <td>04-23 10:00</td>
+                <td>
+                  <div class="actions">
+                    <button class="btn btn-ghost btn-sm" onclick="showDetail('travel')">详情</button>
+                    <button class="btn btn-ghost btn-sm" onclick="showUpdate('travel')">更新</button>
+                    <button class="btn btn-ghost btn-sm" style="color:#ff3b30">下架</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" /></td>
+                <td>
+                  <div class="skill-name">
+                    <div class="skill-icon blue">📄</div>
+                    <div class="skill-info">
+                      <div class="name">合同智能审核</div>
+                      <div class="desc">合同预审、条款检查、风险识别</div>
+                    </div>
+                  </div>
+                </td>
+                <td><code style="font-size:12px;color:#646a73">seal-center-review</code></td>
+                <td><span class="tag tag-version">v2.0.0</span></td>
+                <td><span class="tag" style="background:#fff5e6;color:#e88a00">测试版</span></td>
+                <td><span class="status status-active"><span class="status-dot"></span>已上架</span></td>
+                <td>2个Agent</td>
+                <td>张三</td>
+                <td>04-05 10:30</td>
+                <td>04-22 16:00</td>
+                <td>
+                  <div class="actions">
+                    <button class="btn btn-ghost btn-sm" onclick="showDetail('seal')">详情</button>
+                    <button class="btn btn-ghost btn-sm" onclick="showUpdate('seal')">更新</button>
+                    <button class="btn btn-ghost btn-sm" style="color:#ff3b30">下架</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" /></td>
+                <td>
+                  <div class="skill-name">
+                    <div class="skill-icon purple">📊</div>
+                    <div class="skill-info">
+                      <div class="name">会议纪要生成</div>
+                      <div class="desc">基于飞书妙记生成结构化会议纪要</div>
+                    </div>
+                  </div>
+                </td>
+                <td><code style="font-size:12px;color:#646a73">oa-meeting-minutes</code></td>
+                <td><span class="tag tag-version">v1.0.0</span></td>
+                <td><span class="tag" style="background:#e8f8e8;color:#1e7e34">正式版</span></td>
+                <td><span class="status status-active"><span class="status-dot"></span>已上架</span></td>
+                <td>全部(8)</td>
+                <td>王五</td>
+                <td>04-23 15:20</td>
+                <td>04-23 15:20</td>
+                <td>
+                  <div class="actions">
+                    <button class="btn btn-ghost btn-sm" onclick="showDetail('meeting')">详情</button>
+                    <button class="btn btn-ghost btn-sm" onclick="showUpdate('meeting')">更新</button>
+                    <button class="btn btn-ghost btn-sm" style="color:#ff3b30">下架</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" /></td>
+                <td>
+                  <div class="skill-name">
+                    <div class="skill-icon red">⚠️</div>
+                    <div class="skill-info">
+                      <div class="name">审批流程处理</div>
+                      <div class="desc">BPM审批单查询、同意、拒绝操作</div>
+                    </div>
+                  </div>
+                </td>
+                <td><code style="font-size:12px;color:#646a73">bpm-approval</code></td>
+                <td><span class="tag tag-version">v1.1.0</span></td>
+                <td><span class="tag" style="background:#e8f8e8;color:#1e7e34">正式版</span></td>
+                <td><span class="status status-inactive"><span class="status-dot"></span>已下架</span></td>
+                <td>—</td>
+                <td>张三</td>
+                <td>03-15 11:00</td>
+                <td>04-18 09:00</td>
+                <td>
+                  <div class="actions">
+                    <button class="btn btn-ghost btn-sm" onclick="showDetail('bpm')">详情</button>
+                    <button class="btn btn-ghost btn-sm">重新上架</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="pagination">
+            <div class="info">共 5 条记录</div>
+            <div class="pages">
+              <div class="page active">1</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== 详情页 ========== -->
+      <div id="page-detail" class="detail-page">
+        <div class="detail-back" onclick="backToList()">← 返回Skill仓库</div>
+
+        <!-- 基础信息 -->
+        <div class="detail-card">
+          <div class="detail-card-header">
+            <h3>基础信息</h3>
+            <span class="status status-active" id="detail-status"><span class="status-dot"></span>已上架</span>
+          </div>
+          <div class="detail-card-body">
+            <div class="detail-field">
+              <span class="field-label">技能名称</span>
+              <span class="field-value" id="detail-name">合同查询</span>
+            </div>
+            <div class="detail-field">
+              <span class="field-label">skill-name</span>
+              <span class="field-value"><code style="font-size:13px;color:#646a73" id="detail-skillname">oa-contract</code></span>
+            </div>
+            <div class="detail-field">
+              <span class="field-label">技能简介</span>
+              <span class="field-value" id="detail-desc">查询合同系统中的合同信息与状态，支持按合同编号、签约方、金额范围等条件搜索</span>
+            </div>
+            <div class="detail-field">
+              <span class="field-label">调用次数</span>
+              <span class="field-value" id="detail-calls" style="font-weight:500">2,847 次</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 版本信息 -->
+        <div class="detail-card">
+          <div class="detail-card-header">
+            <h3>版本信息</h3>
+          </div>
+          <div class="detail-card-body">
+            <div class="version-list" id="detail-versions">
+
+              <!-- Version 1.3.2 (current / latest) -->
+              <div class="version-item">
+                <div class="version-header">
+                  <span class="ver-name">v1.3.2</span>
+                  <span class="ver-tag" style="background:#e8f8e8;color:#1e7e34">正式版</span>
+                  <span class="ver-tag ver-tag-current">最新版本</span>
+                </div>
+                <div class="version-meta">
+                  <div class="version-meta-item"><span class="meta-label">更新人：</span>张三</div>
+                  <div class="version-meta-item"><span class="meta-label">更新时间：</span>2026-04-20 09:15</div>
+                </div>
+                <div class="version-file" onclick="alert('预览 SKILL.md 文件内容')">📄 SKILL.md</div>
+                <div class="version-agents">
+                  <div class="version-agents-title">已安装最新版Agent：3 / 8</div>
+                  <span class="agent-tag"><span class="agent-dot"></span>协同产品经理Agent-A</span>
+                  <span class="agent-tag"><span class="agent-dot"></span>协同产品经理Agent-B</span>
+                  <span class="agent-tag"><span class="agent-dot"></span>协同产品经理Agent-C</span>
+                </div>
+                <div style="margin-top:14px;display:flex;gap:8px">
+                  <button class="btn btn-primary" onclick="upgradeAll()">🚀 全部升级到最新版</button>
+                  <button class="btn btn-secondary" onclick="showUpgradeModal()">部分升级到最新版</button>
+                </div>
+              </div>
+
+              <!-- Version 1.3.0 -->
+              <div class="version-item old">
+                <div class="version-header">
+                  <span class="ver-name">v1.3.0</span>
+                  <span class="ver-tag" style="background:#e8f8e8;color:#1e7e34">正式版</span>
+                  <span class="ver-tag ver-tag-old">历史版本</span>
+                </div>
+                <div class="version-meta">
+                  <div class="version-meta-item"><span class="meta-label">更新人：</span>张三</div>
+                  <div class="version-meta-item"><span class="meta-label">更新时间：</span>2026-04-12 14:30</div>
+                </div>
+                <div class="version-file" onclick="alert('预览 SKILL.md 文件内容')">📄 SKILL.md</div>
+                <div class="version-agents">
+                  <div class="version-agents-title">已下发安装Agent：</div>
+                  <span class="agent-tag"><span class="agent-dot offline"></span>协同产品经理Agent-A</span>
+                  <span class="agent-tag"><span class="agent-dot offline"></span>协同产品经理Agent-B</span>
+                  <span style="font-size:12px;color:#8f959e;margin-left:4px">（已被 v1.3.2 覆盖）</span>
+                </div>
+              </div>
+
+              <!-- Version 1.2.0 -->
+              <div class="version-item old">
+                <div class="version-header">
+                  <span class="ver-name">v1.2.0</span>
+                  <span class="ver-tag" style="background:#fff5e6;color:#e88a00">测试版</span>
+                  <span class="ver-tag ver-tag-old">历史版本</span>
+                </div>
+                <div class="version-meta">
+                  <div class="version-meta-item"><span class="meta-label">更新人：</span>李四</div>
+                  <div class="version-meta-item"><span class="meta-label">更新时间：</span>2026-03-28 11:00</div>
+                </div>
+                <div class="version-file" onclick="alert('预览 SKILL.md 文件内容')">📄 SKILL.md</div>
+                <div class="version-agents">
+                  <div class="version-agents-title">已下发安装Agent：</div>
+                  <span class="agent-tag"><span class="agent-dot offline"></span>协同产品经理Agent-A</span>
+                  <span style="font-size:12px;color:#8f959e;margin-left:4px">（已被 v1.3.0 覆盖）</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== 上传技能页 ========== -->
+      <div id="page-upload" class="detail-page">
+        <div class="detail-back" onclick="backToList()">← <span id="uploadPageTitle">上传技能</span></div>
+
+        <!-- 步骤条 -->
+        <div style="display:flex;gap:0;margin-bottom:24px">
+          <div id="uploadStep1Tab" style="flex:1;text-align:center;padding:10px 0;font-size:13px;color:#3370ff;border-bottom:2px solid #3370ff;font-weight:500">① 填写技能信息</div>
+          <div id="uploadStep2Tab" style="flex:1;text-align:center;padding:10px 0;font-size:13px;color:#8f959e;border-bottom:2px solid #e5e6e8">② 选择下发Agent</div>
+        </div>
+
+        <!-- 第一步：填写技能信息 -->
+        <div id="uploadStep1">
+          <!-- 基本信息 -->
+          <div class="detail-card">
+            <div class="detail-card-header"><h3>基本信息</h3></div>
+            <div class="detail-card-body">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+                <div class="form-group" style="margin-bottom:0">
+                  <label class="form-label">展示名称 <span class="required">*</span></label>
+                  <input class="form-input" id="formDisplayName" placeholder="易于人类理解的名称，非skill.md中的name" />
+                </div>
+                <div class="form-group" style="margin-bottom:0">
+                  <label class="form-label">版本类型 <span class="required">*</span></label>
+                  <div style="display:flex;gap:16px;padding-top:4px">
+                    <label style="display:flex;align-items:center;gap:6px;font-size:14px;cursor:pointer"><input type="radio" name="versionType" value="release" checked /> 正式版</label>
+                    <label style="display:flex;align-items:center;gap:6px;font-size:14px;cursor:pointer"><input type="radio" name="versionType" value="test" /> 测试版</label>
+                  </div>
+                </div>
+                <div class="form-group" style="margin-bottom:0">
+                  <label class="form-label">版本号 <span class="required">*</span> <span style="font-size:11px;color:#8f959e;font-weight:400;cursor:help" title="版本号规则：主版本.次版本.修订号">ⓘ</span></label>
+                  <input class="form-input" id="formVersion" value="1.0.0" style="background:#f5f6f7" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">技能描述 <span class="required">*</span></label>
+                <div style="position:relative">
+                  <textarea class="form-input form-textarea" placeholder="描述技能能力、触发词等" maxlength="150" id="descInput" oninput="updateCharCount()"></textarea>
+                  <span style="position:absolute;bottom:8px;right:12px;font-size:12px;color:#8f959e" id="charCount">0/150</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 技能文件 -->
+          <div class="detail-card">
+            <div class="detail-card-header"><h3>技能文件</h3></div>
+            <div class="detail-card-body">
+              <div class="form-group">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+                  <label class="form-label" style="margin-bottom:0">技能文件 <span class="required">*</span></label>
+                  <span style="font-size:12px;color:#8f959e" id="filePathHint"></span>
+                </div>
+                <div id="fileUploadArea" class="upload-area" onclick="simulateUpload()" style="padding:24px">
+                  <div class="upload-icon" style="font-size:28px;margin-bottom:8px">📁</div>
+                  <div class="upload-text">点击或拖拽上传 SKILL.md / .zip 文件</div>
+                  <div class="upload-hint">支持 .md / .zip 格式，大小不超过 10MB。上传后自动添加时间戳区分版本</div>
+                </div>
+                <div id="fileUploaded" style="display:none;border:1px solid #e5e6e8;border-radius:10px;padding:14px 16px;align-items:center;justify-content:space-between">
+                  <div style="display:flex;align-items:center;gap:10px">
+                    <span style="font-size:20px">📄</span>
+                    <span style="font-size:14px" id="uploadedFileName">oa_contract-1776951667571.zip</span>
+                  </div>
+                  <a style="font-size:13px;color:#3370ff;cursor:pointer;text-decoration:none" onclick="resetUpload()">重新上传</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 提示词示例 -->
+          <div class="detail-card">
+            <div class="detail-card-header"><h3>提示词示例</h3></div>
+            <div class="detail-card-body">
+              <div id="promptList">
+                <div class="prompt-item" style="margin-bottom:12px">
+                  <div style="display:flex;gap:10px;align-items:flex-start">
+                    <div style="flex:1">
+                      <label class="form-label">提示词文本 <span class="required">*</span></label>
+                      <div style="position:relative">
+                        <textarea class="form-input" style="min-height:64px;resize:vertical" placeholder="输入提示词，引导用户更好的提问" maxlength="150" oninput="this.nextElementSibling.textContent=this.value.length+'/150'"></textarea>
+                        <span style="position:absolute;bottom:8px;right:12px;font-size:12px;color:#8f959e">0/150</span>
+                      </div>
+                    </div>
+                    <div style="padding-top:22px">
+                      <div style="width:64px;height:64px;border:1px dashed #dee0e3;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:#8f959e" onclick="alert('上传提示词配图')">
+                        <span style="font-size:18px">+</span>
+                        上传图片
+                      </div>
+                    </div>
+                    <div style="padding-top:26px">
+                      <span style="font-size:18px;color:#8f959e;cursor:pointer" onclick="this.closest('.prompt-item').remove()">🗑</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button class="btn btn-secondary" onclick="addPrompt()" style="font-size:13px">+ 添加提示词</button>
+            </div>
+          </div>
+
+          <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:8px;padding-bottom:40px">
+            <button class="btn btn-secondary" onclick="backToList()">取消</button>
+            <button class="btn btn-primary" onclick="goUploadStep(2)">上传并进下一步 →</button>
+          </div>
+        </div>
+
+        <!-- 第二步：选择下发Agent -->
+        <div id="uploadStep2" style="display:none">
+          <div class="detail-card">
+            <div class="detail-card-header">
+              <h3>选择下发Agent</h3>
+              <span style="font-size:13px;color:#8f959e">已选 <span id="agentSelectCount" style="color:#3370ff;font-weight:500">0</span> 个Agent</span>
+            </div>
+            <div class="detail-card-body">
+              <p style="font-size:13px;color:#646a73;margin-bottom:16px">选择首次要安装该技能的Agent，上架后可随时在Agent管理中调整。</p>
+              <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+                <div class="search-box" style="flex:1"><span class="search-icon">🔍</span><input type="text" placeholder="搜索Agent名称..." /></div>
+                <label style="font-size:13px;cursor:pointer;display:flex;align-items:center;gap:4px"><input type="checkbox" id="selectAllAgents" onchange="toggleSelectAllAgents()" /> 全选</label>
+              </div>
+              <div style="border:1px solid #e5e6e8;border-radius:10px;overflow:hidden">
+                <table style="width:100%;border-collapse:collapse">
+                  <thead><tr style="background:#f8f9fa">
+                    <th style="padding:10px 14px;text-align:left;font-size:13px;font-weight:500;color:#646a73;border-bottom:1px solid #e5e6e8;width:36px"><input type="checkbox" onchange="toggleSelectAllAgents()" /></th>
+                    <th style="padding:10px 14px;text-align:left;font-size:13px;font-weight:500;color:#646a73;border-bottom:1px solid #e5e6e8">Agent名称</th>
+                    <th style="padding:10px 14px;text-align:left;font-size:13px;font-weight:500;color:#646a73;border-bottom:1px solid #e5e6e8">状态</th>
+                    <th style="padding:10px 14px;text-align:left;font-size:13px;font-weight:500;color:#646a73;border-bottom:1px solid #e5e6e8">当前版本</th>
+                    <th style="padding:10px 14px;text-align:left;font-size:13px;font-weight:500;color:#646a73;border-bottom:1px solid #e5e6e8">当前技能数</th>
+                  </tr></thead>
+                  <tbody>
+                    <tr><td style="padding:10px 14px;border-bottom:1px solid #f0f1f2"><input type="checkbox" class="agent-pick-check" onchange="updateAgentSelectCount()" /></td><td style="padding:10px 14px;border-bottom:1px solid #f0f1f2;font-size:14px">协同产品经理Agent-A</td><td style="padding:10px 14px;border-bottom:1px solid #f0f1f2"><span class="status status-active" style="font-size:11px"><span class="status-dot"></span>运行中</span></td><td style="padding:10px 14px;border-bottom:1px solid #f0f1f2"><span class="tag" style="background:#e8f8e8;color:#1e7e34" id="ver-a">v1.3.2</span></td><td style="padding:10px 14px;border-bottom:1px solid #f0f1f2;font-size:13px;color:#646a73">8个</td></tr>
+                    <tr><td style="padding:10px 14px;border-bottom:1px solid #f0f1f2"><input type="checkbox" class="agent-pick-check" onchange="updateAgentSelectCount()" /></td><td style="padding:10px 14px;border-bottom:1px solid #f0f1f2;font-size:14px">协同产品经理Agent-B</td><td style="padding:10px 14px;border-bottom:1px solid #f0f1f2"><span class="status status-active" style="font-size:11px"><span class="status-dot"></span>运行中</span></td><td style="padding:10px 14px;border-bottom:1px solid #f0f1f2"><span class="tag" style="background:#e8f8e8;color:#1e7e34" id="ver-b">v1.3.2</span></td><td style="padding:10px 14px;border-bottom:1px solid #f0f1f2;font-size:13px;color:#646a73">8个</td></tr>
+                    <tr><td style="padding:10px 14px;border-bottom:1px solid #f0f1f2"><input type="checkbox" class="agent-pick-check" onchange="updateAgentSelectCount()" /></td><td style="padding:10px 14px;border-bottom:1px solid #f0f1f2;font-size:14px">协同产品经理Agent-C</td><td style="padding:10px 14px;border-bottom:1px solid #f0f1f2"><span class="status status-active" style="font-size:11px"><span class="status-dot"></span>运行中</span></td><td style="padding:10px 14px;border-bottom:1px solid #f0f1f2"><span class="tag" style="background:#fff5e6;color:#e88a00" id="ver-c">v1.3.0</span></td><td style="padding:10px 14px;border-bottom:1px solid #f0f1f2;font-size:13px;color:#646a73">7个</td></tr>
+                    <tr><td style="padding:10px 14px;border-bottom:1px solid #f0f1f2"><input type="checkbox" class="agent-pick-check" onchange="updateAgentSelectCount()" /></td><td style="padding:10px 14px;border-bottom:1px solid #f0f1f2;font-size:14px">协同产品经理Agent-D</td><td style="padding:10px 14px;border-bottom:1px solid #f0f1f2"><span class="status status-active" style="font-size:11px"><span class="status-dot"></span>运行中</span></td><td style="padding:10px 14px;border-bottom:1px solid #f0f1f2"><span class="tag" style="background:#e8f8e8;color:#1e7e34" id="ver-d">v1.3.2</span></td><td style="padding:10px 14px;border-bottom:1px solid #f0f1f2;font-size:13px;color:#646a73">6个</td></tr>
+                    <tr><td style="padding:10px 14px;border-bottom:1px solid #f0f1f2"><input type="checkbox" class="agent-pick-check" onchange="updateAgentSelectCount()" /></td><td style="padding:10px 14px;border-bottom:1px solid #f0f1f2;font-size:14px">协同产品经理Agent-E</td><td style="padding:10px 14px;border-bottom:1px solid #f0f1f2"><span class="status status-active" style="font-size:11px"><span class="status-dot"></span>运行中</span></td><td style="padding:10px 14px;border-bottom:1px solid #f0f1f2"><span class="tag" style="background:#fff5e6;color:#e88a00" id="ver-e">v1.2.0</span></td><td style="padding:10px 14px;border-bottom:1px solid #f0f1f2;font-size:13px;color:#646a73">6个</td></tr>
+                    <tr><td style="padding:10px 14px"><input type="checkbox" class="agent-pick-check" onchange="updateAgentSelectCount()" /></td><td style="padding:10px 14px;font-size:14px">训虾员</td><td style="padding:10px 14px"><span class="status status-active" style="font-size:11px"><span class="status-dot"></span>运行中</span></td><td style="padding:10px 14px"><span class="tag" style="background:#e8f8e8;color:#1e7e34" id="ver-f">v1.3.2</span></td><td style="padding:10px 14px;font-size:13px;color:#646a73">5个</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-bottom:40px">
+            <span style="font-size:13px;color:#8f959e">已选择 <span id="deployCount" style="color:#3370ff;font-weight:500">0</span> 个岗位Agent</span>
+            <button class="btn btn-primary" id="uploadSubmitBtn" onclick="submitUpload()">确定下发</button>
+          </div>
+        </div>
+
+      </div>
+
+      </div> <!-- /page-skill -->
+
+    </div>
+  </div>
+</div>
+
+<!-- Partial Upgrade Modal -->
+<div class="modal-overlay" id="upgradeModal">
+  <div class="modal" style="width:680px">
+    <div class="modal-header">
+      <h2>部分升级到最新版 v1.3.2</h2>
+      <div class="modal-close" onclick="closeModal('upgradeModal')">✕</div>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:#8f959e;margin-bottom:16px">以下 Agent 尚未安装最新版本，勾选后点击「批量升级」即可推送。</p>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <div class="search-box" style="flex:1">
+          <span class="search-icon">🔍</span>
+          <input type="text" placeholder="搜索Agent名称..." id="upgradeSearch" oninput="filterAgents()" />
+        </div>
+        <label style="font-size:13px;cursor:pointer;display:flex;align-items:center;gap:4px">
+          <input type="checkbox" id="selectAllAgents" onchange="toggleSelectAll()" /> 全选
+        </label>
+      </div>
+      <div style="border:1px solid #e5e6e8;border-radius:10px;overflow:hidden">
+        <table style="width:100%;border-collapse:collapse" id="upgradeTable">
+          <thead><tr style="background:#f8f9fa">
+            <th style="padding:10px 14px;text-align:left;font-size:13px;font-weight:500;color:#646a73;border-bottom:1px solid #e5e6e8;width:36px"><input type="checkbox" id="headerCheck" onchange="toggleSelectAll()" /></th>
+            <th style="padding:10px 14px;text-align:left;font-size:13px;font-weight:500;color:#646a73;border-bottom:1px solid #e5e6e8">Agent名称</th>
+            <th style="padding:10px 14px;text-align:left;font-size:13px;font-weight:500;color:#646a73;border-bottom:1px solid #e5e6e8">当前技能版本</th>
+            <th style="padding:10px 14px;text-align:left;font-size:13px;font-weight:500;color:#646a73;border-bottom:1px solid #e5e6e8">操作</th>
+          </tr></thead>
+          <tbody id="upgradeTableBody">
+            <tr class="upgrade-row">
+              <td style="padding:10px 14px;border-bottom:1px solid #f0f1f2"><input type="checkbox" class="agent-check" /></td>
+              <td style="padding:10px 14px;border-bottom:1px solid #f0f1f2;font-size:14px" class="agent-name-cell">协同产品经理Agent-D</td>
+              <td style="padding:10px 14px;border-bottom:1px solid #f0f1f2"><span class="tag tag-version">v1.3.0</span></td>
+              <td style="padding:10px 14px;border-bottom:1px solid #f0f1f2"><button class="btn btn-ghost btn-sm" onclick="upgradeSingle(this)">升级到最新版</button></td>
+            </tr>
+            <tr class="upgrade-row">
+              <td style="padding:10px 14px;border-bottom:1px solid #f0f1f2"><input type="checkbox" class="agent-check" /></td>
+              <td style="padding:10px 14px;border-bottom:1px solid #f0f1f2;font-size:14px" class="agent-name-cell">协同产品经理Agent-E</td>
+              <td style="padding:10px 14px;border-bottom:1px solid #f0f1f2"><span class="tag tag-version">v1.2.0</span></td>
+              <td style="padding:10px 14px;border-bottom:1px solid #f0f1f2"><button class="btn btn-ghost btn-sm" onclick="upgradeSingle(this)">升级到最新版</button></td>
+            </tr>
+            <tr class="upgrade-row">
+              <td style="padding:10px 14px;border-bottom:1px solid #f0f1f2"><input type="checkbox" class="agent-check" /></td>
+              <td style="padding:10px 14px;border-bottom:1px solid #f0f1f2;font-size:14px" class="agent-name-cell">协同产品经理Agent-F</td>
+              <td style="padding:10px 14px;border-bottom:1px solid #f0f1f2"><span class="tag tag-version">v1.3.0</span></td>
+              <td style="padding:10px 14px;border-bottom:1px solid #f0f1f2"><button class="btn btn-ghost btn-sm" onclick="upgradeSingle(this)">升级到最新版</button></td>
+            </tr>
+            <tr class="upgrade-row">
+              <td style="padding:10px 14px;border-bottom:1px solid #f0f1f2"><input type="checkbox" class="agent-check" /></td>
+              <td style="padding:10px 14px;border-bottom:1px solid #f0f1f2;font-size:14px" class="agent-name-cell">协同产品经理Agent-G</td>
+              <td style="padding:10px 14px;border-bottom:1px solid #f0f1f2"><span class="tag tag-version">v1.2.0</span></td>
+              <td style="padding:10px 14px;border-bottom:1px solid #f0f1f2"><button class="btn btn-ghost btn-sm" onclick="upgradeSingle(this)">升级到最新版</button></td>
+            </tr>
+            <tr class="upgrade-row">
+              <td style="padding:10px 14px"><input type="checkbox" class="agent-check" /></td>
+              <td style="padding:10px 14px;font-size:14px" class="agent-name-cell">协同产品经理Agent-H</td>
+              <td style="padding:10px 14px"><span class="tag tag-version">v1.3.0</span></td>
+              <td style="padding:10px 14px"><button class="btn btn-ghost btn-sm" onclick="upgradeSingle(this)">升级到最新版</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="margin-top:12px;font-size:13px;color:#8f959e">已选 <span id="selectedCount" style="color:#3370ff;font-weight:500">0</span> 个 Agent</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('upgradeModal')">取消</button>
+      <button class="btn btn-primary" id="batchUpgradeBtn" onclick="batchUpgrade()" disabled>🚀 批量升级</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleDropdown() {
+  var dropdown = document.getElementById('positionDropdown');
+  if (!dropdown) return;
+  dropdown.classList.toggle('show');
+}
+function selectPosition(name) {
+  var currentPosition = document.getElementById('currentPosition');
+  var dropdown = document.getElementById('positionDropdown');
+  if (currentPosition) currentPosition.textContent = name;
+  if (dropdown) dropdown.classList.remove('show');
+}
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('show'); });
+});
+document.addEventListener('click', e => {
+  var dropdown = document.getElementById('positionDropdown');
+  if (!dropdown) return;
+  if (!e.target.closest('.dropdown')) dropdown.classList.remove('show');
+});
+
+function showDetail(type) {
+  document.getElementById('page-list').style.display = 'none';
+  document.getElementById('page-detail').classList.add('show');
+}
+function backToList() {
+  document.getElementById('page-detail').classList.remove('show');
+  document.getElementById('page-upload').classList.remove('show');
+  document.getElementById('page-list').style.display = '';
+}
+function updateCharCount() {
+  var input = document.getElementById('descInput');
+  document.getElementById('charCount').textContent = input.value.length + '/150';
+}
+function simulateUpload() {
+  var ts = Date.now();
+  var name = 'oa_skill-' + ts + '.zip';
+  document.getElementById('uploadedFileName').textContent = name;
+  document.getElementById('filePathHint').textContent = '/' + name;
+  document.getElementById('fileUploadArea').style.display = 'none';
+  var el = document.getElementById('fileUploaded');
+  el.style.display = 'flex';
+}
+function resetUpload() {
+  document.getElementById('fileUploadArea').style.display = '';
+  document.getElementById('fileUploaded').style.display = 'none';
+  document.getElementById('filePathHint').textContent = '';
+}
+function addPrompt() {
+  var html = '<div class="prompt-item" style="margin-bottom:12px"><div style="display:flex;gap:10px;align-items:flex-start"><div style="flex:1"><label class="form-label">提示词文本 <span class="required">*</span></label><div style="position:relative"><textarea class="form-input" style="min-height:64px;resize:vertical" placeholder="输入提示词，引导用户更好的提问" maxlength="150" oninput="this.nextElementSibling.textContent=this.value.length+\'/150\'"></textarea><span style="position:absolute;bottom:8px;right:12px;font-size:12px;color:#8f959e">0/150</span></div></div><div style="padding-top:22px"><div style="width:64px;height:64px;border:1px dashed #dee0e3;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:#8f959e" onclick="alert(\'\u4e0a\u4f20\u63d0\u793a\u8bcd\u914d\u56fe\')"><span style="font-size:18px">+</span>上传图片</div></div><div style="padding-top:26px"><span style="font-size:18px;color:#8f959e;cursor:pointer" onclick="this.closest(\'.prompt-item\').remove()">🗑</span></div></div></div>';
+  document.getElementById('promptList').insertAdjacentHTML('beforeend', html);
+}
+// Skill mock data for edit mode
+var skillData = {
+  contract: { name: '合同查询', version: '1.3.2', desc: '查询合同系统中的合同信息与状态，支持按合同编号、签约方、金额范围等条件搜索', file: 'oa_contract-1776800000000.zip', prompts: ['查一下合同编号HT-2026-001的状态', '找一下和华为的所有合同'] },
+  travel: { name: '差旅费用管理', version: '3.0.1', desc: '差旅申请、火车票预订、费用报销全流程管理', file: 'oa_mi_travel_fee-1776900000000.zip', prompts: ['帮我提一个去北京的差旅申请', '查一下4月10号北京到上海的火车票'] },
+  seal: { name: '合同智能审核', version: '2.0.0', desc: '合同预审、条款检查、风险识别，支持批量审核', file: 'seal_center_review-1776850000000.zip', prompts: ['帮我审核这个合同', '检查合同中的风险条款'] },
+  meeting: { name: '会议纪要生成', version: '1.0.0', desc: '基于飞书妙记生成结构化会议纪要，支持跨会议主题汇总', file: 'oa_meeting_minutes-1776951667571.zip', prompts: ['总结下今天上午的会议', '给我这周所有会议的纪要'] }
+};
+
+var isEditMode = false;
+
+function showUpdate(type) {
+  isEditMode = true;
+  var data = skillData[type];
+  document.getElementById('uploadPageTitle').textContent = '更新技能';
+  document.getElementById('uploadSubmitBtn').textContent = '保存并更新';
+  // Fill form
+  document.getElementById('formDisplayName').value = data.name;
+  document.getElementById('formVersion').value = data.version;
+  document.getElementById('formVersion').style.background = '#fff';
+  document.getElementById('descInput').value = data.desc;
+  document.getElementById('charCount').textContent = data.desc.length + '/150';
+  // Show uploaded file
+  document.getElementById('uploadedFileName').textContent = data.file;
+  document.getElementById('filePathHint').textContent = '/' + data.file;
+  document.getElementById('fileUploadArea').style.display = 'none';
+  document.getElementById('fileUploaded').style.display = 'flex';
+  // Fill prompts
+  var promptHtml = '';
+  data.prompts.forEach(function(p) {
+    promptHtml += '<div class="prompt-item" style="margin-bottom:12px"><div style="display:flex;gap:10px;align-items:flex-start"><div style="flex:1"><label class="form-label">提示词文本 <span class="required">*</span></label><div style="position:relative"><textarea class="form-input" style="min-height:64px;resize:vertical" placeholder="输入提示词，引导用户更好的提问" maxlength="150" oninput="this.nextElementSibling.textContent=this.value.length+\'/150\'">' + p + '</textarea><span style="position:absolute;bottom:8px;right:12px;font-size:12px;color:#8f959e">' + p.length + '/150</span></div></div><div style="padding-top:22px"><div style="width:64px;height:64px;border:1px dashed #dee0e3;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:#8f959e" onclick="alert(\'\u4e0a\u4f20\u63d0\u793a\u8bcd\u914d\u56fe\')"><span style="font-size:18px">+</span>上传图片</div></div><div style="padding-top:26px"><span style="font-size:18px;color:#8f959e;cursor:pointer" onclick="this.closest(\'.prompt-item\').remove()">🗑</span></div></div></div>';
+  });
+  document.getElementById('promptList').innerHTML = promptHtml;
+  // Show page
+  document.getElementById('page-list').style.display = 'none';
+  document.getElementById('page-upload').classList.add('show'); goUploadStep(1);
+  // Set demo versions for update mode
+  var verMap = { 'ver-a': 'v1.3.2', 'ver-b': 'v1.3.2', 'ver-c': 'v1.3.0', 'ver-d': 'v1.3.2', 'ver-e': 'v1.2.0', 'ver-f': 'v1.3.2' };
+  Object.keys(verMap).forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) {
+      el.textContent = verMap[id];
+      var isLatest = verMap[id] === 'v1.3.2';
+      el.style.background = isLatest ? '#e8f8e8' : '#fff5e6';
+      el.style.color = isLatest ? '#1e7e34' : '#e88a00';
+    }
+  });
+}
+function showUploadModal() {
+  isEditMode = false;
+  document.getElementById('uploadPageTitle').textContent = '上传技能';
+  document.getElementById('uploadSubmitBtn').textContent = '确定下发';
+  // Reset form
+  document.getElementById('formDisplayName').value = '';
+  document.getElementById('formVersion').value = '1.0.0';
+  document.getElementById('formVersion').style.background = '#f5f6f7';
+  document.getElementById('descInput').value = '';
+  document.getElementById('charCount').textContent = '0/150';
+  resetUpload();
+  document.getElementById('promptList').innerHTML = '<div class="prompt-item" style="margin-bottom:12px"><div style="display:flex;gap:10px;align-items:flex-start"><div style="flex:1"><label class="form-label">提示词文本 <span class="required">*</span></label><div style="position:relative"><textarea class="form-input" style="min-height:64px;resize:vertical" placeholder="输入提示词，引导用户更好的提问" maxlength="150" oninput="this.nextElementSibling.textContent=this.value.length+\'/150\'"></textarea><span style="position:absolute;bottom:8px;right:12px;font-size:12px;color:#8f959e">0/150</span></div></div><div style="padding-top:22px"><div style="width:64px;height:64px;border:1px dashed #dee0e3;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:#8f959e" onclick="alert(\'\u4e0a\u4f20\u63d0\u793a\u8bcd\u914d\u56fe\')"><span style="font-size:18px">+</span>上传图片</div></div><div style="padding-top:26px"><span style="font-size:18px;color:#8f959e;cursor:pointer" onclick="this.closest(\'.prompt-item\').remove()">🗑</span></div></div></div>';
+  document.getElementById('page-list').style.display = 'none';
+  document.getElementById('page-upload').classList.add('show'); goUploadStep(1);
+  // Reset versions for new upload
+  document.querySelectorAll("[id^=ver-]").forEach(function(el) { el.textContent = "未安装"; el.style.background = "#f0f1f2"; el.style.color = "#8f959e"; });
+}
+function submitUpload() {
+  if (isEditMode) {
+    alert('✅ 技能已更新！新版本将按下发策略推送到 Agent');
+  } else {
+    alert('✅ 技能已上传并下发到 ' + document.querySelectorAll('.agent-pick-check:checked').length + ' 个Agent！');
+  }
+  backToList();
+}
+
+// Upgrade functions
+function showUpgradeModal() { document.getElementById('upgradeModal').classList.add('show'); updateSelectedCount(); }
+function upgradeAll() {
+  if (confirm('确认将所有 Agent 升级到最新版 v1.3.2？')) alert('✅ 全部 8 个 Agent 已开始升级，预计 1 分钟内完成');
+}
+function upgradeSingle(btn) {
+  var row = btn.closest('tr');
+  row.style.opacity = '0.5';
+  btn.textContent = '升级中...';
+  btn.disabled = true;
+  setTimeout(function() {
+    row.style.opacity = '1';
+    btn.textContent = '✅ 已升级';
+    btn.style.color = '#34c759';
+    row.querySelector('.tag-version').textContent = 'v1.3.2';
+    row.querySelector('.tag-version').style.background = '#e8f8e8';
+    row.querySelector('.tag-version').style.color = '#1e7e34';
+  }, 800);
+}
+function toggleSelectAll() {
+  var checks = document.querySelectorAll('.agent-check');
+  var headerCheck = document.getElementById('headerCheck');
+  var selectAll = document.getElementById('selectAllAgents');
+  var checked = headerCheck.checked || (selectAll && selectAll.checked);
+  checks.forEach(function(c) { if (c.closest('tr').style.display !== 'none') c.checked = checked; });
+  if (headerCheck !== document.activeElement && selectAll) selectAll.checked = checked;
+  if (selectAll !== document.activeElement) headerCheck.checked = checked;
+  updateSelectedCount();
+}
+function updateSelectedCount() {
+  var count = document.querySelectorAll('.agent-check:checked').length;
+  document.getElementById('selectedCount').textContent = count;
+  document.getElementById('batchUpgradeBtn').disabled = count === 0;
+}
+function filterAgents() {
+  var query = document.getElementById('upgradeSearch').value.toLowerCase();
+  document.querySelectorAll('.upgrade-row').forEach(function(row) {
+    var name = row.querySelector('.agent-name-cell').textContent.toLowerCase();
+    row.style.display = name.includes(query) ? '' : 'none';
+  });
+}
+function batchUpgrade() {
+  var count = document.querySelectorAll('.agent-check:checked').length;
+  if (confirm('确认将已选的 ' + count + ' 个 Agent 升级到最新版 v1.3.2？')) {
+    alert('✅ ' + count + ' 个 Agent 已开始升级');
+    closeModal('upgradeModal');
+  }
+}
+document.addEventListener('change', function(e) { if (e.target.classList.contains('agent-check')) updateSelectedCount(); });
+
+// === 页面切换 ===
+var pageConfig = {
+  position: { title: '岗位管理', id: 'page-position' },
+  agent: { title: '岗位Agent', id: 'page-agent' },
+  skill: { title: 'Skill仓库', id: 'page-skill' }
+};
+function switchPage(page) {
+  var cfg = pageConfig[page];
+  if (!cfg) return;
+  // Hide all page containers
+  document.getElementById('page-position').style.display = 'none';
+  document.getElementById('page-agent').style.display = 'none';
+  document.getElementById('page-skill').style.display = 'none';
+  document.getElementById('page-agent-skill').style.display = 'none';
+  // Reset skill sub-pages
+  document.getElementById('page-detail').classList.remove('show');
+  document.getElementById('page-upload').classList.remove('show');
+  document.getElementById('page-list').style.display = '';
+  // Show target
+  document.getElementById(cfg.id).style.display = '';
+  // Update header
+  document.querySelector('.header-left h1').textContent = cfg.title;
+  // Update sidebar active
+  document.querySelectorAll('.sidebar-item').forEach(function(item) {
+    item.classList.remove('active');
+    if (item.dataset.page === page) item.classList.add('active');
+  });
+}
+
+// Agent Skill Page
+function showAgentSkill(agentName) {
+  document.getElementById('page-agent').style.display = 'none';
+  document.getElementById('page-agent-skill').style.display = '';
+  document.getElementById('askAgentName').textContent = agentName;
+  document.querySelector('.header-left h1').textContent = agentName + ' - 技能管理';
+  document.querySelectorAll('.sidebar-item').forEach(function(item) { item.classList.remove('active'); });
+  document.querySelectorAll('.sidebar-item[data-page=agent]').forEach(function(item) { item.classList.add('active'); });
+}
+function backToAgentList() {
+  document.getElementById('page-agent-skill').style.display = 'none';
+  document.getElementById('page-agent').style.display = '';
+  document.querySelector('.header-left h1').textContent = '岗位Agent';
+  document.querySelectorAll('.sidebar-item').forEach(function(item) { item.classList.remove('active'); });
+  document.querySelectorAll('.sidebar-item[data-page=agent]').forEach(function(item) { item.classList.add('active'); });
+}
+function showInstallSkillModal() {
+  document.getElementById('installSkillModal').classList.add('show');
+  document.getElementById('installSkillSearch').value = '';
+  filterInstallSkills();
+}
+function closeInstallSkillModal() {
+  document.getElementById('installSkillModal').classList.remove('show');
+}
+function toggleInstallSelectAll() {
+  var checked = document.getElementById('installSelectAll').checked;
+  document.querySelectorAll('.install-row').forEach(function(row) {
+    if (row.style.display !== 'none') {
+      row.querySelector('.install-check').checked = checked;
+    }
+  });
+  updateInstallCount();
+}
+function updateInstallCount() {
+  var count = document.querySelectorAll('.install-check:checked').length;
+  document.getElementById('installSelectCount').textContent = count;
+  document.getElementById('installConfirmBtn').disabled = count === 0;
+}
+function filterInstallSkills() {
+  var keyword = document.getElementById('installSkillSearch').value.toLowerCase();
+  var category = document.getElementById('installCategoryFilter').value;
+  document.querySelectorAll('.install-row').forEach(function(row) {
+    var text = row.textContent.toLowerCase();
+    var matchKw = !keyword || text.indexOf(keyword) > -1;
+    var matchCat = category === '全部分类' || text.indexOf(category) > -1;
+    row.style.display = (matchKw && matchCat) ? '' : 'none';
+  });
+}
+function showHistoryModal() {
+  document.getElementById('historyModal').classList.add('show');
+}
+function closeHistoryModal() {
+  document.getElementById('historyModal').classList.remove('show');
+}
+function filterInstalledSkills(keyword) {
+  keyword = keyword.toLowerCase();
+  document.querySelectorAll('#installedSkillCards > div').forEach(function(card) {
+    var text = card.textContent.toLowerCase();
+    card.style.display = (!keyword || text.indexOf(keyword) > -1) ? '' : 'none';
+  });
+}
+function filterWarehouseSkills(keyword) {
+  keyword = keyword.toLowerCase();
+  document.querySelectorAll('.warehouse-card').forEach(function(card) {
+    var name = card.getAttribute('data-name').toLowerCase();
+    card.style.display = (!keyword || name.indexOf(keyword) > -1) ? '' : 'none';
+  });
+}
+
+(function initEmbeddedCapabilitySkillWarehousePage() {
+  function mountEmbeddedCapabilitySkillWarehousePage() {
+    document.body.classList.add('embedded-capability-skill-warehouse-mode');
+    switchPage('skill');
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', mountEmbeddedCapabilitySkillWarehousePage, {
+      once: true,
+    });
+  } else {
+    mountEmbeddedCapabilitySkillWarehousePage();
+  }
+})();
+function confirmInstallSkills() {
+  var count = document.querySelectorAll('.install-check:checked').length;
+  if (count === 0) return;
+  alert('✅ 已选 ' + count + ' 个技能，安装请求已提交！');
+  closeInstallSkillModal();
+}
+
+// More dropdown
+function toggleMore(el) {
+  document.querySelectorAll('.more-wrap.open').forEach(function(o) { if (o !== el) o.classList.remove('open'); });
+  el.classList.toggle('open');
+}
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.more-wrap')) document.querySelectorAll('.more-wrap.open').forEach(function(o) { o.classList.remove('open'); });
+});
+
+// Upload steps
+function goUploadStep(n) {
+  document.getElementById('uploadStep1').style.display = n === 1 ? '' : 'none';
+  document.getElementById('uploadStep2').style.display = n === 2 ? '' : 'none';
+  document.getElementById('uploadStep1Tab').style.color = n === 1 ? '#3370ff' : '#8f959e';
+  document.getElementById('uploadStep1Tab').style.borderBottomColor = n === 1 ? '#3370ff' : '#e5e6e8';
+  document.getElementById('uploadStep1Tab').style.fontWeight = n === 1 ? '500' : '400';
+  document.getElementById('uploadStep2Tab').style.color = n === 2 ? '#3370ff' : '#8f959e';
+  document.getElementById('uploadStep2Tab').style.borderBottomColor = n === 2 ? '#3370ff' : '#e5e6e8';
+  document.getElementById('uploadStep2Tab').style.fontWeight = n === 2 ? '500' : '400';
+}
+function toggleSelectAllAgents() {
+  var checked = document.getElementById('selectAllAgents').checked;
+  document.querySelectorAll('.agent-pick-check').forEach(function(cb) { cb.checked = checked; });
+  updateAgentSelectCount();
+}
+function updateAgentSelectCount() {
+  var count = document.querySelectorAll('.agent-pick-check:checked').length;
+  document.getElementById('agentSelectCount').textContent = count;
+  document.getElementById('deployCount').textContent = count;
+}
+
+</script>
+
+</body>
+</html>

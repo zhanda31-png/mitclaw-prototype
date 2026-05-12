@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cron 管理 - 新建流程草图</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --panel: #ffffff;
+      --line: #e6ebf2;
+      --line-strong: #d7dfeb;
+      --text: #1f2329;
+      --subtext: #667085;
+      --blue: #3370ff;
+      --blue-soft: #eef4ff;
+      --green: #16a34a;
+      --green-soft: #effcf3;
+      --orange: #f59e0b;
+      --orange-soft: #fff7ea;
+      --red: #e5484d;
+      --red-soft: #fff1f1;
+      --radius: 18px;
+      --shadow: 0 18px 36px rgba(15, 23, 42, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(51, 112, 255, 0.08), transparent 24%),
+        linear-gradient(180deg, #f8fafc 0%, #f3f6fb 100%);
+    }
+
+    .page {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 72px 248px 1fr;
+    }
+
+    .primary-nav {
+      background: #111827;
+      color: rgba(255, 255, 255, 0.74);
+      padding: 18px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .primary-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .primary-item {
+      width: 48px;
+      border-radius: 14px;
+      padding: 10px 0 8px;
+      text-align: center;
+      font-size: 11px;
+      line-height: 1.25;
+      cursor: default;
+    }
+
+    .primary-item strong {
+      display: block;
+      font-size: 18px;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .primary-item.is-active {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+    }
+
+    .secondary-nav {
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(14px);
+      border-right: 1px solid rgba(217, 225, 237, 0.94);
+      padding: 24px 18px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .agent-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      padding: 16px;
+      box-shadow: 0 10px 22px rgba(51, 112, 255, 0.06);
+    }
+
+    .agent-card .label {
+      font-size: 12px;
+      color: var(--subtext);
+      margin-bottom: 8px;
+    }
+
+    .agent-card .name {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .agent-card .desc {
+      font-size: 13px;
+      color: var(--subtext);
+      line-height: 1.6;
+    }
+
+    .nav-group-title {
+      font-size: 12px;
+      color: #8a94a6;
+      margin-bottom: 10px;
+      padding-left: 10px;
+    }
+
+    .nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      color: #445066;
+      font-size: 14px;
+      background: transparent;
+    }
+
+    .nav-item .left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-item.is-active {
+      background: var(--blue-soft);
+      color: var(--blue);
+      font-weight: 600;
+    }
+
+    .nav-item .tag {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #eef2f7;
+      color: #6b7280;
+    }
+
+    .content {
+      padding: 24px;
+      overflow: auto;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .topbar h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+      line-height: 1.12;
+    }
+
+    .topbar p {
+      margin: 0;
+      max-width: 760px;
+      color: var(--subtext);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .topbar-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.04);
+    }
+
+    .btn-primary {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #fff;
+    }
+
+    .btn-ghost-blue {
+      border-color: #cfe0ff;
+      background: #f8fbff;
+      color: var(--blue);
+    }
+
+    .stepper {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .step-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.88);
+      font-size: 13px;
+      color: #4a5568;
+      box-shadow: 0 10px 18px rgba(31, 35, 41, 0.04);
+    }
+
+    .step-pill.active {
+      background: var(--blue-soft);
+      border-color: #cfe0ff;
+      color: var(--blue);
+      font-weight: 600;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(360px, 0.9fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 16px 18px;
+      border-bottom: 1px solid #eef2f7;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .panel-head h2 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .panel-head p {
+      margin: 4px 0 0;
+      font-size: 12px;
+      color: var(--subtext);
+    }
+
+    .panel-body {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .hero-card {
+      border: 1px solid #d9e6ff;
+      background: linear-gradient(180deg, #f7fbff 0%, #ffffff 100%);
+      border-radius: 18px;
+      padding: 18px;
+    }
+
+    .hero-card strong {
+      display: block;
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    .hero-card p {
+      margin: 0 0 14px;
+      font-size: 13px;
+      color: var(--subtext);
+      line-height: 1.7;
+    }
+
+    .prompt-box {
+      border: 1px solid var(--line-strong);
+      background: #fff;
+      border-radius: 16px;
+      padding: 14px 14px 12px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    }
+
+    .prompt-box textarea {
+      width: 100%;
+      min-height: 108px;
+      resize: vertical;
+      border: none;
+      outline: none;
+      font: inherit;
+      font-size: 16px;
+      line-height: 1.75;
+      color: var(--text);
+    }
+
+    .prompt-box .footer {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #eef2f7;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .hint {
+      font-size: 12px;
+      color: #7a8699;
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .chip {
+      border: 1px solid #d9e6ff;
+      background: #f7fbff;
+      color: #3565c2;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .mode-switch {
+      display: inline-flex;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      gap: 4px;
+    }
+
+    .mode-switch button {
+      border: none;
+      background: transparent;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      color: #667085;
+      cursor: pointer;
+    }
+
+    .mode-switch button.active {
+      background: var(--blue-soft);
+      color: var(--blue);
+      font-weight: 600;
+    }
+
+    .section {
+      border: 1px solid #eef2f7;
+      border-radius: 16px;
+      padding: 16px;
+      background: #fff;
+    }
+
+    .section h3 {
+      margin: 0 0 12px;
+      font-size: 14px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .mini-card {
+      border: 1px solid #e9eef5;
+      border-radius: 14px;
+      padding: 14px;
+      background: #fcfdff;
+    }
+
+    .mini-card .label {
+      font-size: 12px;
+      color: #7a8699;
+      margin-bottom: 8px;
+    }
+
+    .mini-card .value {
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.6;
+    }
+
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .list-item {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border: 1px solid #e9eef5;
+      border-radius: 14px;
+      background: #fff;
+    }
+
+    .list-item .main strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 13px;
+    }
+
+    .list-item .main span {
+      font-size: 12px;
+      color: var(--subtext);
+      line-height: 1.65;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .badge-blue {
+      background: var(--blue-soft);
+      color: var(--blue);
+    }
+
+    .badge-green {
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .badge-orange {
+      background: var(--orange-soft);
+      color: #b7791f;
+    }
+
+    .badge-red {
+      background: var(--red-soft);
+      color: var(--red);
+    }
+
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 30px 1fr;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .dot {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      font-weight: 700;
+      background: #eef2ff;
+      color: var(--blue);
+      margin-top: 2px;
+    }
+
+    .dot.success {
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .dot.pending {
+      background: var(--orange-soft);
+      color: #b7791f;
+    }
+
+    .timeline-item strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 13px;
+    }
+
+    .timeline-item span {
+      font-size: 12px;
+      color: var(--subtext);
+      line-height: 1.65;
+    }
+
+    .side-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .status-card {
+      border: 1px solid #d9e6ff;
+      background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .status-card strong {
+      display: block;
+      font-size: 15px;
+      margin-bottom: 8px;
+    }
+
+    .status-card p {
+      margin: 0;
+      font-size: 13px;
+      color: var(--subtext);
+      line-height: 1.7;
+    }
+
+    .preview-table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid #eef2f7;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .preview-table th,
+    .preview-table td {
+      padding: 10px 12px;
+      font-size: 12px;
+      border-bottom: 1px solid #f1f4f8;
+      text-align: left;
+    }
+
+    .preview-table th {
+      background: #fbfcfe;
+      color: #788496;
+    }
+
+    .risk-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .risk-item {
+      border-radius: 14px;
+      padding: 12px 14px;
+      border: 1px solid #fbe0a4;
+      background: #fffaf0;
+    }
+
+    .risk-item strong {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 4px;
+      color: #8b6a1f;
+    }
+
+    .risk-item span {
+      font-size: 12px;
+      color: #8b6a1f;
+      line-height: 1.65;
+    }
+
+    .footer-actions {
+      margin-top: 2px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 1420px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 1160px) {
+      .page {
+        grid-template-columns: 72px 220px 1fr;
+      }
+
+      .cards {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <aside class="primary-nav">
+      <div class="primary-logo">虾</div>
+      <div class="primary-item">
+        <strong>⌂</strong>
+        首页
+      </div>
+      <div class="primary-item">
+        <strong>◎</strong>
+        高管虾
+      </div>
+      <div class="primary-item">
+        <strong>◌</strong>
+        个人虾
+      </div>
+      <div class="primary-item is-active">
+        <strong>🦐</strong>
+        岗位虾
+      </div>
+      <div class="primary-item">
+        <strong>✦</strong>
+        技能市场
+      </div>
+      <div class="primary-item">
+        <strong>⌘</strong>
+        开发者
+      </div>
+    </aside>
+
+    <aside class="secondary-nav">
+      <div class="agent-card">
+        <div class="label">当前岗位虾</div>
+        <div class="name">训虾员</div>
+        <div class="desc">岗位训练、效果回看、配置巡检与内容同步都由该岗位虾负责。</div>
+      </div>
+
+      <div>
+        <div class="nav-group-title">基础配置</div>
+        <div class="nav-list">
+          <div class="nav-item"><div class="left"><span>▣</span><span>基础信息</span></div></div>
+          <div class="nav-item"><div class="left"><span>▤</span><span>岗位说明书</span></div></div>
+          <div class="nav-item"><div class="left"><span>◫</span><span>个性化配置</span></div></div>
+          <div class="nav-item"><div class="left"><span>◍</span><span>协作者管理</span></div></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="nav-group-title">能力配置</div>
+        <div class="nav-list">
+          <div class="nav-item"><div class="left"><span>✦</span><span>Skill 管理</span></div></div>
+          <div class="nav-item is-active">
+            <div class="left"><span>⏲</span><span>Cron 管理</span></div>
+            <span class="tag">创建流</span>
+          </div>
+          <div class="nav-item"><div class="left"><span>⬢</span><span>容器管理</span></div></div>
+          <div class="nav-item"><div class="left"><span>⚙</span><span>策略管理</span></div></div>
+          <div class="nav-item"><div class="left"><span>☰</span><span>知识库</span></div></div>
+          <div class="nav-item"><div class="left"><span>🛡</span><span>网络白名单</span></div></div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="content">
+      <div class="topbar">
+        <div>
+          <h1>新建 Cron</h1>
+          <p>这版草图聚焦“一句话创建 -> 系统解析 -> 用户确认 -> 校验并注册”的最小闭环。默认用自然语言建任务，Cron 表达式只作为高级信息展示，不作为第一输入项。</p>
+        </div>
+        <div class="topbar-actions">
+          <div class="mode-switch" aria-label="创建模式">
+            <button class="active">自然语言创建</button>
+            <button>高级模式</button>
+          </div>
+          <button class="btn">返回列表</button>
+        </div>
+      </div>
+
+      <div class="stepper">
+        <div class="step-pill active">1. 描述任务</div>
+        <div class="step-pill active">2. 解析结果</div>
+        <div class="step-pill">3. 校验有效性</div>
+        <div class="step-pill">4. 保存并注册</div>
+      </div>
+
+      <section class="grid">
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>创建主流程</h2>
+              <p>先输入自然语言，再让系统把任务转成结构化配置。</p>
+            </div>
+            <button class="btn btn-ghost-blue" id="toggleStageBtn">切换到解析后</button>
+          </div>
+
+          <div class="panel-body" id="stagePrompt">
+            <div class="hero-card">
+              <strong>先告诉系统你希望它什么时候做什么</strong>
+              <p>建议一句话里同时带上时间、动作和结果去向。系统会自动拆解成任务内容、调度规则、执行配置和通知方式。</p>
+              <div class="prompt-box">
+                <textarea aria-label="自然语言任务描述">每天工作日早上 9 点生成训练日报，汇总前一天完成情况和失败原因，并发给训虾员日报群。</textarea>
+                <div class="footer">
+                  <div class="hint">提示：一句话至少带上“做什么 + 什么时候 + 结果发给谁”</div>
+                  <button class="btn btn-primary" id="parseBtn">解析任务</button>
+                </div>
+              </div>
+            </div>
+
+            <section class="section">
+              <h3>示例输入</h3>
+              <div class="chip-row">
+                <div class="chip">每周一上午 10 点巡检策略配置，有异常就提醒协作者</div>
+                <div class="chip">每 30 分钟同步一次知识库增量内容，失败后自动重试 2 次</div>
+                <div class="chip">每晚 10 点补跑当天失败的训练任务，并把结果回写到日报</div>
+              </div>
+            </section>
+
+            <section class="section">
+              <h3>系统会自动补出的信息</h3>
+              <div class="cards">
+                <div class="mini-card">
+                  <div class="label">任务内容</div>
+                  <div class="value">识别“生成训练日报”，自动归类成日报汇总任务。</div>
+                </div>
+                <div class="mini-card">
+                  <div class="label">调度规则</div>
+                  <div class="value">识别“每天工作日早上 9 点”，自动生成可读规则和 Cron 表达式。</div>
+                </div>
+                <div class="mini-card">
+                  <div class="label">执行对象</div>
+                  <div class="value">识别需要调用的能力、数据源和目标群组。</div>
+                </div>
+                <div class="mini-card">
+                  <div class="label">运行保障</div>
+                  <div class="value">识别失败处理、重试和通知补充项。</div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <div class="panel-body hidden" id="stageConfirm">
+            <section class="section">
+              <h3>解析结果</h3>
+              <div class="cards">
+                <div class="mini-card">
+                  <div class="label">任务名称</div>
+                  <div class="value">训练日报汇总</div>
+                </div>
+                <div class="mini-card">
+                  <div class="label">任务类型</div>
+                  <div class="value">日报汇总</div>
+                </div>
+                <div class="mini-card">
+                  <div class="label">调度规则</div>
+                  <div class="value">工作日 09:00 执行</div>
+                </div>
+                <div class="mini-card">
+                  <div class="label">高级 Cron</div>
+                  <div class="value"><code>0 9 * * 1-5</code></div>
+                </div>
+              </div>
+            </section>
+
+            <section class="section">
+              <h3>用户确认区</h3>
+              <div class="list">
+                <div class="list-item">
+                  <div class="main">
+                    <strong>任务内容</strong>
+                    <span>生成前一天训练日报，包含完成情况、失败原因和补偿建议。</span>
+                  </div>
+                  <span class="badge badge-blue">已识别</span>
+                </div>
+                <div class="list-item">
+                  <div class="main">
+                    <strong>执行对象</strong>
+                    <span>训练日报生成器 + 训练结果数据源 + 日报模板。</span>
+                  </div>
+                  <span class="badge badge-blue">已识别</span>
+                </div>
+                <div class="list-item">
+                  <div class="main">
+                    <strong>结果去向</strong>
+                    <span>训虾员日报群</span>
+                  </div>
+                  <span class="badge badge-green">已补齐</span>
+                </div>
+                <div class="list-item">
+                  <div class="main">
+                    <strong>失败处理</strong>
+                    <span>建议增加“失败后 10 分钟重试 2 次，并通知协作者”。</span>
+                  </div>
+                  <span class="badge badge-orange">待确认</span>
+                </div>
+              </div>
+            </section>
+
+            <section class="section">
+              <h3>有效性校验</h3>
+              <div class="timeline">
+                <div class="timeline-item">
+                  <div class="dot success">1</div>
+                  <div>
+                    <strong>意图校验</strong>
+                    <span>已识别出“做什么、什么时候、结果发给谁”三项核心信息。</span>
+                  </div>
+                </div>
+                <div class="timeline-item">
+                  <div class="dot success">2</div>
+                  <div>
+                    <strong>调度校验</strong>
+                    <span>工作日 09:00 合法，时区使用 Asia/Shanghai，频率在允许范围内。</span>
+                  </div>
+                </div>
+                <div class="timeline-item">
+                  <div class="dot pending">3</div>
+                  <div>
+                    <strong>执行校验</strong>
+                    <span>待确认训练结果数据源权限和目标群组权限，确认后可进行模拟执行。</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <div class="footer-actions">
+              <button class="btn" id="backToPromptBtn">返回修改描述</button>
+              <button class="btn">保存草稿</button>
+              <button class="btn btn-primary">继续校验</button>
+            </div>
+          </div>
+        </section>
+
+        <aside class="side-stack">
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>校验与预览</h2>
+                <p>注册前先让用户看到“未来会怎么跑”。</p>
+              </div>
+            </div>
+            <div class="panel-body">
+              <div class="status-card">
+                <strong>建议默认提供两类预览</strong>
+                <p>一类是未来执行时间预览，另一类是模拟执行结果。这样用户看到的不只是表达式正确，而是这条任务会真的按预期产出结果。</p>
+              </div>
+
+              <section class="section">
+                <h3>未来 5 次执行时间</h3>
+                <table class="preview-table">
+                  <thead>
+                    <tr>
+                      <th>序号</th>
+                      <th>预计触发时间</th>
+                      <th>备注</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>1</td>
+                      <td>2026-05-12 09:00</td>
+                      <td>周二</td>
+                    </tr>
+                    <tr>
+                      <td>2</td>
+                      <td>2026-05-13 09:00</td>
+                      <td>周三</td>
+                    </tr>
+                    <tr>
+                      <td>3</td>
+                      <td>2026-05-14 09:00</td>
+                      <td>周四</td>
+                    </tr>
+                    <tr>
+                      <td>4</td>
+                      <td>2026-05-15 09:00</td>
+                      <td>周五</td>
+                    </tr>
+                    <tr>
+                      <td>5</td>
+                      <td>2026-05-18 09:00</td>
+                      <td>下周一</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+
+              <section class="section">
+                <h3>模拟执行结果</h3>
+                <div class="list">
+                  <div class="list-item">
+                    <div class="main">
+                      <strong>生成内容预览</strong>
+                      <span>会输出日报摘要、失败任务数、异常分布和补偿建议。</span>
+                    </div>
+                    <span class="badge badge-green">可预览</span>
+                  </div>
+                  <div class="list-item">
+                    <div class="main">
+                      <strong>发送目标</strong>
+                      <span>训虾员日报群，当前已识别群组存在。</span>
+                    </div>
+                    <span class="badge badge-green">已通过</span>
+                  </div>
+                  <div class="list-item">
+                    <div class="main">
+                      <strong>数据源检查</strong>
+                      <span>训练结果数据源可读，但失败任务补偿明细权限待确认。</span>
+                    </div>
+                    <span class="badge badge-orange">待补齐</span>
+                  </div>
+                </div>
+              </section>
+
+              <section class="section">
+                <h3>风险提示</h3>
+                <div class="risk-list">
+                  <div class="risk-item">
+                    <strong>目标群组已识别，但通知权限需确认</strong>
+                    <span>建议在保存并注册前补一条权限确认，避免注册成功后首轮发送失败。</span>
+                  </div>
+                  <div class="risk-item">
+                    <strong>失败补偿策略尚未确认</strong>
+                    <span>建议默认增加“失败后 10 分钟重试 2 次”，减少静默失败风险。</span>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </section>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const stagePrompt = document.getElementById("stagePrompt");
+    const stageConfirm = document.getElementById("stageConfirm");
+    const parseBtn = document.getElementById("parseBtn");
+    const toggleStageBtn = document.getElementById("toggleStageBtn");
+    const backToPromptBtn = document.getElementById("backToPromptBtn");
+
+    function showConfirmStage() {
+      stagePrompt.classList.add("hidden");
+      stageConfirm.classList.remove("hidden");
+      toggleStageBtn.textContent = "切换到描述态";
+    }
+
+    function showPromptStage() {
+      stageConfirm.classList.add("hidden");
+      stagePrompt.classList.remove("hidden");
+      toggleStageBtn.textContent = "切换到解析后";
+    }
+
+    parseBtn.addEventListener("click", showConfirmStage);
+    backToPromptBtn.addEventListener("click", showPromptStage);
+    toggleStageBtn.addEventListener("click", () => {
+      if (stageConfirm.classList.contains("hidden")) {
+        showConfirmStage();
+      } else {
+        showPromptStage();
+      }
+    });
+  </script>
+</body>
+</html>

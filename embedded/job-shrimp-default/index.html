@@ -1,0 +1,4605 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>岗位虾列表 - 设计稿 V2</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #F5F8FC;
+      color: #161A2D;
+      line-height: 1.5;
+    }
+
+    /* 页面容器 */
+    .page-container {
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* 主内容区 */
+    .main-content {
+      flex: 1;
+      padding: 24px;
+    }
+
+    /* 页面头部 */
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .page-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #161A2D;
+    }
+
+    .btn-primary {
+      background: #2660FF;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+
+    .btn-primary:hover {
+      background: #4078FF;
+    }
+
+    .btn-secondary {
+      background: #fff;
+      color: #161A2D;
+      border: 1px solid #d0d5dd;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover {
+      background: #F5F8FC;
+      border-color: #2660FF;
+      color: #2660FF;
+    }
+
+    /* 卡片 */
+    .card {
+      background: white;
+      border-radius: 12px;
+      border: 1px solid #E4ECF8;
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #F0F4FA;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #161A2D;
+    }
+
+    .card-extra {
+      color: #2660FF;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .card-body {
+      padding: 20px;
+    }
+
+    /* 快捷入口 */
+    .quick-entries {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+      align-items: stretch;
+    }
+
+    .quick-entry-card {
+      background: white;
+      border-radius: 12px;
+      border: 1px solid #E4ECF8;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .quick-entry-card:hover {
+      border-color: #2660FF;
+      box-shadow: 0 4px 12px rgba(38, 96, 255, 0.1);
+    }
+
+    .quick-entry-card.active {
+      border-color: #2660FF;
+      background: #F5F8FF;
+    }
+
+    .quick-entry-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .quick-entry-icon svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .quick-entry-icon img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .quick-entry-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .quick-entry-title {
+      font-size: 14px;
+      color: #576477;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .quick-entry-count {
+      font-size: clamp(28px, 2.4vw, 32px);
+      font-weight: 600;
+      color: #161A2D;
+      line-height: 1.1;
+    }
+
+    /* 状态标签 */
+    .status-tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      width: 72px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      box-sizing: border-box;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .status-tag-icon {
+      width: 14px;
+      height: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .status-tag.primary .status-tag-icon {
+      background: rgba(140, 147, 179, 0.18);
+      color: #8C93B3;
+    }
+
+    .status-tag.danger .status-tag-icon {
+      background: rgba(255, 77, 79, 0.14);
+      color: #FF4D4F;
+    }
+
+    .status-tag.success {
+      background: #E6F7ED;
+      color: #00B259;
+    }
+
+    .status-tag.warning {
+      background: #FFF4E6;
+      color: #FF8800;
+    }
+
+    .status-tag.default {
+      background: #F0F4FA;
+      color: #8C93B3;
+    }
+
+    .status-tag.primary {
+      background: #F0F4FA;
+      color: #8C93B3;
+    }
+
+    .status-tag.danger {
+      background: #FFECE8;
+      color: #FF4D4F;
+    }
+
+    /* 筛选区 */
+    .filter-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .filter-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: white;
+      border: 1px solid #E4ECF8;
+      border-radius: 6px;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    .filter-item:hover {
+      border-color: #2660FF;
+    }
+
+    .filter-item.active {
+      border-color: #2660FF;
+      background: #F5F8FF;
+    }
+
+    .filter-label {
+      color: #576477;
+      font-size: 14px;
+    }
+
+    .filter-arrow {
+      color: #8C93B3;
+      transition: transform 0.2s;
+    }
+
+    .filter-arrow svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    .filter-item.active .filter-arrow {
+      transform: rotate(180deg);
+    }
+
+    /* 筛选下拉面板 */
+    .filter-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      min-width: 220px;
+      background: white;
+      border-radius: 8px;
+      border: 1px solid #E4ECF8;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+      z-index: 100;
+      margin-top: 4px;
+      display: none;
+    }
+
+    .filter-dropdown.show {
+      display: block;
+    }
+
+    .filter-dropdown-search {
+      padding: 12px;
+      border-bottom: 1px solid #F0F4FA;
+    }
+
+    .filter-dropdown-search input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #E4ECF8;
+      border-radius: 6px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .filter-dropdown-search input:focus {
+      border-color: #2660FF;
+    }
+
+    .filter-dropdown-list {
+      max-height: 240px;
+      overflow-y: auto;
+      padding: 8px 0;
+    }
+
+    .filter-dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .filter-dropdown-item:hover {
+      background: #F5F8FC;
+    }
+
+    .filter-dropdown-item input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #2660FF;
+      cursor: pointer;
+    }
+
+    .filter-dropdown-item label {
+      font-size: 14px;
+      color: #161A2D;
+      cursor: pointer;
+      flex: 1;
+    }
+
+    .filter-dropdown-footer {
+      padding: 12px 16px;
+      border-top: 1px solid #F0F4FA;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .filter-select-all {
+      color: #2660FF;
+      font-size: 14px;
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
+
+    .filter-select-all:hover {
+      text-decoration: underline;
+    }
+
+    /* 筛选项容器 */
+    .filter-item-wrapper {
+      position: relative;
+    }
+
+    .btn-line {
+      background: white;
+      color: #576477;
+      border: 1px solid #E4ECF8;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      position: relative;
+      transition: all 0.2s;
+    }
+
+    .btn-line:hover {
+      border-color: #2660FF;
+      color: #2660FF;
+    }
+
+    .btn-line[data-tooltip]::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 10px);
+      transform: translateX(-50%) translateY(4px);
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: rgba(22, 26, 45, 0.96);
+      color: #fff;
+      font-size: 12px;
+      line-height: 1.4;
+      white-space: nowrap;
+      box-shadow: 0 8px 20px rgba(22, 26, 45, 0.18);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .16s ease, transform .16s ease;
+      z-index: 20;
+    }
+
+    .btn-line[data-tooltip]::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 4px);
+      width: 8px;
+      height: 8px;
+      background: rgba(22, 26, 45, 0.96);
+      transform: translateX(-50%) rotate(45deg);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .16s ease;
+      z-index: 19;
+    }
+
+    .btn-line[data-tooltip]:hover::after,
+    .btn-line[data-tooltip]:hover::before {
+      opacity: 1;
+    }
+
+    .btn-line[data-tooltip]:hover::after {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .btn-line svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* 表格 */
+    .table-container {
+      overflow-x: auto;
+      overflow-y: visible;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      min-width: 1600px;
+    }
+
+    th {
+      background: #F8FAFC;
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 500;
+      color: #576477;
+      border-bottom: 1px solid #E4ECF8;
+      white-space: nowrap;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid #F0F4FA;
+      font-size: 14px;
+      color: #161A2D;
+      white-space: nowrap;
+    }
+
+    /* 固定第一列（数字员工姓名） */
+    th:first-child,
+    td:first-child {
+      position: sticky;
+      left: 0;
+      z-index: 2;
+      background: white;
+      box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
+    }
+
+    th:first-child {
+      background: #F8FAFC;
+    }
+
+    /* 固定最后一列（操作） */
+    th:last-child,
+    td:last-child {
+      position: sticky;
+      right: 0;
+      z-index: 2;
+      background: white;
+      box-shadow: -2px 0 4px rgba(0, 0, 0, 0.05);
+    }
+
+    th:last-child {
+      background: #F8FAFC;
+    }
+
+    tr:hover td {
+      background: #F8FAFC;
+    }
+
+    tr:hover td:first-child,
+    tr:hover td:last-child {
+      background: #F8FAFC;
+    }
+
+    .table-name {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      white-space: nowrap;
+    }
+
+    .table-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .table-link {
+      color: #2660FF;
+      cursor: pointer;
+    }
+
+    .table-link:hover {
+      text-decoration: underline;
+    }
+
+    /* 标签容器 - 隐藏滚动条 */
+    .tag-container {
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .tag-container::-webkit-scrollbar {
+      display: none;
+    }
+
+    .table-space {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #2660FF;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .table-space:hover {
+      text-decoration: underline;
+    }
+
+    .table-space svg {
+      width: 14px;
+      height: 14px;
+      color: #8C93B3;
+    }
+
+    .table-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 24px;
+      white-space: nowrap;
+    }
+
+    .table-action {
+      position: relative;
+      color: #2660FF;
+      cursor: pointer;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      white-space: nowrap;
+    }
+
+    .table-action:hover {
+      text-decoration: underline;
+    }
+
+    .table-action svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .table-action[data-tooltip]::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 10px);
+      transform: translateX(-50%) translateY(4px);
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: rgba(22, 26, 45, 0.96);
+      color: #fff;
+      font-size: 12px;
+      line-height: 1.4;
+      white-space: nowrap;
+      box-shadow: 0 8px 20px rgba(22, 26, 45, 0.18);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .16s ease, transform .16s ease;
+      z-index: 20;
+    }
+
+    .table-action[data-tooltip]::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 4px);
+      width: 8px;
+      height: 8px;
+      background: rgba(22, 26, 45, 0.96);
+      transform: translateX(-50%) rotate(45deg);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .16s ease;
+      z-index: 19;
+    }
+
+    .table-action[data-tooltip]:hover::after,
+    .table-action[data-tooltip]:hover::before {
+      opacity: 1;
+    }
+
+    .table-action[data-tooltip]:hover::after {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .table-action-icon {
+      width: 20px;
+      height: 20px;
+      justify-content: center;
+      border-radius: 6px;
+      flex-shrink: 0;
+    }
+
+    .table-action-icon:hover {
+      text-decoration: none;
+      background: #F5F8FF;
+    }
+
+    .table-cell-actions {
+      width: 92px;
+    }
+
+    /* 弹窗 */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal {
+      background: white;
+      border-radius: 12px;
+      width: 480px;
+      max-height: 80vh;
+      overflow: hidden;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .modal-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid #F0F4FA;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #161A2D;
+    }
+
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      color: #8C93B3;
+    }
+
+    .modal-close:hover {
+      background: #F5F8FC;
+      color: #161A2D;
+    }
+
+    .modal-body {
+      padding: 24px;
+    }
+
+    .space-info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .space-info-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .space-info-label {
+      font-size: 12px;
+      color: #8C93B3;
+    }
+
+    .space-info-value {
+      font-size: 14px;
+      color: #161A2D;
+      font-weight: 500;
+    }
+
+    .space-info-input {
+      background: #F8FAFC;
+      border: 1px solid #E4ECF8;
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-size: 14px;
+      color: #161A2D;
+    }
+
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid #F0F4FA;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    .btn-default {
+      background: white;
+      color: #576477;
+      border: 1px solid #E4ECF8;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-default:hover {
+      border-color: #2660FF;
+      color: #2660FF;
+    }
+
+    /* 分页 */
+    .pagination {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 16px 0;
+      border-top: 1px solid #F0F4FA;
+      margin-top: 16px;
+    }
+
+    .pagination-info {
+      color: #576477;
+      font-size: 14px;
+      margin-right: auto;
+      font-weight: 500;
+    }
+
+    .pagination-btn {
+      min-width: 32px;
+      height: 32px;
+      border: 1px solid #E4ECF8;
+      border-radius: 6px;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 14px;
+      color: #576477;
+      padding: 0 8px;
+    }
+
+    .pagination-btn:hover {
+      border-color: #2660FF;
+      color: #2660FF;
+    }
+
+    .pagination-btn.active {
+      background: #2660FF;
+      border-color: #2660FF;
+      color: white;
+      font-weight: 500;
+    }
+
+    .pagination-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .pagination-btn.disabled {
+      color: #C9CDD8;
+      cursor: not-allowed;
+      border-color: #E4ECF8;
+      background: #F8FAFC;
+    }
+
+    .pagination-ellipsis {
+      color: #8C93B3;
+      font-size: 14px;
+      padding: 0 4px;
+      letter-spacing: 2px;
+    }
+
+    .pagination-size {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: 8px;
+      padding-left: 12px;
+      border-left: 1px solid #E4ECF8;
+    }
+
+    .pagination-size-label {
+      color: #576477;
+      font-size: 14px;
+    }
+
+    .pagination-size-select {
+      border: 1px solid #E4ECF8;
+      border-radius: 6px;
+      padding: 6px 28px 6px 10px;
+      font-size: 14px;
+      color: #161A2D;
+      background: white;
+      cursor: pointer;
+      outline: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%238C93B3' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+    }
+
+    .pagination-size-select:hover {
+      border-color: #2660FF;
+    }
+
+    /* 字段管理侧边栏 */
+    .drawer-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.45);
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s;
+    }
+
+    .drawer-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 400px;
+      height: 100vh;
+      background: white;
+      box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1);
+      z-index: 1001;
+      transform: translateX(100%);
+      transition: transform 0.3s;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .drawer.show {
+      transform: translateX(0);
+    }
+
+    .drawer-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid #F0F4FA;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .drawer-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #161A2D;
+    }
+
+    .drawer-close {
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      color: #8C93B3;
+    }
+
+    .drawer-close:hover {
+      background: #F5F8FC;
+      color: #161A2D;
+    }
+
+    .drawer-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 24px;
+    }
+
+    .drawer-footer {
+      padding: 16px 24px;
+      border-top: 1px solid #F0F4FA;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    /* 字段列表 */
+    .field-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .field-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .field-item:hover {
+      background: #F5F8FC;
+    }
+
+    .field-item.dragging {
+      background: #E5ECFF;
+      opacity: 0.8;
+    }
+
+    .field-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #2660FF;
+      cursor: pointer;
+    }
+
+    .field-item label {
+      flex: 1;
+      font-size: 14px;
+      color: #161A2D;
+      cursor: pointer;
+    }
+
+    .field-drag-handle {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2px;
+      cursor: grab;
+      padding: 2px;
+    }
+
+    .field-drag-handle:active {
+      cursor: grabbing;
+    }
+
+    .drag-dot {
+      width: 4px;
+      height: 4px;
+      background: #8C93B3;
+      border-radius: 50%;
+    }
+
+    .field-all-item {
+      padding-bottom: 12px;
+      margin-bottom: 8px;
+      border-bottom: 1px solid #F0F4FA;
+    }
+
+    /* Popover 弹出层 */
+    .popover-trigger {
+      display: inline-flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .popover {
+      position: fixed;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+      border: 1px solid #E4ECF8;
+      z-index: 2000;
+      padding: 12px 16px;
+      min-width: 180px;
+      max-width: 320px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(4px);
+      transition: all 0.15s;
+    }
+
+    .popover.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .popover-title {
+      font-size: 13px;
+      color: #8C93B3;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .popover-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .popover-list-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 0;
+    }
+
+    .popover-list-item-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #E5ECFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: #2660FF;
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+
+    .popover-list-item-name {
+      font-size: 13px;
+      color: #161A2D;
+    }
+
+    .tag-more {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #F0F4FA;
+      color: #576477;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 2px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.2s;
+      line-height: 18px;
+    }
+
+    .tag-more:hover {
+      background: #E5ECFF;
+      color: #2660FF;
+    }
+
+    /* ====== 申请岗位虾 Drawer ====== */
+    .apply-drawer-overlay {
+      display: none; position: fixed; inset: 0; z-index: 10000;
+      background: rgba(0,0,0,.3); transition: opacity .3s;
+    }
+    .apply-drawer-overlay.show { display: flex; }
+    .apply-drawer-panel {
+      position: fixed; top: 0; right: 0; bottom: 0; width: min(560px, 100vw);
+      background: #fff; box-shadow: -4px 0 24px rgba(0,0,0,.12);
+      display: flex; flex-direction: column;
+      transform: translateX(100%); transition: transform .3s cubic-bezier(.4,0,.2,1);
+    }
+    .apply-drawer-overlay.show .apply-drawer-panel { transform: translateX(0); }
+
+    .apply-drawer-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 28px 16px; border-bottom: 1px solid #eef1f6;
+    }
+    .apply-drawer-header h2 { font-size: 17px; font-weight: 600; color: #161A2D; }
+    .apply-drawer-close {
+      width: 32px; height: 32px; border: none; background: #f5f6f8; border-radius: 8px;
+      font-size: 18px; cursor: pointer; color: #60636b; display: flex;
+      align-items: center; justify-content: center; transition: background .15s;
+    }
+    .apply-drawer-close:hover { background: #e5e8ef; }
+
+    .apply-drawer-body { flex: 1; padding: 24px 28px; overflow-y: auto; }
+
+    .apply-stepper {
+      display: flex; align-items: center; gap: 0;
+      margin-bottom: 18px;
+      padding: 2px 0;
+      overflow-x: auto;
+    }
+    .apply-step-item {
+      appearance: none; padding: 0; border: none; background: transparent;
+      cursor: default; display: inline-flex; align-items: center; gap: 8px;
+      text-align: left; transition: opacity .2s, color .2s;
+      flex-shrink: 0;
+    }
+    .apply-step-item.is-clickable { cursor: pointer; }
+    .apply-step-item.is-clickable:hover .apply-step-name,
+    .apply-step-item.is-clickable:hover .apply-step-index {
+      color: #2660FF;
+      border-color: #91B4FF;
+    }
+    .apply-step-index {
+      width: 22px; height: 22px; border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: #F2F3F5; color: #B7BDC6; font-size: 11px; font-weight: 700;
+      border: 1px solid #E5E6EB; flex-shrink: 0;
+      transition: all .2s;
+    }
+    .apply-step-item.is-active .apply-step-index {
+      background: #2660FF; color: #fff; border-color: #2660FF;
+      box-shadow: 0 0 0 4px rgba(38, 96, 255, 0.12);
+    }
+    .apply-step-item.is-done .apply-step-index {
+      background: #00B42A; color: #fff; border-color: #00B42A;
+    }
+    .apply-step-content { min-width: 0; }
+    .apply-step-name {
+      font-size: 13px; font-weight: 600; color: #B7BDC6; line-height: 1;
+      white-space: nowrap;
+      transition: color .2s;
+    }
+    .apply-step-desc { display: none; }
+    .apply-step-item.is-active .apply-step-name { color: #2660FF; }
+    .apply-step-item.is-done .apply-step-name { color: #00B42A; }
+    .apply-step-line {
+      width: 72px; height: 2px; margin: 0 12px; border-radius: 999px;
+      background: repeating-linear-gradient(
+        to right,
+        #D9DDE4 0 6px,
+        transparent 6px 10px
+      );
+      flex-shrink: 0;
+      transition: background .2s;
+    }
+    .apply-step-line.is-done {
+      background: #00B42A;
+    }
+    .apply-step-panel { display: none; }
+    .apply-step-panel.is-active { display: block; }
+    .apply-step-panel .apply-form-section { margin-bottom: 0; }
+    .apply-context-banner {
+      display: none;
+      margin-bottom: 16px;
+      padding: 14px 16px;
+      border-radius: 10px;
+      border: 1px solid #FFCCC7;
+      background: linear-gradient(180deg, #FFF6F5 0%, #FFF2F0 100%);
+    }
+    .apply-context-banner.show {
+      display: block;
+    }
+    .apply-context-banner-title {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 13px; font-weight: 600; color: #CF1322;
+    }
+    .apply-context-banner-icon {
+      width: 18px; height: 18px; border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: rgba(245, 34, 45, 0.12); color: #F5222D;
+      font-size: 12px; font-weight: 700;
+    }
+    .apply-context-banner-desc {
+      margin-top: 8px;
+      font-size: 12px; line-height: 1.7; color: #7A1B1D;
+    }
+    .apply-context-banner-actions {
+      margin-top: 10px;
+      display: flex; align-items: center; gap: 12px;
+      flex-wrap: wrap;
+    }
+    .apply-context-banner-link {
+      border: none;
+      background: transparent;
+      padding: 0;
+      color: #2660FF;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .apply-context-banner-link:hover {
+      text-decoration: underline;
+    }
+    .apply-inline-grid {
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px;
+    }
+    .apply-step-tip {
+      font-size: 12px; color: #8F959E;
+    }
+    .apply-btn-hidden { display: none !important; }
+    .apply-ai-check-result {
+      display: none; margin-top: 10px; padding: 12px 14px; border-radius: 8px;
+      border: 1px solid transparent; font-size: 12px; line-height: 1.6;
+    }
+    .apply-ai-check-result.show { display: block; }
+    .apply-ai-check-result.info {
+      background: #F5F8FC; color: #576477; border-color: #DCE3EC;
+    }
+    .apply-ai-check-result.success {
+      background: #F6FFED; color: #237804; border-color: #B7EB8F;
+    }
+    .apply-ai-check-result.error {
+      background: #FFF2F0; color: #A8071A; border-color: #FFCCC7;
+    }
+    .apply-ai-check-result.loading {
+      background: #F5F8FC; color: #576477; border-color: #DCE3EC;
+    }
+    .apply-ai-check-header {
+      display: flex; align-items: flex-start; gap: 10px;
+    }
+    .apply-ai-check-icon {
+      width: 20px; height: 20px; border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px; font-size: 12px; font-weight: 700;
+    }
+    .apply-ai-check-result.success .apply-ai-check-icon {
+      background: #52C41A; color: #fff;
+    }
+    .apply-ai-check-result.error .apply-ai-check-icon {
+      background: #F5222D; color: #fff;
+    }
+    .apply-ai-check-result.loading .apply-ai-check-icon {
+      position: relative;
+      background: rgba(38, 96, 255, 0.08);
+      color: transparent;
+    }
+    .apply-ai-check-result.loading .apply-ai-check-icon::after {
+      content: '';
+      width: 12px; height: 12px; border-radius: 50%;
+      border: 2px solid #C9D8FF; border-top-color: #2660FF;
+      animation: applyAiSpin .8s linear infinite;
+    }
+    .apply-ai-check-body {
+      flex: 1; min-width: 0;
+    }
+    .apply-ai-check-title {
+      font-size: 13px; font-weight: 600; color: #161A2D;
+    }
+    .apply-ai-check-desc {
+      margin-top: 4px; font-size: 12px; line-height: 1.6; color: inherit;
+    }
+    .apply-ai-check-progress {
+      display: flex; align-items: center; gap: 10px;
+      margin-top: 12px;
+    }
+    .apply-ai-check-progress-bar {
+      flex: 1; height: 6px; border-radius: 999px; overflow: hidden;
+      background: rgba(38, 96, 255, 0.12);
+    }
+    .apply-ai-check-progress-fill {
+      height: 100%; border-radius: inherit;
+      background: linear-gradient(90deg, #2660FF 0%, #7CA6FF 100%);
+      transition: width .25s ease;
+    }
+    .apply-ai-check-progress-text {
+      font-size: 12px; font-weight: 600; color: #2660FF;
+      white-space: nowrap;
+    }
+    .apply-ai-check-list {
+      margin-top: 12px; display: grid; gap: 8px;
+    }
+    .apply-ai-check-item {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-size: 12px; line-height: 1.6;
+    }
+    .apply-ai-check-item-marker {
+      width: 16px; height: 16px; border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px; font-size: 10px; font-weight: 700;
+      background: rgba(82, 196, 26, 0.14); color: #389E0D;
+    }
+    .apply-ai-check-result.error .apply-ai-check-item-marker {
+      background: rgba(245, 34, 45, 0.12); color: #CF1322;
+    }
+    .apply-ai-check-item strong {
+      color: #161A2D; font-weight: 600;
+    }
+    .apply-ai-check-tip {
+      margin-top: 12px; font-size: 12px; line-height: 1.6;
+      color: #8F959E;
+    }
+    .apply-submit-loading {
+      pointer-events: none; opacity: .72;
+    }
+    .apply-drawer-footer-actions .btn-primary:disabled,
+    .apply-drawer-footer-actions .btn-default:disabled,
+    .ai-verify-btn:disabled,
+    .apply-drawer-close:disabled {
+      cursor: not-allowed; opacity: .56; box-shadow: none; transform: none;
+    }
+    @keyframes applyAiSpin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .apply-form-section {
+      background: #f8f9fc; border-radius: 10px; padding: 20px;
+      margin-bottom: 16px;
+    }
+    .apply-form-section-title {
+      font-size: 13px; font-weight: 600; color: #60636b; margin-bottom: 16px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .apply-form-section-title .dot {
+      width: 4px; height: 14px; border-radius: 2px; background: #2660FF;
+    }
+
+    .apply-form-group { margin-bottom: 18px; }
+    .apply-form-group:last-child { margin-bottom: 0; }
+    .apply-form-label {
+      display: flex; align-items: center; gap: 4px;
+      font-size: 13px; font-weight: 500; color: #161A2D; margin-bottom: 6px;
+    }
+    .apply-form-label .required { color: #FF4D4F; font-size: 14px; line-height: 1; }
+    .ai-verify-btn {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 8px; margin-left: 6px;
+      background: linear-gradient(135deg, #7C3AED 0%, #A855F7 100%);
+      color: #fff; font-size: 11px; font-weight: 600;
+      border: none; border-radius: 10px; cursor: pointer;
+      transition: all .2s; box-shadow: 0 2px 6px rgba(124,58,237,.3);
+    }
+    .ai-verify-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(124,58,237,.4);
+    }
+    .ai-verify-btn:active { transform: translateY(0); }
+    .ai-verify-btn svg { width: 12px; height: 12px; }
+    .apply-form-input, .apply-form-select, .apply-form-textarea {
+      width: 100%; padding: 9px 12px; border: 1px solid #d0d5dd; border-radius: 8px;
+      font-size: 14px; color: #161A2D; outline: none; transition: all .2s;
+      background: #fff;
+    }
+    .apply-form-input:focus, .apply-form-select:focus, .apply-form-textarea:focus {
+      border-color: #2660FF; box-shadow: 0 0 0 3px rgba(38,96,255,.1);
+    }
+    .apply-form-input--readonly {
+      background: #F2F3F5; color: #86909C; cursor: not-allowed;
+    }
+    .apply-form-input--readonly.apply-form-input--has-value {
+      background: #F5F8FC; color: #161A2D;
+    }
+    .apply-form-textarea {
+      resize: vertical; min-height: 80px; font-family: inherit; line-height: 1.6;
+    }
+    .apply-form-textarea.tall { min-height: 100px; }
+    .apply-form-select {
+      appearance: none; cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%238f959e' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px;
+    }
+
+    .apply-form-hint {
+      font-size: 12px; color: #8f959e; margin-top: 6px; line-height: 1.5;
+      display: flex; align-items: flex-start; gap: 4px;
+    }
+    .apply-form-hint .hint-icon {
+      width: 14px; height: 14px; border-radius: 50%; background: #eef1f6;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 10px; color: #8f959e; flex-shrink: 0; margin-top: 2px;
+    }
+    .apply-char-counter {
+      font-size: 12px; color: #8f959e; text-align: right; margin-top: 4px;
+    }
+    .apply-char-counter.warn { color: #d48806; }
+    .apply-char-counter.over { color: #cf1322; }
+
+    .apply-drawer-footer {
+      padding: 16px 28px; border-top: 1px solid #eef1f6;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    }
+    .apply-drawer-footer-actions {
+      display: flex; justify-content: flex-end; gap: 10px; margin-left: auto;
+    }
+
+    .apply-toast {
+      display: none; position: fixed; top: 24px; left: 50%; transform: translateX(-50%);
+      z-index: 10001; padding: 12px 24px; border-radius: 10px;
+      font-size: 14px; font-weight: 500; box-shadow: 0 4px 16px rgba(0,0,0,.12);
+      animation: applyToastIn .3s;
+    }
+    .apply-toast.success { background: #f0f9eb; color: #389e0d; border: 1px solid #b7eb8f; }
+    @keyframes applyToastIn { from { opacity: 0; transform: translateX(-50%) translateY(-10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+
+    @media (max-width: 640px) {
+      .apply-drawer-header, .apply-drawer-body, .apply-drawer-footer {
+        padding-left: 20px; padding-right: 20px;
+      }
+      .apply-stepper, .apply-inline-grid {
+        grid-template-columns: 1fr;
+      }
+      .apply-drawer-footer {
+        flex-direction: column; align-items: stretch;
+      }
+      .apply-drawer-footer-actions {
+        width: 100%; margin-left: 0; flex-wrap: wrap; justify-content: flex-end;
+      }
+    }
+
+    /* Department Search Selector */
+    .apply-tree-trigger {
+      width: 100%; padding: 9px 12px; border: 1px solid #d0d5dd; border-radius: 8px;
+      font-size: 14px; color: #161A2D; background: #fff; cursor: pointer;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: all .2s; min-height: 38px;
+    }
+    .apply-tree-trigger:hover { border-color: #2660FF; }
+    .apply-tree-trigger.active { border-color: #2660FF; box-shadow: 0 0 0 3px rgba(38,96,255,.1); }
+    .apply-tree-trigger .placeholder { color: #b0b5bd; }
+    .apply-tree-trigger .selected-text { color: #161A2D; }
+    .apply-tree-trigger .arrow {
+      width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;
+      transition: transform .2s; color: #8f959e; flex-shrink: 0;
+    }
+    .apply-tree-trigger.active .arrow { transform: rotate(180deg); }
+
+    .apply-tree-dropdown {
+      display: none; position: absolute; top: 100%; left: 0; right: 0; z-index: 100;
+      background: #fff; border: 1px solid #e5e8ef; border-radius: 10px;
+      box-shadow: 0 6px 20px rgba(0,0,0,.12); margin-top: 4px; overflow: hidden;
+    }
+    .apply-tree-dropdown.show { display: block; }
+
+    .apply-tree-search {
+      position: relative;
+      padding: 10px 12px; border-bottom: 1px solid #eef1f6;
+    }
+    .apply-tree-search-icon {
+      position: absolute;
+      left: 22px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 14px;
+      height: 14px;
+      color: #8C93B3;
+      pointer-events: none;
+    }
+    .apply-tree-search input {
+      width: 100%; padding: 7px 10px 7px 32px; border: 1px solid #d0d5dd; border-radius: 6px;
+      font-size: 13px; outline: none; transition: border-color .2s;
+    }
+    .apply-tree-search input:focus { border-color: #2660FF; }
+    .apply-tree-search input::placeholder { color: #b0b5bd; }
+
+    /* Flat List */
+    .apply-tree-flat-list {
+      max-height: 280px; overflow-y: auto; padding: 4px 0;
+    }
+    .apply-tree-flat-item {
+      display: flex; align-items: center;
+      padding: 10px 12px; font-size: 13px; color: #4e5969; cursor: pointer;
+      transition: background .1s;
+    }
+    .apply-tree-flat-item:hover { background: #f5f8fc; }
+    .apply-tree-flat-item.is-selected {
+      background: #EAF2FF;
+    }
+    .apply-tree-flat-item .item-left {
+      display: flex; align-items: flex-start; min-width: 0; width: 100%;
+    }
+    .apply-tree-flat-item .item-main {
+      min-width: 0;
+      width: 100%;
+    }
+    .apply-tree-flat-item .item-name {
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+      color: #161A2D;
+      font-size: 13px;
+    }
+    .apply-tree-flat-item.is-selected .item-name {
+      color: #2660FF;
+      font-weight: 600;
+    }
+
+    .apply-tree-empty {
+      padding: 24px; text-align: center; font-size: 13px; color: #b0b5bd;
+    }
+
+    .apply-form-group-tree { position: relative; }
+
+
+    /* 附件上传区域 */
+    .apply-attachment-area {
+      border: 1px dashed #d0d5dd;
+      border-radius: 8px;
+      background: #fafbfc;
+      transition: all 0.2s;
+    }
+
+    .apply-attachment-area:hover {
+      border-color: #2660FF;
+      background: #f5f8ff;
+    }
+
+    .apply-attachment-empty {
+      padding: 24px;
+      text-align: center;
+    }
+
+    .apply-attachment-icon {
+      margin-bottom: 8px;
+    }
+
+    .apply-attachment-text {
+      font-size: 14px;
+      color: #161a2d;
+      margin-bottom: 4px;
+    }
+
+    .apply-attachment-link {
+      color: #2660FF;
+      cursor: pointer;
+    }
+
+    .apply-attachment-link:hover {
+      text-decoration: underline;
+    }
+
+    .apply-attachment-hint {
+      font-size: 12px;
+      color: #8f959e;
+    }
+
+    .apply-attachment-template-link {
+      color: #2660FF;
+      text-decoration: none;
+    }
+
+    .apply-attachment-template-link:hover {
+      text-decoration: underline;
+    }
+
+    .apply-attachment-filled {
+      padding: 12px 16px;
+    }
+
+    .apply-attachment-file {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff;
+      border: 1px solid #e4ecf8;
+      border-radius: 6px;
+      padding: 8px 12px;
+    }
+
+    .apply-attachment-filename {
+      flex: 1;
+      font-size: 14px;
+      color: #161a2d;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .apply-attachment-remove {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #f0f4fa;
+      color: #8f959e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .apply-attachment-remove:hover {
+      background: #ffece8;
+      color: #ff4d4f;
+    }
+
+    .apply-hint-link {
+      color: #2660FF;
+      text-decoration: none;
+    }
+
+    .apply-hint-link:hover {
+      text-decoration: underline;
+    }
+
+    /* 响应式 */
+    @media (max-width: 1200px) {
+      .quick-entries {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      }
+    }
+
+    @media (max-width: 960px) {
+      .quick-entries {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .quick-entry-card {
+        padding: 18px 16px;
+      }
+
+      .quick-entry-icon {
+        width: 52px;
+        height: 52px;
+      }
+
+      .quick-entry-icon svg {
+        width: 24px;
+        height: 24px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .main-content {
+        padding: 16px;
+      }
+
+      .quick-entries {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .quick-entry-card {
+        padding: 16px 14px;
+        gap: 12px;
+      }
+
+      .quick-entry-title {
+        font-size: 13px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .quick-entries {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .quick-entry-card {
+        padding: 16px;
+      }
+
+      .quick-entry-icon {
+        width: 48px;
+        height: 48px;
+      }
+
+      .quick-entry-icon svg {
+        width: 22px;
+        height: 22px;
+      }
+    }
+
+    @keyframes toastSlideIn {
+      from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+    @keyframes toastSlideOut {
+      from { opacity: 1; transform: translateX(-50%) translateY(0); }
+      to { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-container">
+    <!-- 主内容区 -->
+    <main class="main-content">
+      <!-- 页面头部 -->
+      <header class="page-header">
+        <h1 class="page-title">岗位虾列表</h1>
+        <button class="btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          <span>申请岗位虾</span>
+        </button>
+      </header>
+
+      <!-- 快捷入口 -->
+      <section class="quick-entries" id="quickEntries">
+        <div class="quick-entry-card" data-filter="trained" onclick="handleQuickFilter('trained', this)">
+          <div class="quick-entry-icon" style="background: #FF8800;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <div class="quick-entry-info">
+            <div class="quick-entry-title">我训练的</div>
+            <div class="quick-entry-count" id="countTrained">22</div>
+          </div>
+        </div>
+        <div class="quick-entry-card" data-filter="managed" onclick="handleQuickFilter('managed', this)">
+          <div class="quick-entry-icon" style="background: #00B259;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="8.5" cy="7" r="4"/>
+              <path d="M20 8v6"/>
+              <path d="M23 11h-6"/>
+            </svg>
+          </div>
+          <div class="quick-entry-info">
+            <div class="quick-entry-title">我管理的</div>
+            <div class="quick-entry-count" id="countManaged">6</div>
+          </div>
+        </div>
+        <div class="quick-entry-card" data-filter="applied" onclick="handleQuickFilter('applied', this)">
+          <div class="quick-entry-icon" style="background: #2660FF;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+              <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
+            </svg>
+          </div>
+          <div class="quick-entry-info">
+            <div class="quick-entry-title">我申请的</div>
+            <div class="quick-entry-count" id="countApplied">6</div>
+          </div>
+        </div>
+        <div class="quick-entry-card" data-filter="favorited" onclick="handleQuickFilter('favorited', this)">
+          <div class="quick-entry-icon" style="background: #FF4D4F;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+              <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+            </svg>
+          </div>
+          <div class="quick-entry-info">
+            <div class="quick-entry-title">我收藏的</div>
+            <div class="quick-entry-count" id="countFavorited">3</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 全部岗位虾 -->
+      <section class="card">
+        <div class="card-header">
+          <h2 class="card-title">全部岗位虾</h2>
+        </div>
+        <div class="card-body">
+          <!-- 筛选区 -->
+          <div class="filter-section">
+            <!-- 状态筛选 -->
+            <div class="filter-item-wrapper">
+              <div class="filter-item" data-filter="status">
+                <span class="filter-label">状态</span>
+                <span class="filter-arrow">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6,9 12,15 18,9"/>
+                  </svg>
+                </span>
+              </div>
+              <div class="filter-dropdown" id="statusFilter">
+                <div class="filter-dropdown-search">
+                  <input type="text" placeholder="搜索" />
+                </div>
+                <div class="filter-dropdown-list">
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="status-1" />
+                    <label for="status-1">上岗</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="status-2" />
+                    <label for="status-2">试运行</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="status-3" />
+                    <label for="status-3">申请中</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="status-4" />
+                    <label for="status-4">冻结</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="status-5" />
+                    <label for="status-5">下岗</label>
+                  </div>
+                </div>
+                <div class="filter-dropdown-footer">
+                  <button class="filter-select-all">全选</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 空间筛选 -->
+            <div class="filter-item-wrapper">
+              <div class="filter-item" data-filter="space">
+                <span class="filter-label">所属空间</span>
+                <span class="filter-arrow">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6,9 12,15 18,9"/>
+                  </svg>
+                </span>
+              </div>
+              <div class="filter-dropdown" id="spaceFilter">
+                <div class="filter-dropdown-search">
+                  <input type="text" placeholder="搜索" />
+                </div>
+                <div class="filter-dropdown-list">
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="space-1" />
+                    <label for="space-1">国际业务 BP空间 (SP001)</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="space-2" />
+                    <label for="space-2">东南亚空间 (SP002)</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="space-3" />
+                    <label for="space-3">客服空间 (SP003)</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="space-4" />
+                    <label for="space-4">数据空间 (SP004)</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="space-5" />
+                    <label for="space-5">培训空间 (SP005)</label>
+                  </div>
+                </div>
+                <div class="filter-dropdown-footer">
+                  <button class="filter-select-all">全选</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 工号筛选 -->
+            <div class="filter-item-wrapper">
+              <div class="filter-item" data-filter="employeeId">
+                <span class="filter-label">工号</span>
+                <span class="filter-arrow">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6,9 12,15 18,9"/>
+                  </svg>
+                </span>
+              </div>
+              <div class="filter-dropdown" id="employeeIdFilter">
+                <div class="filter-dropdown-search">
+                  <input type="text" placeholder="搜索" />
+                </div>
+                <div class="filter-dropdown-list">
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="emp-1" />
+                    <label for="emp-1">E100142</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="emp-2" />
+                    <label for="emp-2">E100234</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="emp-3" />
+                    <label for="emp-3">E100345</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="emp-4" />
+                    <label for="emp-4">E100456</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="emp-5" />
+                    <label for="emp-5">E100567</label>
+                  </div>
+                </div>
+                <div class="filter-dropdown-footer">
+                  <button class="filter-select-all">全选</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- MID筛选 -->
+            <div class="filter-item-wrapper">
+              <div class="filter-item" data-filter="mid">
+                <span class="filter-label">MID</span>
+                <span class="filter-arrow">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6,9 12,15 18,9"/>
+                  </svg>
+                </span>
+              </div>
+              <div class="filter-dropdown" id="midFilter">
+                <div class="filter-dropdown-search">
+                  <input type="text" placeholder="搜索" />
+                </div>
+                <div class="filter-dropdown-list">
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="mid-1" />
+                    <label for="mid-1">1539920049</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="mid-2" />
+                    <label for="mid-2">13900139002</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="mid-3" />
+                    <label for="mid-3">15000150003</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="mid-4" />
+                    <label for="mid-4">18600186004</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="mid-5" />
+                    <label for="mid-5">17700177005</label>
+                  </div>
+                </div>
+                <div class="filter-dropdown-footer">
+                  <button class="filter-select-all">全选</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 所属部门筛选 -->
+            <div class="filter-item-wrapper">
+              <div class="filter-item" data-filter="department">
+                <span class="filter-label">所属部门</span>
+                <span class="filter-arrow">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6,9 12,15 18,9"/>
+                  </svg>
+                </span>
+              </div>
+              <div class="filter-dropdown" id="departmentFilter">
+                <div class="filter-dropdown-search">
+                  <input type="text" placeholder="搜索" />
+                </div>
+                <div class="filter-dropdown-list">
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="dept-1" />
+                    <label for="dept-1">国际业务部</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="dept-2" />
+                    <label for="dept-2">东南亚销售部</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="dept-3" />
+                    <label for="dept-3">客户服务部</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="dept-4" />
+                    <label for="dept-4">数据分析部</label>
+                  </div>
+                  <div class="filter-dropdown-item">
+                    <input type="checkbox" id="dept-5" />
+                    <label for="dept-5">培训发展部</label>
+                  </div>
+                </div>
+                <div class="filter-dropdown-footer">
+                  <button class="filter-select-all">全选</button>
+                </div>
+              </div>
+            </div>
+            <button class="btn-line" id="fieldManageBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+              </svg>
+              <span>字段管理</span>
+            </button>
+            <button class="btn-line" data-tooltip="筛选项、字段选择均重置">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="23,4 23,10 17,10"/>
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+              </svg>
+              <span>重置</span>
+            </button>
+          </div>
+
+          <!-- 表格 -->
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>数字员工姓名</th>
+                  <th>所属空间</th>
+                  <th>状态</th>
+                  <th>AgentID</th>
+                  <th>工号</th>
+                  <th>邮箱</th>
+                  <th>MID</th>
+                  <th>汇报上级</th>
+                  <th>申请人</th>
+                  <th>所属部门</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody">
+                <!-- JS 动态渲染 -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- 分页 -->
+          <div class="pagination" id="pagination">
+            <!-- JS 动态渲染 -->
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // 当前用户（模拟）
+    const currentUser = '杨帆';
+    let applySpaceOptions = {
+      'intl-bp': '国际业务 BP 空间 (SP001)',
+      'sea': '东南亚空间 (SP002)',
+      'eu': '欧洲空间 (SP006)',
+      'latam': '拉美空间 (SP007)',
+      'mea': '中东非空间 (SP008)',
+      'global': '全球通用空间 (SP009)',
+    };
+    let applyFormMode = 'create';
+    let applyEditingShrimpId = null;
+    let applyBpmCounter = 1040;
+
+    const spaceManagementMap = {
+      '国际业务 BP空间 (SP001)': {
+        id: 204,
+        detailName: '国际销售空间',
+        displayName: '国际业务 BP空间 (SP001)',
+        model: 'xiaomi/mimo-v2-pro-mit',
+        image: 'micr.cloud.mioffice.cn/openclaw-images/miclaw:v0.18.0',
+        updatedAt: '2026-03-16 17:44',
+        admin: '郭琳'
+      },
+      '交付履约空间': {
+        id: 204,
+        detailName: '交付履约空间',
+        displayName: '交付履约空间',
+        model: 'xiaomi/mimo-v2-pro-mit',
+        image: 'micr.cloud.mioffice.cn/openclaw-images/miclaw:v0.18.0',
+        updatedAt: '2026-03-16 17:44',
+        admin: '郭琳'
+      },
+      '东南亚空间 (SP002)': {
+        id: 164,
+        detailName: '东南亚销售空间',
+        displayName: '东南亚空间 (SP002)',
+        model: 'xiaomi/mimo-v2-lite',
+        image: 'micr.cloud.mioffice.cn/openclaw-images/miclaw:v0.17.0',
+        updatedAt: '2026-03-18 10:12',
+        admin: '杨帆'
+      },
+      '客服空间 (SP003)': {
+        id: 194,
+        detailName: '客服智能空间',
+        displayName: '客服空间 (SP003)',
+        model: 'xiaomi/mimo-v1-pro',
+        image: 'micr.cloud.mioffice.cn/openclaw-images/miclaw:v0.16.0',
+        updatedAt: '2026-03-12 09:26',
+        admin: '战达'
+      },
+      '数据空间 (SP004)': {
+        id: 201,
+        detailName: '数据部空间',
+        displayName: '数据空间 (SP004)',
+        model: 'openai/gpt-4o',
+        image: 'micr.cloud.mioffice.cn/openclaw-images/miclaw:v0.18.0',
+        updatedAt: '2026-03-20 15:08',
+        admin: '李建国'
+      },
+      '培训空间 (SP005)': {
+        id: 156,
+        detailName: '全球培训空间',
+        displayName: '培训空间 (SP005)',
+        model: 'xiaomi/mimo-v2-pro-mit',
+        image: 'micr.cloud.mioffice.cn/openclaw-images/miclaw:v0.18.0',
+        updatedAt: '2026-03-22 11:36',
+        admin: '郭瑞琪 Seven'
+      },
+      '欧洲空间 (SP006)': {
+        id: 163,
+        detailName: '欧洲渠道空间',
+        displayName: '欧洲空间 (SP006)',
+        model: 'anthropic/claude-3.5-sonnet',
+        image: 'micr.cloud.mioffice.cn/openclaw-images/miclaw:v0.17.0',
+        updatedAt: '2026-03-19 08:45',
+        admin: 'Wei He 何伟'
+      },
+      '拉美空间 (SP007)': {
+        id: 162,
+        detailName: '拉美市场空间',
+        displayName: '拉美空间 (SP007)',
+        model: 'xiaomi/mimo-v2-lite',
+        image: 'micr.cloud.mioffice.cn/openclaw-images/miclaw:v0.17.0',
+        updatedAt: '2026-03-17 13:20',
+        admin: 'Hanya 韩亚'
+      },
+      '中东非空间 (SP008)': {
+        id: 159,
+        detailName: '中东商务空间',
+        displayName: '中东非空间 (SP008)',
+        model: 'openai/gpt-4o',
+        image: 'micr.cloud.mioffice.cn/openclaw-images/miclaw:v0.16.0',
+        updatedAt: '2026-03-14 16:50',
+        admin: '陈亮'
+      },
+      '全球通用空间 (SP009)': {
+        id: 203,
+        detailName: '企业智能协同空间',
+        displayName: '全球通用空间 (SP009)',
+        model: 'xiaomi/mimo-v2-pro-mit',
+        image: 'micr.cloud.mioffice.cn/openclaw-images/miclaw:v0.18.0',
+        updatedAt: '2026-03-21 18:10',
+        admin: '李四'
+      }
+    };
+
+    let activeSpaceManagement = spaceManagementMap['国际业务 BP空间 (SP001)'];
+
+    // 岗位虾数据
+    const allShrimps = [
+      { id: 2, name: '干线物流虾', avatar: '东南', avatarColor: '#2660FF', space: '交付履约空间', status: 'active', statusLabel: '上岗', agentId: 'AGT002', employeeId: 'E100234', email: 'dengzhou@xiaomi.com', mid: '13900139002', reporter: 'Lancelot Liu 刘聪', manager: '陈亮', applicant: 'Wei He 何伟', user: 'Eric Deng 邓舟', department: '国际业务部', businessLine: '国际', applicationSource: 'ai', favorited: true },
+      { id: 3, name: '客服助手', avatar: '客服', avatarColor: '#FF8800', space: '客服空间 (SP003)', status: 'trial', statusLabel: '试运行', agentId: 'AGT003', employeeId: 'E100345', email: 'zhouye@xiaomi.com', mid: '15000150003', reporter: '战达', manager: '周烨', applicant: '战达', user: '张可阿心', department: '客户服务部', businessLine: '中国区', applicationSource: 'web', favorited: false },
+      { id: 4, name: '数据分析虾', avatar: '数据', avatarColor: '#7B61FF', space: '数据空间 (SP004)', status: 'active', statusLabel: '上岗', agentId: 'AGT004', employeeId: 'E100456', email: 'chenliang@xiaomi.com', mid: '18600186004', reporter: '李建国', manager: 'Eric Deng 邓舟', applicant: 'Eric Deng 邓舟', user: 'Will 徐巍', department: '数据分析部', businessLine: 'IPD', applicationSource: 'ai', favorited: false },
+      { id: 5, name: '培训助手', avatar: '培训', avatarColor: '#8C93B3', space: '培训空间 (SP005)', status: 'draft', statusLabel: '申请中', agentId: 'AGT005', employeeId: '', email: '', mid: '', reporter: '郭瑞琪 Seven', manager: '杨帆', applicant: '杨帆', user: '周烨', department: '培训发展部', businessLine: '人力', applicationSource: 'web', favorited: true },
+      { id: 6, name: '欧洲市场虾', avatar: '欧洲', avatarColor: '#2660FF', space: '欧洲空间 (SP006)', status: 'active', statusLabel: '上岗', agentId: 'AGT006', employeeId: 'E100678', email: 'guoruiqi@xiaomi.com', mid: '13800138006', reporter: 'Wei He 何伟', manager: 'Joffrey 马俊淞', applicant: 'Joffrey 马俊淞', user: '战达', department: '国际业务部', businessLine: '国际', applicationSource: 'ai', favorited: false },
+      { id: 7, name: '拉美销售虾', avatar: '拉美', avatarColor: '#FF8800', space: '拉美空间 (SP007)', status: 'trial', statusLabel: '试运行', agentId: 'AGT007', employeeId: 'E100789', email: 'zhangkexin@xiaomi.com', mid: '13900139007', reporter: 'Hanya 韩亚', manager: '陈亮', applicant: '陈亮', user: 'Wei He 何伟', department: '东南亚销售部', businessLine: '国际', applicationSource: 'web', favorited: false },
+      { id: 8, name: '产品培训虾', avatar: '产品', avatarColor: '#00B259', space: '培训空间 (SP005)', status: 'active', statusLabel: '上岗', agentId: 'AGT008', employeeId: 'E100890', email: 'yangfan@xiaomi.com', mid: '15000150008', reporter: 'Eric Deng 邓舟', manager: '李建国', applicant: '李建国', user: 'Will 徐巍', department: '培训发展部', businessLine: 'ISC', applicationSource: 'ai', favorited: true },
+      { id: 9, name: '客服质检虾', avatar: '质检', avatarColor: '#FF4D4F', space: '客服空间 (SP003)', status: 'frozen', statusLabel: '冻结', agentId: 'AGT009', employeeId: 'E100901', email: 'zhanda@xiaomi.com', mid: '18600186009', reporter: '周烨', manager: '战达', applicant: 'Hanya 韩亚', user: '陈亮', department: '客户服务部', businessLine: '中国区', applicationSource: 'web', favorited: false },
+      { id: 10, name: '数据报表虾', avatar: '报表', avatarColor: '#7B61FF', space: '数据空间 (SP004)', status: 'active', statusLabel: '上岗', agentId: 'AGT010', employeeId: 'E101012', email: 'lijianguo@xiaomi.com', mid: '17700177010', reporter: '战达', manager: '周烨', applicant: '战达', user: 'Joffrey 马俊淞', department: '数据分析部', businessLine: '汽车', applicationSource: 'ai', favorited: false },
+      { id: 11, name: '智能推荐虾', avatar: '推荐', avatarColor: '#2660FF', space: '数据空间 (SP004)', status: 'active', statusLabel: '上岗', agentId: 'AGT011', employeeId: 'E101123', email: 'hewei2@xiaomi.com', mid: '13800138011', reporter: 'Wei He 何伟', manager: '张可阿心', applicant: '张可阿心', user: '张可阿心', department: '数据分析部', businessLine: 'IPD', applicationSource: 'web', favorited: false },
+      { id: 12, name: '销售话术虾', avatar: '话术', avatarColor: '#FF8800', space: '东南亚空间 (SP002)', status: 'draft', statusLabel: '申请中', agentId: 'AGT012', employeeId: '', email: '', mid: '', reporter: '杨帆', manager: '杨帆', applicant: '杨帆', user: 'Hanya 韩亚', department: '东南亚销售部', businessLine: '国际', applicationSource: 'ai', favorited: false },
+      { id: 13, name: '合规审查虾', avatar: '合规', avatarColor: '#00B259', space: '国际业务 BP空间 (SP001)', status: 'active', statusLabel: '上岗', agentId: 'AGT013', employeeId: 'E101345', email: 'majunsong@xiaomi.com', mid: '15000150013', reporter: 'Wei He 何伟', manager: '战达', applicant: '战达', user: '陈亮', department: '国际业务部', businessLine: '国际', applicationSource: 'web', favorited: false },
+      { id: 14, name: '培训考核虾', avatar: '考核', avatarColor: '#8C93B3', space: '培训空间 (SP005)', status: 'trial', statusLabel: '试运行', agentId: 'AGT014', employeeId: 'E101456', email: 'zhouye2@xiaomi.com', mid: '18600186014', reporter: 'Eric Deng 邓舟', manager: 'Will 徐巍', applicant: 'Will 徐巍', user: '杨帆', department: '培训发展部', businessLine: '人力', applicationSource: 'ai', favorited: false },
+      { id: 15, name: '客诉处理虾', avatar: '客诉', avatarColor: '#FF4D4F', space: '客服空间 (SP003)', status: 'active', statusLabel: '上岗', agentId: 'AGT015', employeeId: 'E101567', email: 'hanya@xiaomi.com', mid: '17700177015', reporter: '杨帆', manager: '杨帆', applicant: '杨帆', user: 'Wei He 何伟', department: '客户服务部', businessLine: '中国区', applicationSource: 'web', favorited: false },
+      { id: 16, name: '市场分析虾', avatar: '分析', avatarColor: '#2660FF', space: '欧洲空间 (SP006)', status: 'active', statusLabel: '上岗', agentId: 'AGT016', employeeId: 'E101678', email: 'lijianguo2@xiaomi.com', mid: '13800138016', reporter: 'Wei He 何伟', manager: 'Wei He 何伟', applicant: 'Eric Deng 邓舟', user: 'Will 徐巍', department: '国际业务部', businessLine: 'ISC', applicationSource: 'ai', favorited: false },
+      { id: 17, name: '合同管理虾', avatar: '合同', avatarColor: '#00B259', space: '国际业务 BP空间 (SP001)', status: 'inactive', statusLabel: '下岗', agentId: 'AGT017', employeeId: 'E101789', email: 'zhanda2@xiaomi.com', mid: '13900139017', reporter: '杨帆', manager: '杨帆', applicant: '杨帆', user: 'Hanya 韩亚', department: '国际业务部', businessLine: '国际', applicationSource: 'web', favorited: false },
+      { id: 18, name: '竞品监控虾', avatar: '竞品', avatarColor: '#FF8800', space: '东南亚空间 (SP002)', status: 'active', statusLabel: '上岗', agentId: 'AGT018', employeeId: 'E101890', email: 'zhangkexin2@xiaomi.com', mid: '15000150018', reporter: '张可阿心', manager: 'Hanya 韩亚', applicant: '周烨', user: '陈亮', department: '东南亚销售部', businessLine: '国际', applicationSource: 'ai', favorited: false },
+      { id: 19, name: '知识库管理虾', avatar: '知识', avatarColor: '#7B61FF', space: '培训空间 (SP005)', status: 'active', statusLabel: '上岗', agentId: 'AGT019', employeeId: 'E101901', email: 'dengzhou2@xiaomi.com', mid: '18600186019', reporter: '郭瑞琪 Seven', manager: '李建国', applicant: '李建国', user: '张可阿心', department: '培训发展部', businessLine: '人力', applicationSource: 'web', favorited: false },
+      { id: 20, name: '渠道对接虾', avatar: '渠道', avatarColor: '#2660FF', space: '东南亚空间 (SP002)', status: 'draft', statusLabel: '申请中', agentId: 'AGT020', employeeId: '', email: '', mid: '', reporter: '杨帆', manager: '杨帆', applicant: '杨帆', user: 'Hanya 韩亚', department: '东南亚销售部', businessLine: '国际', applicationSource: 'ai', favorited: false },
+      { id: 21, name: '员工培训虾', avatar: '员工', avatarColor: '#00B259', space: '培训空间 (SP005)', status: 'active', statusLabel: '上岗', agentId: 'AGT021', employeeId: 'E102123', email: 'chenliang2@xiaomi.com', mid: '13800138021', reporter: 'Eric Deng 邓舟', manager: '战达', applicant: '战达', user: '陈亮', department: '培训发展部', businessLine: 'ISC', applicationSource: 'web', favorited: false },
+      { id: 22, name: '舆情监测虾', avatar: '舆情', avatarColor: '#FF4D4F', space: '国际业务 BP空间 (SP001)', status: 'active', statusLabel: '上岗', agentId: 'AGT022', employeeId: 'E102234', email: 'guoruiqi2@xiaomi.com', mid: '13900139022', reporter: '杨帆', manager: '杨帆', applicant: '杨帆', user: '李建国', department: '国际业务部', businessLine: '汽车', applicationSource: 'ai', favorited: false },
+      { id: 23, name: '流程自动化虾', avatar: '自动', avatarColor: '#8C93B3', space: '客服空间 (SP003)', status: 'inactive', statusLabel: '下岗', agentId: 'AGT023', employeeId: 'E102345', email: 'majunsong2@xiaomi.com', mid: '15000150023', reporter: '战达', manager: '周烨', applicant: '战达', user: '张可阿心', department: '客户服务部', businessLine: '中国区', applicationSource: 'web', favorited: false }
+    ];
+
+    const shrimpManagerMap = {
+      2: '陈亮',
+      3: '周烨',
+      4: 'Eric Deng 邓舟',
+      5: '杨帆',
+      6: 'Joffrey 马俊淞',
+      7: '陈亮',
+      8: '李建国',
+      9: '战达',
+      10: '周烨',
+      11: '张可阿心',
+      12: '杨帆',
+      13: '战达',
+      14: 'Will 徐巍',
+      15: '杨帆',
+      16: 'Wei He 何伟',
+      17: '杨帆',
+      18: 'Hanya 韩亚',
+      19: '李建国',
+      20: '杨帆',
+      21: '战达',
+      22: '杨帆',
+      23: '周烨'
+    };
+
+    const shrimpAvatarImageIds = new Set([
+      2, 3, 4, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23
+    ]);
+
+    function getShrimpManager(shrimp) {
+      return shrimp?.manager || shrimpManagerMap[shrimp?.id] || shrimp?.reporter || '';
+    }
+
+    function getShrimpAvatarImage(shrimp) {
+      if (shrimp?.avatarImage) return shrimp.avatarImage;
+      return shrimpAvatarImageIds.has(shrimp?.id) ? '/job-shrimp-avatar.png' : '';
+    }
+
+    function getApplyAvatarText(name) {
+      const trimmed = (name || '').trim();
+      if (!trimmed) return '虾';
+      return trimmed.slice(0, Math.min(2, trimmed.length));
+    }
+
+    function getApplyTimestamp() {
+      const now = new Date();
+      const pad = (value) => String(value).padStart(2, '0');
+      return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+    }
+
+    function escapeApplyHtml(value) {
+      return String(value || '').replace(/[&<>"']/g, (char) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      }[char]));
+    }
+
+    function buildApplyFormSnapshotFromShrimp(shrimp, overrides) {
+      const overrideData = overrides || {};
+      return {
+        shrimpName: overrideData.shrimpName || shrimp.name || '',
+        englishName: overrideData.englishName || shrimp.englishName || `Job Shrimp ${shrimp.id}`,
+        miAccount: overrideData.miAccount || (shrimp.email ? shrimp.email.split('@')[0] : `shrimp${shrimp.id}`),
+        departmentId: overrideData.departmentId || '',
+        departmentName: overrideData.departmentName || shrimp.department || '',
+        reporter: overrideData.reporter || shrimp.reporter || '',
+        spaceValue: overrideData.spaceValue || Object.entries(applySpaceOptions).find(([,l]) => l === shrimp.space)?.[0] || 'intl-bp',
+        jobTitle: overrideData.jobTitle || shrimp.jobTitle || shrimp.name || '',
+        jobLevel: overrideData.jobLevel || shrimp.jobLevel || '14级（多场景协同）',
+        attachment: overrideData.attachment || shrimp.attachment || `https://mi.feishu.cn/wiki/mock-job-shrimp-${shrimp.id}`
+      };
+    }
+
+    function buildMockApplication(state, shrimpId, formSnapshot, overrides) {
+      const overrideData = overrides || {};
+      const bpmId = overrideData.id || `BPM20260507${String(shrimpId).padStart(4, '0')}`;
+      return {
+        id: bpmId,
+        state,
+        bpmUrl: overrideData.bpmUrl || `https://bpm.mi.com/process/${bpmId}`,
+        rejectReason: overrideData.rejectReason || '',
+        rejectNode: overrideData.rejectNode || '',
+        submittedAt: overrideData.submittedAt || getApplyTimestamp(),
+        formSnapshot: { ...formSnapshot }
+      };
+    }
+
+    function seedMockApplicationStates() {
+      const rejectedShrimp = allShrimps.find((shrimp) => shrimp.id === 5);
+      if (rejectedShrimp) {
+        rejectedShrimp.applicant = currentUser;
+        rejectedShrimp.application = buildMockApplication(
+          'rejected',
+          rejectedShrimp.id,
+          buildApplyFormSnapshotFromShrimp(rejectedShrimp, {
+            englishName: 'Training Assistant',
+            jobTitle: '培训助手',
+            jobLevel: '14级（多场景协同）',
+            attachment: 'https://mi.feishu.cn/wiki/mock-job-shrimp-rejected-5?missing-roi=1&duplicate-scene=1'
+          }),
+          {
+            rejectNode: '部门负责人审批',
+            rejectReason: '岗位定义缺少 ROI 价值收益现状与上线后的对比，且 Top3 场景存在重复描述。',
+            submittedAt: '2026-05-06 14:32'
+          }
+        );
+      }
+
+      [12, 20].forEach((id) => {
+        const shrimp = allShrimps.find((item) => item.id === id);
+        if (!shrimp) return;
+        shrimp.application = buildMockApplication(
+          'pending',
+          shrimp.id,
+          buildApplyFormSnapshotFromShrimp(shrimp, {
+            englishName: `Pending Shrimp ${shrimp.id}`,
+            attachment: `https://mi.feishu.cn/wiki/mock-job-shrimp-pending-${shrimp.id}`
+          }),
+          {
+            submittedAt: id === 12 ? '2026-05-07 10:18' : '2026-05-07 16:05'
+          }
+        );
+      });
+    }
+
+    seedMockApplicationStates();
+
+    function moveShrimpToIndex(shrimpId, targetIndex) {
+      const fromIndex = allShrimps.findIndex((item) => item.id === shrimpId);
+      if (fromIndex === -1) return;
+      const [target] = allShrimps.splice(fromIndex, 1);
+      const safeIndex = Math.max(0, Math.min(targetIndex, allShrimps.length));
+      allShrimps.splice(safeIndex, 0, target);
+    }
+
+    moveShrimpToIndex(12, 5);
+
+    // 状态颜色映射
+    const statusClassMap = {
+      active: 'success',
+      trial: 'warning',
+      draft: 'default',
+      frozen: 'primary',
+      inactive: 'danger'
+    };
+
+    // 分页状态
+    let currentPage = 1;
+    let pageSize = 10;
+    let currentQuickFilter = '';
+    let filteredShrimps = [...allShrimps];
+
+    function syncFilteredShrimpsByQuickFilter() {
+      switch (currentQuickFilter) {
+        case 'managed':
+          filteredShrimps = allShrimps.filter(s => getShrimpManager(s) === currentUser);
+          break;
+        case 'trained':
+          filteredShrimps = [...allShrimps];
+          break;
+        case 'applied':
+          filteredShrimps = allShrimps.filter(s => s.applicant === currentUser);
+          break;
+        case 'favorited':
+          filteredShrimps = allShrimps.filter(s => s.favorited);
+          break;
+        default:
+          filteredShrimps = [...allShrimps];
+      }
+    }
+
+    function refreshShrimpDashboard() {
+      syncFilteredShrimpsByQuickFilter();
+      updateQuickEntryCounts();
+      renderTable();
+      updateTableColumns();
+      renderPagination();
+    }
+
+    // 快捷入口筛选
+    function handleQuickFilter(filter, el) {
+      currentQuickFilter = filter;
+      currentPage = 1;
+
+      // 更新卡片选中状态
+      document.querySelectorAll('.quick-entry-card').forEach(card => card.classList.remove('active'));
+      el.classList.add('active');
+      refreshShrimpDashboard();
+    }
+
+    // 更新快捷入口计数
+    function updateQuickEntryCounts() {
+      document.getElementById('countManaged').textContent = allShrimps.filter(s => getShrimpManager(s) === currentUser).length;
+      document.getElementById('countTrained').textContent = allShrimps.length;
+      document.getElementById('countApplied').textContent = allShrimps.filter(s => s.applicant === currentUser).length;
+      document.getElementById('countFavorited').textContent = allShrimps.filter(s => s.favorited).length;
+    }
+
+    // 打开岗位虾详情
+    function openShrimpDetail(shrimpId) {
+      const shrimp = allShrimps.find(s => s.id === shrimpId);
+      if (shrimp) {
+        window.parent.postMessage({
+          type: 'job-shrimp-open-config',
+          payload: {
+            appId: shrimp.agentId,
+            section: 'baseinfo'
+          }
+        }, '*');
+      }
+    }
+
+    // 渲染带截断的 Tag 列表
+    function renderTruncatedTags(arr, maxShow = 2) {
+      if (arr.length <= maxShow) {
+        return arr.map(name =>
+          `<span style="background: #E5ECFF; padding: 2px 8px; border-radius: 4px; font-size: 13px; white-space: nowrap;">${name}</span>`
+        ).join('');
+      }
+      const shown = arr.slice(0, maxShow);
+      const more = arr.length - maxShow;
+      const tagsHtml = shown.map(name =>
+        `<span style="background: #E5ECFF; padding: 2px 8px; border-radius: 4px; font-size: 13px; white-space: nowrap;">${name}</span>`
+      ).join('');
+      const popoverId = 'popover-' + Math.random().toString(36).slice(2, 8);
+      const moreHtml = `<span class="popover-trigger tag-more" data-popover-id="${popoverId}" data-names='${JSON.stringify(arr)}'>+${more}</span>`;
+      return tagsHtml + moreHtml;
+    }
+
+    function getShrimpStatusMeta(shrimp) {
+      if (shrimp.application?.state === 'pending') {
+        return { className: 'primary', label: '申请中', icon: '↻' };
+      }
+      if (shrimp.application?.state === 'rejected') {
+        return { className: 'danger', label: '已驳回', icon: '!' };
+      }
+      return {
+        className: statusClassMap[shrimp.status],
+        label: shrimp.statusLabel,
+        icon: ''
+      };
+    }
+
+    function renderShrimpStatus(shrimp) {
+      const statusMeta = getShrimpStatusMeta(shrimp);
+      const titleAttr = shrimp.application?.state === 'rejected' && shrimp.application?.rejectReason
+        ? ` title="${shrimp.application.rejectReason.replace(/"/g, '&quot;')}"`
+        : '';
+      return `<span class="status-tag ${statusMeta.className}"${titleAttr}>
+        ${statusMeta.icon ? `<span class="status-tag-icon">${statusMeta.icon}</span>` : ''}
+        <span>${statusMeta.label}</span>
+      </span>`;
+    }
+
+    function openShrimpApprovalFlow(shrimpId) {
+      const shrimp = allShrimps.find((item) => item.id === shrimpId);
+      if (!shrimp?.application?.bpmUrl) {
+        showToast('当前申请暂无审批流链接', 'warning');
+        return;
+      }
+      window.open(shrimp.application.bpmUrl, '_blank', 'noopener');
+    }
+
+    function handleApplyResubmit(shrimpId) {
+      const shrimp = allShrimps.find((item) => item.id === shrimpId);
+      if (!shrimp?.application?.formSnapshot) {
+        showToast('未找到原始申请内容，暂时无法重新提交', 'warning');
+        return;
+      }
+      openApplyDrawer({ mode: 'resubmit', shrimpId });
+    }
+
+    function toggleShrimpFavorite(shrimpId) {
+      const shrimp = allShrimps.find((item) => item.id === shrimpId);
+      if (!shrimp) return;
+      shrimp.favorited = !shrimp.favorited;
+      showToast(shrimp.favorited ? '已收藏岗位虾' : '已取消收藏', 'success');
+      refreshShrimpDashboard();
+    }
+
+    function renderShrimpActions(shrimp) {
+      const favoriteAction = `<span class="table-action table-action-icon" data-tooltip="${shrimp.favorited ? '已收藏' : '收藏'}" onclick="toggleShrimpFavorite(${shrimp.id})" style="cursor:pointer">
+          <svg viewBox="0 0 24 24" fill="${shrimp.favorited ? '#2660FF' : 'none'}" stroke="#2660FF" stroke-width="2">
+            <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+          </svg>
+        </span>`;
+      const approvalAction = `<span class="table-action" data-tooltip="查看审批流" onclick="openShrimpApprovalFlow(${shrimp.id})" style="cursor:pointer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6-10-6-10-6z"/>
+            <circle cx="12" cy="12" r="2.5"/>
+          </svg>
+          审批
+        </span>`;
+      const resubmitAction = `<span class="table-action" data-tooltip="重新提交申请" onclick="handleApplyResubmit(${shrimp.id})" style="cursor:pointer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 12a9 9 0 1 0 3-6.71"/>
+            <polyline points="3 3 3 9 9 9"/>
+          </svg>
+          重提
+        </span>`;
+
+      if (shrimp.application?.state === 'pending') {
+        return [favoriteAction, approvalAction].join('');
+      }
+
+      if (shrimp.application?.state === 'rejected') {
+        return [favoriteAction, resubmitAction].join('');
+      }
+
+      return favoriteAction;
+    }
+
+    function renderTableCell(fieldId, shrimp) {
+      switch (fieldId) {
+        case 'name':
+          const avatarImage = getShrimpAvatarImage(shrimp);
+          return `<td>
+            <div class="table-name">
+              <div class="table-avatar" style="background: ${shrimp.avatarColor};">${avatarImage ? `<img src="${avatarImage}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" />` : shrimp.avatar}</div>
+              <span class="table-link" onclick="openShrimpDetail(${shrimp.id})">${shrimp.name}</span>
+            </div>
+          </td>`;
+        case 'space':
+          return `<td>
+            <div class="table-space">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9,22 9,12 15,12 15,22"/>
+              </svg>
+              <span>${shrimp.space}</span>
+            </div>
+          </td>`;
+        case 'status':
+          return `<td>${renderShrimpStatus(shrimp)}</td>`;
+        case 'agentId':
+          return `<td>${shrimp.agentId || '--'}</td>`;
+        case 'employeeId':
+          return `<td>${shrimp.employeeId || '--'}</td>`;
+        case 'email':
+          return `<td>${shrimp.email || '--'}</td>`;
+        case 'mid':
+          return `<td>${shrimp.mid || '--'}</td>`;
+        case 'reporter':
+          return `<td>${shrimp.reporter || '--'}</td>`;
+        case 'applicant':
+          return `<td>${shrimp.applicant || '--'}</td>`;
+        case 'department':
+          return `<td>${shrimp.department || '--'}</td>`;
+        case 'applicationSource':
+          const isAi = shrimp.applicationSource === 'ai';
+          const iconSvg = isAi
+            ? '<svg viewBox="0 0 1152 1024" width="14" height="14" fill="currentColor"><path d="M701.44 809.6c147.072 0 266.325333-106.986667 266.325333-238.933333 0-131.968-119.253333-238.933333-266.325333-238.933334H439.893333c-147.093333 0-266.325333 106.965333-266.325333 238.933334 0 131.946667 119.253333 238.933333 266.325333 238.933333h261.546667z m-261.546667 76.8c-194.346667 0-351.914667-141.354667-351.914666-315.733333s157.546667-315.733333 351.914666-315.733334h261.546667c194.346667 0 351.914667 141.354667 351.914667 315.733334s-157.568 315.733333-351.914667 315.733333H439.893333z"/><path d="M470.784 602.666667c0 21.205333-19.157333 38.4-42.794667 38.4-23.637333 0-42.794667-17.194667-42.794666-38.4v-85.333334c0-21.205333 19.157333-38.4 42.794666-38.4 23.637333 0 42.794667 17.194667 42.794667 38.4v85.333334zM751.872 572.629333c18.496 13.226667 21.546667 37.376 6.826667 53.973334-14.72 16.576-41.642667 19.306667-60.138667 6.101333l-36.202667-25.877333c-33.365333-23.850667-33.493333-69.312-0.213333-93.290667l36.266667-26.133333c18.432-13.290667 45.376-10.645333 60.16 5.888 14.805333 16.533333 11.861333 40.704-6.549334 53.973333l-17.749333 12.778667 17.6 12.586666zM642.005333 137.6c23.637333 0 42.794667 17.194667 42.794667 38.4s-19.157333 38.4-42.794667 38.4h-142.677333c-23.637333 0-42.794667-17.194667-42.794667-38.4s19.157333-38.4 42.794667-38.4h142.677333z"/><path d="M613.461333 282.666667c0 21.205333-19.157333 38.4-42.794666 38.4-23.637333 0-42.794667-17.194667-42.794667-38.4v-106.666667c0-21.205333 19.157333-38.4 42.794667-38.4 23.637333 0 42.794667 17.194667 42.794666 38.4v106.666667z"/></svg>'
+            : '<svg viewBox="0 0 1024 1024" width="14" height="14" fill="currentColor"><path d="M923.733333 454.4V768a102.4 102.4 0 0 1-102.4 102.4h-618.666666A102.4 102.4 0 0 1 100.266667 768V454.4h823.466666zM100.266667 256a102.4 102.4 0 0 1 102.4-102.4h618.666666a102.4 102.4 0 0 1 102.4 102.4v121.6H100.266667V256z m273.066666 10.666667a32 32 0 1 0 64 0 32 32 0 0 0-64 0z m-85.333333 0a32 32 0 1 0 64 0 32 32 0 0 0-64 0z m-85.333333 0a32 32 0 1 0 64 0 32 32 0 0 0-64 0z"/></svg>';
+          return `<td><span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:500;background:${isAi ? '#E8F5E9' : '#EBF3FF'};color:${isAi ? '#34C724' : '#3370FF'}"><span style="display:inline-flex;align-items:center">${iconSvg}</span>${isAi ? 'AI虾塘' : 'Web虾塘'}</span></td>`;
+        case 'actions':
+          return `<td class="table-cell-actions"><div class="table-actions">${renderShrimpActions(shrimp)}</div></td>`;
+        default:
+          return '';
+      }
+    }
+
+    // 渲染表格行
+    function renderRow(shrimp) {
+      const visibleFields = currentFields.filter((field) => field.visible);
+      return `<tr>${visibleFields.map((field) => renderTableCell(field.id, shrimp)).join('')}</tr>`;
+    }
+
+    // 渲染表格
+    function renderTable() {
+      const tbody = document.getElementById('tableBody');
+      const start = (currentPage - 1) * pageSize;
+      const end = start + pageSize;
+      const pageData = filteredShrimps.slice(start, end);
+      updateTableColumns();
+      tbody.innerHTML = pageData.map(renderRow).join('');
+
+      // 绑定空间点击事件
+      tbody.querySelectorAll('.table-space').forEach(space => {
+        space.addEventListener('click', () => {
+          const spaceName = space.querySelector('span')?.textContent?.trim() || '';
+          const shrimpName = space.closest('tr')?.querySelector('.table-link')?.textContent?.trim() || '';
+          openSpaceManagementModal(spaceName, shrimpName);
+        });
+      });
+
+      // 重新渲染后更新 Popover
+      initPopovers();
+    }
+
+    // 渲染分页
+    function renderPagination() {
+      const total = filteredShrimps.length;
+      const totalPages = Math.ceil(total / pageSize);
+      const pagination = document.getElementById('pagination');
+
+      // 构建页码按钮
+      let pageButtons = '';
+
+      // 上一页
+      pageButtons += `<button class="pagination-btn ${currentPage === 1 ? 'disabled' : ''}" data-page="prev">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="15,18 9,12 15,6"/>
+        </svg>
+      </button>`;
+
+      // 页码
+      for (let i = 1; i <= totalPages; i++) {
+        if (i === currentPage) {
+          pageButtons += `<button class="pagination-btn active" data-page="${i}">${i}</button>`;
+        } else {
+          pageButtons += `<button class="pagination-btn" data-page="${i}">${i}</button>`;
+        }
+      }
+
+      // 下一页
+      pageButtons += `<button class="pagination-btn ${currentPage === totalPages ? 'disabled' : ''}" data-page="next">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="9,18 15,12 9,6"/>
+        </svg>
+      </button>`;
+
+      pagination.innerHTML = `
+        <span class="pagination-info">共 ${total} 条</span>
+        ${pageButtons}
+        <div class="pagination-size">
+          <span class="pagination-size-label">条/页</span>
+          <select class="pagination-size-select" id="pageSizeSelect">
+            <option value="10" ${pageSize === 10 ? 'selected' : ''}>10</option>
+            <option value="20" ${pageSize === 20 ? 'selected' : ''}>20</option>
+            <option value="50" ${pageSize === 50 ? 'selected' : ''}>50</option>
+          </select>
+        </div>
+      `;
+
+      // 绑定分页点击事件
+      pagination.querySelectorAll('.pagination-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const page = btn.getAttribute('data-page');
+          if (btn.classList.contains('disabled')) return;
+
+          if (page === 'prev') {
+            if (currentPage > 1) currentPage--;
+          } else if (page === 'next') {
+            if (currentPage < totalPages) currentPage++;
+          } else {
+            currentPage = parseInt(page);
+          }
+          renderTable();
+          renderPagination();
+          initPopovers();
+        });
+      });
+
+      // 绑定每页条数选择
+      document.getElementById('pageSizeSelect').addEventListener('change', (e) => {
+        pageSize = parseInt(e.target.value);
+        currentPage = 1;
+        renderTable();
+        renderPagination();
+        initPopovers();
+      });
+    }
+
+    // Popover 逻辑
+    let activePopover = null;
+
+    function initPopovers() {
+      document.querySelectorAll('.popover-trigger').forEach(trigger => {
+        trigger.addEventListener('mouseenter', (e) => {
+          e.stopPropagation();
+          // 关闭已有的 popover
+          if (activePopover) {
+            activePopover.classList.remove('show');
+            activePopover.remove();
+            activePopover = null;
+          }
+
+          const names = JSON.parse(trigger.getAttribute('data-names'));
+          const title = trigger.closest('.tag-container')?.previousElementSibling?.textContent?.includes('训虾员') ? '训虾员' : '管理者';
+
+          // 创建 popover
+          const popover = document.createElement('div');
+          popover.className = 'popover';
+          popover.innerHTML = `
+            <div class="popover-title">${title} (${names.length})</div>
+            <div class="popover-list">
+              ${names.map(name => `
+                <div class="popover-list-item">
+                  <div class="popover-list-item-avatar">${name.charAt(0)}</div>
+                  <span class="popover-list-item-name">${name}</span>
+                </div>
+              `).join('')}
+            </div>
+          `;
+          document.body.appendChild(popover);
+
+          // 定位 popover
+          const rect = trigger.getBoundingClientRect();
+          popover.style.left = rect.left + 'px';
+          popover.style.top = (rect.bottom + 4) + 'px';
+
+          // 确保不超出右边界
+          requestAnimationFrame(() => {
+            const popRect = popover.getBoundingClientRect();
+            if (popRect.right > window.innerWidth - 16) {
+              popover.style.left = (window.innerWidth - popRect.width - 16) + 'px';
+            }
+            if (popRect.bottom > window.innerHeight - 16) {
+              popover.style.top = (rect.top - popRect.height - 4) + 'px';
+            }
+            popover.classList.add('show');
+          });
+
+          activePopover = popover;
+        });
+
+        trigger.addEventListener('mouseleave', () => {
+          setTimeout(() => {
+            if (activePopover && !activePopover.matches(':hover')) {
+              activePopover.classList.remove('show');
+              activePopover.remove();
+              activePopover = null;
+            }
+          }, 100);
+        });
+      });
+
+      // popover 自身 hover 时保持显示
+      document.addEventListener('mouseenter', (e) => {
+        if (activePopover && activePopover.contains(e.target)) {
+          clearTimeout(activePopover._hideTimer);
+        }
+      }, true);
+    }
+
+    // 初始化
+    document.addEventListener('DOMContentLoaded', () => {
+      refreshShrimpDashboard();
+      initPopovers();
+
+      // 空间弹窗
+      const spaceModal = document.getElementById('spaceModal');
+      const closeBtn = document.querySelector('.modal-close');
+      const enterSpaceBtn = document.querySelector('.modal-footer .btn-primary');
+      const overlay = document.querySelector('.modal-overlay');
+
+      closeBtn.addEventListener('click', () => spaceModal.classList.remove('show'));
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) spaceModal.classList.remove('show');
+      });
+      enterSpaceBtn.addEventListener('click', () => {
+        spaceModal.classList.remove('show');
+        window.parent.postMessage({
+          type: 'job-shrimp-open-space-management',
+          payload: {
+            spaceId: activeSpaceManagement?.id,
+          }
+        }, '*');
+      });
+
+      // 筛选下拉
+      const filterItems = document.querySelectorAll('.filter-item[data-filter]');
+      const filterMap = {
+        'status': 'statusFilter', 'space': 'spaceFilter', 'employeeId': 'employeeIdFilter',
+        'mid': 'midFilter', 'department': 'departmentFilter',
+        'trainer': 'trainerFilter', 'manager': 'managerFilter'
+      };
+
+      filterItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const filterType = item.getAttribute('data-filter');
+          const dropdown = document.getElementById(filterMap[filterType]);
+          document.querySelectorAll('.filter-dropdown').forEach(d => { if (d !== dropdown) d.classList.remove('show'); });
+          document.querySelectorAll('.filter-item').forEach(fi => { if (fi !== item) fi.classList.remove('active'); });
+          dropdown.classList.toggle('show');
+          item.classList.toggle('active');
+        });
+      });
+
+      document.addEventListener('click', () => {
+        document.querySelectorAll('.filter-dropdown').forEach(d => d.classList.remove('show'));
+        document.querySelectorAll('.filter-item').forEach(fi => fi.classList.remove('active'));
+      });
+
+      document.querySelectorAll('.filter-dropdown').forEach(dropdown => {
+        dropdown.addEventListener('click', (e) => e.stopPropagation());
+      });
+
+      document.querySelectorAll('.filter-select-all').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const list = btn.closest('.filter-dropdown').querySelector('.filter-dropdown-list');
+          const checkboxes = list.querySelectorAll('input[type="checkbox"]');
+          const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+          checkboxes.forEach(cb => { cb.checked = !allChecked; });
+          btn.textContent = allChecked ? '全选' : '取消全选';
+        });
+      });
+
+      document.querySelectorAll('.filter-dropdown-search input').forEach(input => {
+        input.addEventListener('input', () => {
+          const searchTerm = input.value.toLowerCase();
+          const list = input.closest('.filter-dropdown').querySelector('.filter-dropdown-list');
+          list.querySelectorAll('.filter-dropdown-item').forEach(item => {
+            const label = item.querySelector('label').textContent.toLowerCase();
+            item.style.display = label.includes(searchTerm) ? 'flex' : 'none';
+          });
+        });
+      });
+    });
+
+    function openSpaceManagementModal(spaceName, shrimpName) {
+      const fallbackSpace = {
+        id: 204,
+        detailName: spaceName || '国际销售空间',
+        displayName: spaceName || '国际业务 BP空间 (SP001)',
+        model: 'xiaomi/mimo-v2-pro-mit',
+        image: 'micr.cloud.mioffice.cn/openclaw-images/miclaw:v0.18.0',
+        updatedAt: '2026-03-16 17:44',
+        admin: '郭琳'
+      };
+      const spaceInfo = spaceManagementMap[spaceName] || fallbackSpace;
+      activeSpaceManagement = spaceInfo;
+
+      const modal = document.getElementById('spaceModal');
+      const summary = modal.querySelector('.modal-header p');
+      const infoInputs = modal.querySelectorAll('.space-info-input');
+
+      if (summary) {
+        summary.textContent = `查看 ${shrimpName || '当前岗位虾'} 的专属空间、模型与运行镜像。`;
+      }
+
+      if (infoInputs[0]) infoInputs[0].textContent = spaceInfo.displayName;
+      if (infoInputs[1]) infoInputs[1].textContent = spaceInfo.model;
+      if (infoInputs[2]) infoInputs[2].textContent = spaceInfo.image;
+      if (infoInputs[3]) infoInputs[3].textContent = spaceInfo.updatedAt;
+      if (infoInputs[4]) infoInputs[4].textContent = spaceInfo.admin;
+
+      modal.classList.add('show');
+    }
+  </script>
+
+  <!-- 空间信息弹窗 -->
+  <div class="modal-overlay" id="spaceModal">
+    <div class="modal" style="width: 560px;">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title">空间管理</h3>
+          <p style="font-size: 14px; color: #8C93B3; margin-top: 4px;">查看 国际IT业务BP虾 的专属空间、模型与运行镜像。</p>
+        </div>
+        <button class="modal-close">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="space-info-item">
+          <span class="space-info-label">空间名称</span>
+          <div class="space-info-input">国际业务 BP空间 (SP001)</div>
+        </div>
+        <div class="space-info-item" style="margin-top: 20px;">
+          <span class="space-info-label">模型</span>
+          <div class="space-info-input">xiaomi/mimo-v2-pro-mit</div>
+        </div>
+        <div class="space-info-item" style="margin-top: 20px;">
+          <span class="space-info-label">镜像</span>
+          <div class="space-info-input">micr.cloud.mioffice.cn/openclaw-images/miclaw:v0.18.0</div>
+        </div>
+        <div class="space-info-grid" style="margin-top: 20px;">
+          <div class="space-info-item">
+            <span class="space-info-label">更新日期</span>
+            <div class="space-info-input">2026-03-16 17:44</div>
+          </div>
+          <div class="space-info-item">
+            <span class="space-info-label">管理员</span>
+            <div class="space-info-input">郭琳</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-primary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15,3 21,3 21,9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+          进入空间管理
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 字段管理侧边栏 -->
+  <div class="drawer-overlay" id="fieldDrawerOverlay"></div>
+  <div class="drawer" id="fieldDrawer">
+    <div class="drawer-header">
+      <h3 class="drawer-title">字段管理</h3>
+      <button class="drawer-close" id="drawerClose">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="drawer-body">
+      <div class="field-list" id="fieldList">
+        <!-- 全部 -->
+        <div class="field-item field-all-item" data-field="all">
+          <input type="checkbox" id="field-all" checked />
+          <label for="field-all">全部</label>
+        </div>
+        <!-- 字段列表由JS动态生成 -->
+      </div>
+    </div>
+    <div class="drawer-footer">
+      <button class="btn-default" id="drawerCancel">取消</button>
+      <button class="btn-default" id="drawerReset">重置</button>
+      <button class="btn-primary" id="drawerConfirm">确定</button>
+    </div>
+  </div>
+
+  <script>
+    // 字段配置（顶层作用域，供 handleQuickFilter 等调用）
+    const defaultFields = [
+      { id: 'name', label: '数字员工姓名', visible: true },
+      { id: 'space', label: '所属空间', visible: true },
+      { id: 'status', label: '状态', visible: true },
+      { id: 'agentId', label: 'AgentID', visible: false },
+      { id: 'employeeId', label: '工号', visible: true },
+      { id: 'email', label: '邮箱', visible: false },
+      { id: 'mid', label: 'MID', visible: true },
+      { id: 'reporter', label: '汇报上级', visible: true },
+      { id: 'applicant', label: '申请人', visible: false },
+      { id: 'department', label: '所属部门', visible: true },
+      { id: 'applicationSource', label: '申请来源', visible: true },
+      { id: 'actions', label: '操作', visible: true }
+    ];
+    let currentFields = JSON.parse(JSON.stringify(defaultFields));
+
+    function updateTableColumns() {
+      const table = document.querySelector('table');
+      if (!table) return;
+      const thead = table.querySelector('thead tr');
+      thead.innerHTML = '';
+      currentFields.forEach(field => {
+        if (field.visible) {
+          const th = document.createElement('th');
+          th.textContent = field.label;
+          if (field.id === 'actions') {
+            th.className = 'table-cell-actions';
+          }
+          thead.appendChild(th);
+        }
+      });
+    }
+
+    // 字段管理功能
+    document.addEventListener('DOMContentLoaded', () => {
+      const fieldManageBtn = document.getElementById('fieldManageBtn');
+      const fieldDrawer = document.getElementById('fieldDrawer');
+      const fieldDrawerOverlay = document.getElementById('fieldDrawerOverlay');
+      const drawerClose = document.getElementById('drawerClose');
+      const drawerCancel = document.getElementById('drawerCancel');
+      const drawerReset = document.getElementById('drawerReset');
+      const drawerConfirm = document.getElementById('drawerConfirm');
+      const fieldList = document.getElementById('fieldList');
+      const fieldAllCheckbox = document.getElementById('field-all');
+
+      // 生成字段列表
+      function renderFieldList() {
+        // 保留"全部"项
+        const allItem = fieldList.querySelector('.field-all-item');
+        fieldList.innerHTML = '';
+        fieldList.appendChild(allItem);
+
+        // 更新"全部"复选框状态
+        const allChecked = currentFields.every(f => f.visible);
+        const someChecked = currentFields.some(f => f.visible);
+        fieldAllCheckbox.checked = allChecked;
+        fieldAllCheckbox.indeterminate = someChecked && !allChecked;
+
+        // 生成字段项
+        currentFields.forEach((field, index) => {
+          const item = document.createElement('div');
+          item.className = 'field-item';
+          item.setAttribute('data-field-id', field.id);
+          item.setAttribute('draggable', 'true');
+          item.innerHTML = `
+            <input type="checkbox" id="field-${field.id}" ${field.visible ? 'checked' : ''} />
+            <label for="field-${field.id}">${field.label}</label>
+            <div class="field-drag-handle">
+              <span class="drag-dot"></span>
+              <span class="drag-dot"></span>
+              <span class="drag-dot"></span>
+              <span class="drag-dot"></span>
+              <span class="drag-dot"></span>
+              <span class="drag-dot"></span>
+            </div>
+          `;
+          fieldList.appendChild(item);
+
+          // 复选框事件
+          const checkbox = item.querySelector('input[type="checkbox"]');
+          checkbox.addEventListener('change', () => {
+            currentFields[index].visible = checkbox.checked;
+            updateAllCheckbox();
+          });
+
+          // 拖拽事件
+          item.addEventListener('dragstart', (e) => {
+            item.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', index);
+          });
+
+          item.addEventListener('dragend', () => {
+            item.classList.remove('dragging');
+          });
+
+          item.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+          });
+
+          item.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const fromIndex = parseInt(e.dataTransfer.getData('text/plain'));
+            const toIndex = index;
+            if (fromIndex !== toIndex) {
+              const [movedItem] = currentFields.splice(fromIndex, 1);
+              currentFields.splice(toIndex, 0, movedItem);
+              renderFieldList();
+            }
+          });
+        });
+      }
+
+      // 更新"全部"复选框状态
+      function updateAllCheckbox() {
+        const allChecked = currentFields.every(f => f.visible);
+        const someChecked = currentFields.some(f => f.visible);
+        fieldAllCheckbox.checked = allChecked;
+        fieldAllCheckbox.indeterminate = someChecked && !allChecked;
+      }
+
+      // 全部复选框事件
+      fieldAllCheckbox.addEventListener('change', () => {
+        const checked = fieldAllCheckbox.checked;
+        currentFields.forEach(f => f.visible = checked);
+        renderFieldList();
+      });
+
+      // 打开侧边栏
+      fieldManageBtn.addEventListener('click', () => {
+        renderFieldList();
+        fieldDrawer.classList.add('show');
+        fieldDrawerOverlay.classList.add('show');
+      });
+
+      // 关闭侧边栏
+      function closeDrawer() {
+        fieldDrawer.classList.remove('show');
+        fieldDrawerOverlay.classList.remove('show');
+      }
+
+      drawerClose.addEventListener('click', closeDrawer);
+      drawerCancel.addEventListener('click', closeDrawer);
+      fieldDrawerOverlay.addEventListener('click', closeDrawer);
+
+      // 重置
+      drawerReset.addEventListener('click', () => {
+        currentFields = JSON.parse(JSON.stringify(defaultFields));
+        renderFieldList();
+      });
+
+      // 确定
+      drawerConfirm.addEventListener('click', () => {
+        renderTable();
+        closeDrawer();
+      });
+
+      // 初始渲染
+      renderFieldList();
+      updateTableColumns();
+    });
+  </script>
+
+  <!-- ====== 申请岗位虾 Drawer ====== -->
+  <div class="apply-drawer-overlay" id="applyDrawerOverlay" onclick="if(event.target===this)closeApplyDrawer()">
+    <div class="apply-drawer-panel">
+      <div class="apply-drawer-header">
+        <h2 id="applyDrawerTitle">申请岗位虾</h2>
+        <button class="apply-drawer-close" onclick="closeApplyDrawer()">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <div class="apply-drawer-body">
+        <div class="apply-stepper" id="applyStepper">
+          <button type="button" class="apply-step-item is-active" onclick="goToApplyStep(0)">
+            <span class="apply-step-index">1</span>
+            <span class="apply-step-content">
+              <span class="apply-step-name">身份信息</span>
+            </span>
+          </button>
+          <span class="apply-step-line"></span>
+          <button type="button" class="apply-step-item" onclick="goToApplyStep(1)">
+            <span class="apply-step-index">2</span>
+            <span class="apply-step-content">
+              <span class="apply-step-name">组织归属</span>
+            </span>
+          </button>
+          <span class="apply-step-line"></span>
+          <button type="button" class="apply-step-item" onclick="goToApplyStep(2)">
+            <span class="apply-step-index">3</span>
+            <span class="apply-step-content">
+              <span class="apply-step-name">岗位定义</span>
+            </span>
+          </button>
+        </div>
+        <div class="apply-context-banner" id="applyContextBanner"></div>
+
+        <div class="apply-step-panel is-active" data-step-panel="0">
+          <div class="apply-form-section">
+            <div class="apply-form-section-title">
+              <span class="dot"></span>
+              身份信息
+            </div>
+            <div class="apply-form-group">
+              <label class="apply-form-label">
+                <span class="required">*</span> 数字员工姓名
+              </label>
+              <input class="apply-form-input" id="applyShrimpName" placeholder="如：东南亚销售虾、门店巡检虾" oninput="generateMiAccount(); validateApplyForm()" />
+              <div class="apply-form-hint">
+                <span class="hint-icon">i</span>
+                名称将在工作台和对话中展示，建议简洁明了
+              </div>
+            </div>
+            <div class="apply-form-group">
+              <label class="apply-form-label">
+                <span class="required">*</span> 英文名
+              </label>
+              <input class="apply-form-input" id="applyEnglishName" placeholder="如：SEA Sales Shrimp" oninput="validateApplyForm()" />
+              <div class="apply-form-hint">
+                <span class="hint-icon">i</span>
+                用于英文环境展示与跨语种检索
+              </div>
+            </div>
+            <div class="apply-form-group">
+              <label class="apply-form-label">
+                <span class="required">*</span> 邮箱前缀
+              </label>
+              <input class="apply-form-input" id="applyMiAccount" placeholder="根据数字员工姓名自动生成，可修改" oninput="validateApplyForm()" />
+              <div class="apply-form-hint">
+                <span class="hint-icon">i</span>
+                仅填写邮箱 @ 前内容，系统会自动拼接企业域名
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="apply-step-panel" data-step-panel="1">
+          <div class="apply-form-section">
+            <div class="apply-form-section-title">
+              <span class="dot"></span>
+              组织归属
+            </div>
+            <div class="apply-form-group apply-form-group-tree">
+              <label class="apply-form-label">
+                <span class="required">*</span> 所属部门
+              </label>
+              <div class="apply-tree-trigger" id="applyDeptTrigger" onclick="toggleApplyDeptDropdown()">
+                <span class="placeholder" id="applyDeptPlaceholder">请选择部门</span>
+                <span class="arrow">
+                  <svg width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+              </div>
+              <div class="apply-tree-dropdown" id="applyDeptDropdown">
+                <div class="apply-tree-search">
+                  <span class="apply-tree-search-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="11" cy="11" r="7"></circle>
+                      <path d="M20 20l-3.5-3.5"></path>
+                    </svg>
+                  </span>
+                  <input type="text" id="applyDeptSearch" placeholder="请输入部门名称" oninput="filterApplyDeptTree()" />
+                </div>
+                <div class="apply-tree-flat-list" id="applyDeptFlatList"></div>
+              </div>
+              <div class="apply-form-hint">
+                <span class="hint-icon">i</span>
+                部门用于确定岗位虾的组织归属和管理权限
+              </div>
+            </div>
+            <div class="apply-form-group">
+              <label class="apply-form-label">汇报上级</label>
+              <input class="apply-form-input apply-form-input--readonly" id="applyReporter" placeholder="选择部门后自动带出" readonly />
+              <div class="apply-form-hint">
+                <span class="hint-icon">i</span>
+                根据所选部门自动确定，如需调整请联系管理员
+              </div>
+            </div>
+            <div class="apply-form-group apply-form-group-tree">
+              <label class="apply-form-label">
+                <span class="required">*</span> 加入/注册空间
+              </label>
+              <div class="apply-tree-trigger" id="applySpaceTrigger" onclick="toggleApplySpaceDropdown()">
+                <span class="placeholder" id="applySpacePlaceholder">请选择空间</span>
+                <span class="arrow">
+                  <svg width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+              </div>
+              <div class="apply-tree-dropdown" id="applySpaceDropdown">
+                <div class="apply-tree-search">
+                  <span class="apply-tree-search-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="11" cy="11" r="7"></circle>
+                      <path d="M20 20l-3.5-3.5"></path>
+                    </svg>
+                  </span>
+                  <input type="text" id="applySpaceSearch" placeholder="搜索空间名称" oninput="filterApplySpaceList()" />
+                </div>
+                <div class="apply-tree-flat-list" id="applySpaceFlatList"></div>
+              </div>
+              <div class="apply-form-hint">
+                <span class="hint-icon">i</span>
+                空间用于镜像、模型、配置共享及配额管理，选错会影响可用资源。不确定时可联系 guoying1 确认。
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="apply-step-panel" data-step-panel="2">
+          <div class="apply-form-section">
+            <div class="apply-form-section-title">
+              <span class="dot"></span>
+              岗位定义
+            </div>
+            <div class="apply-inline-grid">
+              <div class="apply-form-group">
+                <label class="apply-form-label">
+                  <span class="required">*</span> 岗位名称
+                </label>
+                <input class="apply-form-input" id="applyJobTitle" placeholder="如：东南亚销售经理、门店巡检专员" oninput="validateApplyForm()" />
+              </div>
+              <div class="apply-form-group">
+                <label class="apply-form-label">
+                  <span class="required">*</span> 岗位定级
+                </label>
+                <select class="apply-form-select" id="applyJobLevel" onchange="validateApplyForm()">
+                  <option value="">请选择岗位定级</option>
+                  <option value="13级（基础执行）">13级（基础执行）</option>
+                  <option value="14级（多场景协同）">14级（多场景协同）</option>
+                  <option value="15级（跨系统推理）">15级（跨系统推理）</option>
+                  <option value="16级（主动洞察）">16级（主动洞察）</option>
+                </select>
+              </div>
+            </div>
+            <div class="apply-form-group">
+              <label class="apply-form-label">
+                <span class="required">*</span> 岗位说明书
+                <button type="button" class="ai-verify-btn" id="applyAiVerifyBtn" onclick="handleAiVerify()">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="currentColor"/>
+                  </svg>
+                  AI验
+                </button>
+              </label>
+              <input type="text" class="apply-form-input" id="applyAttachment" placeholder="提供岗位说明书飞书文档链接" oninput="clearApplyAiCheckResult(); validateApplyForm()" />
+              <div class="apply-ai-check-result" id="applyAiCheckResult"></div>
+              <div class="apply-form-hint">
+                <span class="hint-icon">i</span>
+                提供岗位说明书附件，<a href="https://mi.feishu.cn/wiki/ELYvwSntIigE4pk5ZFocik9InAd" target="_blank" class="apply-hint-link">参考模版</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="apply-drawer-footer">
+        <div class="apply-drawer-footer-actions">
+          <button class="btn-default apply-btn-hidden" id="applyPrevBtn" onclick="handleApplyPrev()">返回上一步</button>
+          <button class="btn-default" id="applyCancelBtn" onclick="closeApplyDrawer()">取消</button>
+          <button class="btn-primary" id="applyNextBtn" onclick="handleApplyNext()">下一步</button>
+          <button class="btn-primary apply-btn-hidden" id="applySubmitBtn" disabled onclick="handleApplySubmit()">提交申请</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Apply Toast -->
+  <div class="apply-toast success" id="applyToast">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="vertical-align:-2px;margin-right:6px"><circle cx="8" cy="8" r="8" fill="#389e0d"/><path d="M4.5 8.2l2.2 2.2 4.8-4.8" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span id="applyToastText">已提交岗位虾申请</span>
+  </div>
+
+
+  <script>
+    // ====== Apply Drawer Script ======
+    const applySpacePlaceholders = {
+      '': '为一线销售提供实时报价查询和竞品对比，减少人工翻表时间 70%',
+      'intl-bp': '为国际业务团队提供跨区域销售数据汇总和异常预警，提升决策效率',
+      'sea': '为东南亚一线销售提供实时报价查询和竞品对比，减少人工翻表时间 70%',
+      'eu': '为欧洲区域经理提供合规审查辅助和多语言客户沟通支持',
+      'latam': '为拉美渠道商提供本地化产品推荐和库存预警',
+      'mea': '为中东非市场团队提供阿拉伯语客户咨询和区域销售分析',
+      'global': '为全球运营团队提供跨区域数据聚合和统一报表生成',
+    };
+
+    const applyDeptTree = [
+      { id: 'phone', name: '手机部', children: [
+        { id: 'phone-product', name: '手机产品部' },
+        { id: 'phone-design', name: '手机设计部' },
+        { id: 'phone-software', name: '手机软件部' },
+      ]},
+      { id: 'intl', name: '国际业务部', children: [
+        { id: 'intl-weu', name: '西欧地区部' },
+        { id: 'intl-sasia', name: '南亚地区部' },
+        { id: 'intl-sea', name: '东南亚地区部' },
+        { id: 'intl-ea', name: '东亚地区部' },
+        { id: 'intl-af', name: '非洲地区部' },
+        { id: 'intl-latam', name: '拉美地区部' },
+        { id: 'intl-mea', name: '中东地区部' },
+      ]},
+      { id: 'auto', name: '汽车部', children: [
+        { id: 'auto-product', name: '汽车产品部' },
+        { id: 'auto-tech', name: '汽车技术部' },
+      ]},
+      { id: 'china', name: '中国区', children: [
+        { id: 'china-retail', name: '中国区零售部' },
+        { id: 'china-online', name: '中国区线上部' },
+      ]},
+      { id: 'internet', name: '互联网业务部', children: [
+        { id: 'internet-ads', name: '广告业务部' },
+        { id: 'internet-game', name: '游戏业务部' },
+      ]},
+      { id: 'committee', name: '集团技术委员会', children: [
+        { id: 'committee-ai', name: 'AI 实验室' },
+        { id: 'committee-cloud', name: '云平台部' },
+      ]},
+      { id: 'strategy', name: '策略运营部', children: [] },
+      { id: 'channel', name: '渠道零售部', children: [
+        { id: 'channel-retail-mgmt', name: '零售管理部' },
+        { id: 'channel-retail-support', name: '零售支持部' },
+        { id: 'channel-retail-market', name: '零售市场部' },
+        { id: 'channel-training', name: '培训管理部' },
+        { id: 'channel-xiaomi-net', name: '小米网' },
+        { id: 'channel-new-retail', name: '新零售部' },
+      ]},
+    ];
+
+    function buildApplyDeptSearchOptions(nodes, currentPath) {
+      const path = currentPath || [];
+      return nodes.flatMap((node) => {
+        const nextPath = [...path, node.name];
+        const currentOption = {
+          id: node.id,
+          name: node.name,
+          pathNames: nextPath,
+          pathText: nextPath.join('-'),
+          searchText: nextPath.join(' ').toLowerCase(),
+          node
+        };
+        const children = node.children && node.children.length
+          ? buildApplyDeptSearchOptions(node.children, nextPath)
+          : [];
+        return [currentOption, ...children];
+      });
+    }
+
+    const applyDeptSearchOptions = buildApplyDeptSearchOptions(applyDeptTree);
+
+    // mock: 部门ID → 汇报上级
+    const deptManagerMap = {
+      'phone': '郭琳',
+      'phone-product': 'Wei He 何伟',
+      'phone-design': 'Eric Deng 邓舟',
+      'phone-software': 'Will 徐巍',
+      'intl': '杨帆',
+      'intl-weu': 'Hanya 韩亚',
+      'intl-sasia': '张可阿心',
+      'intl-sea': '李建国',
+      'intl-ea': '周烨',
+      'intl-af': '陈亮',
+      'intl-latam': '战达',
+      'intl-mea': 'Seven',
+      'auto': 'Joffrey 马俊淞',
+      'auto-product': 'Wei He 何伟',
+      'auto-tech': 'Eric Deng 邓舟',
+      'china': '杨帆',
+      'china-retail': '郭琳',
+      'china-online': '李建国',
+      'internet': 'Will 徐巍',
+      'internet-ads': '张可阿心',
+      'internet-game': '周烨',
+      'committee': '陈亮',
+      'committee-ai': 'Seven',
+      'committee-cloud': '战达',
+      'strategy': 'Hanya 韩亚',
+      'channel': '杨帆',
+      'channel-retail-mgmt': '郭琳',
+      'channel-retail-support': '李建国',
+      'channel-retail-market': 'Joffrey 马俊淞',
+      'channel-training': 'Eric Deng 邓舟',
+      'channel-xiaomi-net': 'Wei He 何伟',
+      'channel-new-retail': '张可阿心',
+    };
+
+    let applySelectedDept = null;
+    let applyActiveColIndex = 0;
+    let applyActivePath = [];
+    const APPLY_TOTAL_STEPS = 3;
+    let applyCurrentStep = 0;
+    let applyAiCheckInProgress = false;
+    let applyAiCheckSequence = 0;
+
+    function showToast(message, type = 'info') {
+      const existing = document.querySelector('.toast-message');
+      if (existing) existing.remove();
+
+      const toast = document.createElement('div');
+      toast.className = 'toast-message';
+      const colors = {
+        info: { bg: '#EBF3FF', color: '#3370FF', border: '#3370FF' },
+        success: { bg: '#EBFBE9', color: '#34C724', border: '#34C724' },
+        warning: { bg: '#FFF7E6', color: '#FF9500', border: '#FF9500' },
+        error: { bg: '#FFECEB', color: '#F54A45', border: '#F54A45' }
+      };
+      const c = colors[type] || colors.info;
+      toast.style.cssText = `
+        position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+        padding: 10px 20px; background: ${c.bg}; color: ${c.color};
+        border: 1px solid ${c.border}; border-radius: 8px;
+        font-size: 13px; font-weight: 500; z-index: 10000;
+        box-shadow: 0 4px 12px rgba(0,0,0,.12);
+        animation: toastSlideIn .3s ease;
+      `;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => {
+        toast.style.animation = 'toastSlideOut .3s ease forwards';
+        setTimeout(() => toast.remove(), 300);
+      }, 2000);
+    }
+
+    function escapeApplyHtml(value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function setApplyAiCheckResult(type, payload) {
+      const result = document.getElementById('applyAiCheckResult');
+      if (!result) return;
+
+      if (!type || !payload) {
+        result.className = 'apply-ai-check-result';
+        result.innerHTML = '';
+        return;
+      }
+
+      const iconMap = {
+        loading: '',
+        success: '✓',
+        error: '!'
+      };
+      const itemsHtml = (payload.items || []).map((item) => `
+        <div class="apply-ai-check-item">
+          <span class="apply-ai-check-item-marker">${type === 'error' ? '!' : '✓'}</span>
+          <span><strong>${escapeApplyHtml(item.label)}</strong>${item.desc ? `：${escapeApplyHtml(item.desc)}` : ''}</span>
+        </div>
+      `).join('');
+      const progressHtml = type === 'loading'
+        ? `
+          <div class="apply-ai-check-progress">
+            <div class="apply-ai-check-progress-bar">
+              <div class="apply-ai-check-progress-fill" style="width:${payload.progress || 0}%"></div>
+            </div>
+            <span class="apply-ai-check-progress-text">${payload.progress || 0}%</span>
+          </div>
+        `
+        : '';
+
+      result.className = `apply-ai-check-result show ${type}`;
+      result.innerHTML = `
+        <div class="apply-ai-check-header">
+          <span class="apply-ai-check-icon">${iconMap[type] || ''}</span>
+          <div class="apply-ai-check-body">
+            <div class="apply-ai-check-title">${escapeApplyHtml(payload.title || '')}</div>
+            ${payload.desc ? `<div class="apply-ai-check-desc">${escapeApplyHtml(payload.desc)}</div>` : ''}
+            ${progressHtml}
+          </div>
+        </div>
+        ${itemsHtml ? `<div class="apply-ai-check-list">${itemsHtml}</div>` : ''}
+        ${payload.tip ? `<div class="apply-ai-check-tip">${escapeApplyHtml(payload.tip)}</div>` : ''}
+      `;
+    }
+
+    function clearApplyAiCheckResult() {
+      applyAiCheckSequence += 1;
+      applyAiCheckInProgress = false;
+      setApplyAiCheckBusy(false);
+      setApplyAiCheckResult('', null);
+    }
+
+    function showApplyStepError(message) {
+      showToast(message, 'warning');
+      return false;
+    }
+
+    function validateApplyStep(stepIndex, showError) {
+      const shouldShowError = !!showError;
+      const shrimpName = document.getElementById('applyShrimpName').value.trim();
+      const englishName = document.getElementById('applyEnglishName').value.trim();
+      const miAccount = document.getElementById('applyMiAccount').value.trim();
+      const space = getApplySpaceValue();
+      const jobTitle = document.getElementById('applyJobTitle').value.trim();
+      const jobLevel = document.getElementById('applyJobLevel').value;
+      const attachment = document.getElementById('applyAttachment').value.trim();
+
+      switch (stepIndex) {
+        case 0:
+          if (!shrimpName) return shouldShowError ? showApplyStepError('请先填写数字员工姓名') : false;
+          if (!englishName) return shouldShowError ? showApplyStepError('请先填写英文名') : false;
+          if (!miAccount) return shouldShowError ? showApplyStepError('请先填写邮箱前缀') : false;
+          return true;
+        case 1:
+          if (!applySelectedDept) return shouldShowError ? showApplyStepError('请先选择所属部门') : false;
+          if (!space) return shouldShowError ? showApplyStepError('请先选择所属空间') : false;
+          return true;
+        case 2:
+          if (!jobTitle) return shouldShowError ? showApplyStepError('请先填写岗位名称') : false;
+          if (!jobLevel) return shouldShowError ? showApplyStepError('请先选择岗位定级') : false;
+          if (!attachment) return shouldShowError ? showApplyStepError('请先填写岗位说明书链接') : false;
+          return true;
+        default:
+          return true;
+      }
+    }
+
+    function validateApplyForm() {
+      const nextBtn = document.getElementById('applyNextBtn');
+      const submitBtn = document.getElementById('applySubmitBtn');
+
+      if (nextBtn) {
+        nextBtn.disabled = applyAiCheckInProgress || !validateApplyStep(applyCurrentStep, false);
+      }
+      if (submitBtn) {
+        submitBtn.disabled = applyAiCheckInProgress || !validateApplyStep(APPLY_TOTAL_STEPS - 1, false);
+      }
+
+      return validateApplyStep(applyCurrentStep, false);
+    }
+
+    function setApplyAiCheckBusy(isBusy, submitMode) {
+      applyAiCheckInProgress = isBusy;
+      const footerButtons = Array.from(document.querySelectorAll('.apply-drawer-footer-actions button'));
+      footerButtons.forEach((button) => {
+        button.disabled = isBusy;
+      });
+
+      const closeBtn = document.querySelector('.apply-drawer-close');
+      if (closeBtn) closeBtn.disabled = isBusy;
+
+      const aiVerifyBtn = document.getElementById('applyAiVerifyBtn');
+      if (aiVerifyBtn) aiVerifyBtn.disabled = isBusy;
+
+      const formControls = Array.from(document.querySelectorAll('.apply-drawer-body input, .apply-drawer-body select, .apply-drawer-body textarea'));
+      formControls.forEach((control) => {
+        if (control.id === 'applyReporter') return;
+        control.disabled = isBusy;
+      });
+
+      const stepper = document.getElementById('applyStepper');
+      if (stepper) {
+        stepper.classList.toggle('apply-submit-loading', isBusy);
+      }
+
+      const submitBtn = document.getElementById('applySubmitBtn');
+      if (submitBtn) {
+        submitBtn.textContent = isBusy && submitMode ? 'AI 质检中...' : getApplySubmitButtonText();
+      }
+
+      validateApplyForm();
+    }
+
+    function syncApplyStepUi() {
+      const stepItems = Array.from(document.querySelectorAll('#applyStepper .apply-step-item'));
+      const stepLines = Array.from(document.querySelectorAll('#applyStepper .apply-step-line'));
+      const panels = Array.from(document.querySelectorAll('[data-step-panel]'));
+      const prevBtn = document.getElementById('applyPrevBtn');
+      const nextBtn = document.getElementById('applyNextBtn');
+      const submitBtn = document.getElementById('applySubmitBtn');
+
+      stepItems.forEach((item, index) => {
+        item.classList.toggle('is-active', index === applyCurrentStep);
+        item.classList.toggle('is-done', index < applyCurrentStep);
+        item.classList.toggle('is-clickable', index <= applyCurrentStep + 1);
+        const indexEl = item.querySelector('.apply-step-index');
+        if (indexEl) {
+          indexEl.textContent = index < applyCurrentStep ? '✓' : String(index + 1);
+        }
+      });
+
+      stepLines.forEach((line, index) => {
+        line.classList.toggle('is-done', applyCurrentStep > index);
+      });
+
+      panels.forEach((panel) => {
+        const panelStep = Number(panel.getAttribute('data-step-panel'));
+        panel.classList.toggle('is-active', panelStep === applyCurrentStep);
+      });
+
+      if (prevBtn) {
+        prevBtn.classList.toggle('apply-btn-hidden', applyCurrentStep === 0);
+      }
+      if (nextBtn) {
+        nextBtn.classList.toggle('apply-btn-hidden', applyCurrentStep === APPLY_TOTAL_STEPS - 1);
+      }
+      if (submitBtn) {
+        submitBtn.classList.toggle('apply-btn-hidden', applyCurrentStep !== APPLY_TOTAL_STEPS - 1);
+      }
+
+      validateApplyForm();
+    }
+
+    function goToApplyStep(stepIndex) {
+      if (applyAiCheckInProgress) return;
+      if (stepIndex < 0 || stepIndex >= APPLY_TOTAL_STEPS) return;
+      if (stepIndex === applyCurrentStep) return;
+      if (stepIndex > applyCurrentStep + 1) return;
+      if (stepIndex > applyCurrentStep && !validateApplyStep(applyCurrentStep, true)) return;
+      applyCurrentStep = stepIndex;
+      syncApplyStepUi();
+    }
+
+    function handleApplyPrev() {
+      if (applyAiCheckInProgress) return;
+      if (applyCurrentStep === 0) return;
+      applyCurrentStep -= 1;
+      syncApplyStepUi();
+    }
+
+    function handleApplyNext() {
+      if (applyAiCheckInProgress) return;
+      if (!validateApplyStep(applyCurrentStep, true)) return;
+      if (applyCurrentStep < APPLY_TOTAL_STEPS - 1) {
+        applyCurrentStep += 1;
+        syncApplyStepUi();
+      }
+    }
+
+    function getApplySubmitButtonText() {
+      return applyFormMode === 'resubmit' ? '重新提交申请' : '提交申请';
+    }
+
+    function getApplyDrawerTitleText() {
+      return applyFormMode === 'resubmit' ? '重新提交岗位虾申请' : '申请岗位虾';
+    }
+
+    function collectApplyFormSnapshot() {
+      const reporterInput = document.getElementById('applyReporter');
+      return {
+        shrimpName: document.getElementById('applyShrimpName').value.trim(),
+        englishName: document.getElementById('applyEnglishName').value.trim(),
+        miAccount: document.getElementById('applyMiAccount').value.trim(),
+        departmentId: applySelectedDept?.id || '',
+        departmentName: applySelectedDept?.name || '',
+        reporter: reporterInput ? reporterInput.value.trim() : '',
+        spaceValue: getApplySpaceValue(),
+        jobTitle: document.getElementById('applyJobTitle').value.trim(),
+        jobLevel: document.getElementById('applyJobLevel').value,
+        attachment: document.getElementById('applyAttachment').value.trim()
+      };
+    }
+
+    function resetApplyFormFields() {
+      document.getElementById('applyShrimpName').value = '';
+      document.getElementById('applyEnglishName').value = '';
+      document.getElementById('applyMiAccount').value = '';
+      setApplySpaceValue('');
+      document.getElementById('applyJobTitle').value = '';
+      document.getElementById('applyJobLevel').value = '';
+      document.getElementById('applyAttachment').value = '';
+      clearApplyDept();
+      clearApplyAiCheckResult();
+    }
+
+    function setApplyDeptFromSnapshot(snapshot) {
+      if (!snapshot?.departmentId && !snapshot?.departmentName) {
+        clearApplyDept();
+        return;
+      }
+      const targetNode = snapshot.departmentId
+        ? applyFindNodeById(applyDeptTree, snapshot.departmentId)
+        : applyFindNodeByName(applyDeptTree, snapshot.departmentName);
+      if (!targetNode) {
+        clearApplyDept();
+        return;
+      }
+      selectApplyDept(targetNode);
+      const reporterInput = document.getElementById('applyReporter');
+      const reporterValue = snapshot.reporter || deptManagerMap[targetNode.id] || '';
+      reporterInput.value = reporterValue;
+      reporterInput.classList.toggle('apply-form-input--has-value', !!reporterValue);
+    }
+
+    function fillApplyFormSnapshot(snapshot) {
+      resetApplyFormFields();
+      if (!snapshot) return;
+      document.getElementById('applyShrimpName').value = snapshot.shrimpName || '';
+      document.getElementById('applyEnglishName').value = snapshot.englishName || '';
+      document.getElementById('applyMiAccount').value = snapshot.miAccount || '';
+      setApplySpaceValue(snapshot.spaceValue || '');
+      document.getElementById('applyJobTitle').value = snapshot.jobTitle || '';
+      document.getElementById('applyJobLevel').value = snapshot.jobLevel || '';
+      document.getElementById('applyAttachment').value = snapshot.attachment || '';
+      setApplyDeptFromSnapshot(snapshot);
+      validateApplyForm();
+    }
+
+    function setApplyDrawerContext(shrimp) {
+      const titleEl = document.getElementById('applyDrawerTitle');
+      const bannerEl = document.getElementById('applyContextBanner');
+      const submitBtn = document.getElementById('applySubmitBtn');
+
+      if (titleEl) titleEl.textContent = getApplyDrawerTitleText();
+      if (submitBtn) submitBtn.textContent = getApplySubmitButtonText();
+      if (!bannerEl) return;
+
+      if (applyFormMode === 'resubmit' && shrimp?.application?.state === 'rejected') {
+        const rejectNode = escapeApplyHtml(shrimp.application.rejectNode || '审批节点');
+        const rejectReason = escapeApplyHtml(shrimp.application.rejectReason || '当前申请已被驳回，请补充后重新提交。');
+        bannerEl.innerHTML = `
+          <div class="apply-context-banner-title">
+            <span class="apply-context-banner-icon">!</span>
+            <span>当前申请已被驳回，可编辑后重新提交</span>
+          </div>
+          <div class="apply-context-banner-desc">驳回节点：${rejectNode}</div>
+          <div class="apply-context-banner-desc">驳回原因：${rejectReason}</div>
+          <div class="apply-context-banner-actions">
+            <span class="apply-context-banner-link" onclick="openShrimpApprovalFlow(${shrimp.id})">查看审批流</span>
+          </div>
+        `;
+        bannerEl.classList.add('show');
+        return;
+      }
+
+      bannerEl.classList.remove('show');
+      bannerEl.innerHTML = '';
+    }
+
+    function openApplyDrawer(options = {}) {
+      const {
+        mode = 'create',
+        shrimpId = null
+      } = options;
+      const editingShrimp = shrimpId != null ? allShrimps.find((item) => item.id === shrimpId) : null;
+
+      if (mode === 'resubmit' && (!editingShrimp || !editingShrimp.application?.formSnapshot)) {
+        showToast('未找到原始申请内容，暂时无法重新提交', 'warning');
+        return;
+      }
+
+      applyFormMode = mode;
+      applyEditingShrimpId = mode === 'resubmit' ? shrimpId : null;
+      fillApplyFormSnapshot(mode === 'resubmit' ? editingShrimp.application.formSnapshot : null);
+      setApplyDrawerContext(editingShrimp);
+
+      const overlay = document.getElementById('applyDrawerOverlay');
+      overlay.classList.add('show');
+      overlay.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      applyCurrentStep = 0;
+      clearApplyAiCheckResult();
+      syncApplyStepUi();
+    }
+
+    function closeApplyDrawer(forceClose) {
+      if (applyAiCheckInProgress && !forceClose) {
+        showToast('AI 正在解析岗位说明书，请稍候...', 'info');
+        return;
+      }
+      const overlay = document.getElementById('applyDrawerOverlay');
+      overlay.classList.remove('show');
+      setTimeout(() => { overlay.style.display = 'none'; }, 300);
+      document.body.style.overflow = '';
+      closeApplyDeptDropdown();
+      clearApplyAiCheckResult();
+      applyCurrentStep = 0;
+      applyFormMode = 'create';
+      applyEditingShrimpId = null;
+      setApplyDrawerContext(null);
+      syncApplyStepUi();
+    }
+
+    function handleApplySpaceChange() {
+      validateApplyForm();
+    }
+
+    // ── 加入/注册空间 下拉 ──────────────────────────────────
+    let applySpaceSelectedValue = '';
+
+    function getApplySpaceLabel(value) {
+      return applySpaceOptions[value] || '';
+    }
+
+    function getApplySpaceValueByLabel(label) {
+      return Object.fromEntries(Object.entries(applySpaceOptions).map(([v, l]) => [l, v]))[label] || '';
+    }
+
+    function renderApplySpaceList(keyword) {
+      const list = document.getElementById('applySpaceFlatList');
+      const entries = Object.entries(applySpaceOptions);
+      const kw = (keyword || '').trim().toLowerCase();
+      const filtered = kw ? entries.filter(([, label]) => label.toLowerCase().includes(kw)) : entries;
+
+      if (filtered.length === 0) {
+        list.innerHTML = '<div class="apply-tree-empty">无匹配空间，可点击下方注册新空间</div>';
+        return;
+      }
+
+      list.innerHTML = filtered.map(([value, label]) => {
+        const isSelected = value === applySpaceSelectedValue;
+        return `<div class="apply-tree-flat-item${isSelected ? ' is-selected' : ''}" onclick="selectApplySpace('${value}')">
+          <div class="item-main"><div class="item-name">${label}</div></div>
+          ${isSelected ? '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0;color:#2660FF"><path d="M3.5 8.5l3 3 6-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ''}
+        </div>`;
+      }).join('');
+    }
+
+    function toggleApplySpaceDropdown() {
+      const dropdown = document.getElementById('applySpaceDropdown');
+      const trigger = document.getElementById('applySpaceTrigger');
+      const isOpen = dropdown.classList.contains('show');
+
+      // Close all other dropdowns first
+      document.querySelectorAll('.apply-tree-dropdown.show').forEach(d => d.classList.remove('show'));
+      document.querySelectorAll('.apply-tree-trigger.active').forEach(t => t.classList.remove('active'));
+
+      if (!isOpen) {
+        dropdown.classList.add('show');
+        trigger.classList.add('active');
+        document.getElementById('applySpaceSearch').value = '';
+        renderApplySpaceList('');
+        document.getElementById('applySpaceSearch').focus();
+      }
+    }
+
+    function filterApplySpaceList() {
+      const keyword = document.getElementById('applySpaceSearch').value;
+      renderApplySpaceList(keyword);
+    }
+
+    function selectApplySpace(value) {
+      applySpaceSelectedValue = value;
+      const label = applySpaceOptions[value] || '';
+      const trigger = document.getElementById('applySpaceTrigger');
+      const placeholder = document.getElementById('applySpacePlaceholder');
+
+      if (label) {
+        placeholder.textContent = label;
+        placeholder.classList.remove('placeholder');
+        placeholder.classList.add('selected-text');
+      } else {
+        placeholder.textContent = '请选择空间';
+        placeholder.classList.add('placeholder');
+        placeholder.classList.remove('selected-text');
+      }
+
+      document.getElementById('applySpaceDropdown').classList.remove('show');
+      trigger.classList.remove('active');
+      handleApplySpaceChange();
+    }
+
+    function getApplySpaceValue() {
+      return applySpaceSelectedValue;
+    }
+
+    function setApplySpaceValue(value) {
+      applySpaceSelectedValue = value || '';
+      const label = applySpaceOptions[value] || '';
+      const placeholder = document.getElementById('applySpacePlaceholder');
+      if (label) {
+        placeholder.textContent = label;
+        placeholder.classList.remove('placeholder');
+        placeholder.classList.add('selected-text');
+      } else {
+        placeholder.textContent = '请选择空间';
+        placeholder.classList.add('placeholder');
+        placeholder.classList.remove('selected-text');
+      }
+    }
+
+    // Close space dropdown on outside click
+    document.addEventListener('click', (e) => {
+      const trigger = document.getElementById('applySpaceTrigger');
+      const dropdown = document.getElementById('applySpaceDropdown');
+      if (trigger && dropdown && !trigger.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.classList.remove('show');
+        trigger.classList.remove('active');
+      }
+    });
+
+    // 根据虾名生成邮箱前缀（拼音简写）
+    function generateMiAccount() {
+      const name = document.getElementById('applyShrimpName').value.trim();
+      const accountField = document.getElementById('applyMiAccount');
+      if (!name) {
+        accountField.value = '';
+        return;
+      }
+      // 简单拼音转换映射（常见中文字）
+      const pinyinMap = {
+        '门': 'men', '店': 'dian', '东': 'dong', '南': 'nan', '亚': 'ya', '销': 'xiao', '售': 'shou',
+        '客': 'ke', '服': 'fu', '助': 'zhu', '手': 'shou', '数': 'shu',
+        '据': 'ju', '分': 'fen', '析': 'xi', '培': 'pei', '训': 'xun',
+        '市': 'shi', '场': 'chang', '产': 'chan', '品': 'pin', '质': 'zhi',
+        '检': 'jian', '报': 'bao', '表': 'biao', '欧': 'ou', '洲': 'zhou',
+        '拉': 'la', '美': 'mei', '人': 'ren', '力': 'li', '财': 'cai',
+        '务': 'wu', '的': 'de', '虾': 'xia', '米': 'mi', '巡': 'xun',
+        '检': 'jian', '查': 'cha', '管': 'guan', '理': 'li', '员': 'yuan',
+        '招': 'zhao', '聘': 'pin', '求': 'qiu', '职': 'zhi', '面': 'mian',
+        '试': 'shi', '合': 'he', '同': 'tong', '入': 'ru', '职': 'zhi',
+        '离': 'li', '职': 'zhi', '薪': 'xin', '酬': 'chou', '绩': 'ji',
+        '效': 'xiao', '考': 'kao', '核': 'he', '培': 'pei', '训': 'xun',
+        '发': 'fa', '展': 'zhan', '员': 'yuan', '工': 'gong', '关': 'guan',
+        '系': 'xi', '企': 'qi', '业': 'ye', '文': 'wen', '化': 'hua',
+        '建': 'jian', '设': 'she', '团': 'tuan', '队': 'dui', '领': 'ling',
+        '导': 'dao', '决': 'jue', '策': 'ce', '执': 'zhi', '行': 'xing',
+        '监': 'jian', '督': 'du', '协': 'xie', '调': 'tiao', '沟': 'gou',
+        '通': 'tong', '反': 'fan', '馈': 'kui', '改': 'gai', '进': 'jin',
+        '创': 'chuang', '新': 'xin', '优': 'you', '化': 'hua', '提': 'ti',
+        '升': 'sheng', '降': 'jiang', '低': 'di', '减': 'jian', '少': 'shao',
+        '增': 'zeng', '加': 'jia', '扩': 'kuo', '缩': 'suo', '整': 'zheng',
+        '合': 'he', '分': 'fen', '拆': 'chai', '合': 'he', '并': 'bing',
+        '转': 'zhuan', '移': 'yi', '替': 'ti', '换': 'huan', '更': 'geng',
+        '新': 'xin', '修': 'xiu', '改': 'gai', '删': 'shan', '除': 'chu',
+        '添': 'tian', '加': 'jia', '编': 'bian', '辑': 'ji', '查': 'cha',
+        '询': 'xun', '搜': 'sou', '索': 'suo', '筛': 'shai', '选': 'xuan',
+        '排': 'pai', '序': 'xu', '过': 'guo', '滤': 'lv', '统': 'tong',
+        '计': 'ji', '分': 'fen', '析': 'xi', '报': 'bao', '告': 'gao',
+        '图': 'tu', '表': 'biao', '数': 'shu', '据': 'ju', '库': 'ku',
+        '系': 'xi', '统': 'tong', '平': 'ping', '台': 'tai', '模': 'mo',
+        '块': 'kuai', '功': 'gong', '能': 'neng', '模': 'mo', '式': 'shi',
+        '策': 'ce', '略': 'lue', '规': 'gui', '则': 'ze', '配': 'pei',
+        '置': 'zhi', '设': 'she', '置': 'zhi', '参': 'can', '数': 'shu',
+        '默': 'mo', '认': 'ren', '自': 'zi', '动': 'dong', '手': 'shou',
+        '动': 'dong', '定': 'ding', '时': 'shi', '触': 'chu', '发': 'fa',
+        '事': 'shi', '件': 'jian', '监': 'jian', '控': 'kong', '告': 'gao',
+        '警': 'jing', '通': 'tong', '知': 'zhi', '消': 'xiao', '息': 'xi',
+        '邮': 'you', '件': 'jian', '短': 'duan', '信': 'xin', '微': 'wei',
+        '信': 'xin', '飞': 'fei', '书': 'shu', '钉': 'ding', '钉': 'ding',
+        '企': 'qi', '业': 'ye', '微': 'wei', '信': 'xin', '办': 'ban',
+        '公': 'gong', '自': 'zi', '动': 'dong', '化': 'hua', '智': 'zhi',
+        '能': 'neng', '人': 'ren', '工': 'gong', '智': 'zhi', '能': 'neng',
+        '机': 'ji', '器': 'qi', '学': 'xue', '习': 'xi', '深': 'shen',
+        '度': 'du', '学': 'xue', '习': 'xi', '自': 'zi', '然': 'ran',
+        '语': 'yu', '言': 'yan', '处': 'chu', '理': 'li', '图': 'tu',
+        '像': 'xiang', '识': 'shi', '别': 'bie', '语': 'yu', '音': 'yin',
+        '识': 'shi', '别': 'bie', '视': 'shi', '频': 'pin', '分': 'fen',
+        '析': 'xi', '文': 'wen', '本': 'ben', '分': 'fen', '析': 'xi',
+        '情': 'qing', '感': 'gan', '分': 'fen', '析': 'xi', '知': 'zhi',
+        '识': 'shi', '图': 'tu', '谱': 'pu', '推': 'tui', '理': 'li',
+        '对': 'dui', '话': 'hua', '机': 'ji', '器': 'qi', '人': 'ren',
+        '问': 'wen', '答': 'da', '系': 'xi', '统': 'tong', '推': 'tui',
+        '荐': 'jian', '引': 'yin', '擎': 'qing', '搜': 'sou', '索': 'suo',
+        '引': 'yin', '擎': 'qing', '广': 'guang', '告': 'gao', '投': 'tou',
+        '放': 'fang', '营': 'ying', '销': 'xiao', '推': 'tui', '广': 'guang',
+        '销': 'xiao', '售': 'shou', '客': 'ke', '户': 'hu', '服': 'fu',
+        '市': 'shi', '场': 'chang', '研': 'yan', '究': 'jiu', '竞': 'jing',
+        '争': 'zheng', '分': 'fen', '析': 'xi', '产': 'chan', '品': 'pin',
+        '规': 'gui', '划': 'hua', '项': 'xiang', '目': 'mu', '管': 'guan',
+        '理': 'li', '工': 'gong', '程': 'cheng', '质': 'zhi', '量': 'liang',
+        '管': 'guan', '理': 'li', '风': 'feng', '险': 'xian', '管': 'guan',
+        '理': 'li', '合': 'he', '规': 'gui', '管': 'guan', '理': 'li',
+        '财': 'cai', '务': 'wu', '管': 'guan', '理': 'li', '人': 'ren',
+        '力': 'li', '资': 'zi', '源': 'yuan', '行': 'xing', '政': 'zheng',
+        '管': 'guan', '理': 'li', '法': 'fa', '务': 'wu', '管': 'guan',
+        '理': 'li', '知': 'zhi', '识': 'shi', '管': 'guan', '理': 'li',
+        '档': 'dang', '案': 'an', '管': 'guan', '理': 'li', '信': 'xin',
+        '息': 'xi', '安': 'an', '全': 'quan', '网': 'wang', '络': 'luo',
+        '安': 'an', '全': 'quan', '数': 'shu', '据': 'ju', '安': 'an',
+        '全': 'quan', '运': 'yun', '维': 'wei', '监': 'jian', '控': 'kong',
+        '测': 'ce', '试': 'shi', '验': 'yan', '证': 'zheng', '发': 'fa',
+        '布': 'bu', '更': 'geng', '新': 'xin', '维': 'wei', '护': 'hu',
+        '优': 'you', '化': 'hua', '重': 'zhong', '构': 'gou', '迁': 'qian',
+        '移': 'yi', '升': 'sheng', '级': 'ji', '降': 'jiang', '级': 'ji',
+        '扩': 'kuo', '容': 'rong', '缩': 'suo', '容': 'rong', '备': 'bei',
+        '份': 'fen', '恢': 'hui', '复': 'fu', '灾': 'zai', '难': 'nan',
+        '恢': 'hui', '复': 'fu', '业': 'ye', '务': 'wu', '连': 'lian',
+        '续': 'xu', '性': 'xing', '高': 'gao', '可': 'ke', '用': 'yong',
+        '性': 'xing', '性': 'xing', '能': 'neng', '优': 'you', '化': 'hua',
+        '容': 'rong', '量': 'liang', '规': 'gui', '划': 'hua', '成': 'cheng',
+        '本': 'ben', '控': 'kong', '制': 'zhi', '预': 'yu', '算': 'suan',
+        '管': 'guan', '理': 'li', '财': 'cai', '报': 'bao', '告': 'gao',
+        '分': 'fen', '析': 'xi', '决': 'jue', '策': 'ce', '支': 'zhi',
+        '持': 'chi', '数': 'shu', '据': 'ju', '可': 'ke', '视': 'shi',
+        '化': 'hua', '报': 'bao', '表': 'biao', '生': 'sheng', '成': 'cheng',
+        '导': 'dao', '出': 'chu', '打': 'da', '印': 'yin', '邮': 'you',
+        '件': 'jian', '发': 'fa', '送': 'song', '消': 'xiao', '息': 'xi',
+        '通': 'tong', '知': 'zhi', '提': 'ti', '醒': 'xing', '预': 'yu',
+        '约': 'yue', '日': 'ri', '程': 'cheng', '安': 'an', '排': 'pai',
+        '会': 'hui', '议': 'yi', '组': 'zu', '织': 'zhi', '协': 'xie',
+        '调': 'tiao', '沟': 'gou', '通': 'tong', '谈': 'tan', '判': 'pan',
+        '合': 'he', '作': 'zuo', '伙': 'huo', '伴': 'ban', '供': 'gong',
+        '应': 'ying', '商': 'shang', '管': 'guan', '理': 'li', '采': 'cai',
+        '购': 'gou', '管': 'guan', '理': 'li', '库': 'ku', '存': 'cun',
+        '管': 'guan', '理': 'li', '物': 'wu', '流': 'liu', '管': 'guan',
+        '理': 'li', '配': 'pei', '送': 'song', '管': 'guan', '理': 'li',
+        '运': 'yun', '输': 'shu', '管': 'guan', '理': 'li', '仓': 'cang',
+        '储': 'chu', '管': 'guan', '理': 'li', '质': 'zhi', '检': 'jian',
+        '管': 'guan', '理': 'li', '安': 'an', '全': 'quan', '生': 'sheng',
+        '产': 'chan', '环': 'huan', '保': 'bao', '管': 'guan', '理': 'li',
+        '能': 'neng', '源': 'yuan', '管': 'guan', '理': 'li', '设': 'she',
+        '备': 'bei', '管': 'guan', '理': 'li', '维': 'wei', '修': 'xiu',
+        '保': 'bao', '养': 'yang', '改': 'gai', '造': 'zao', '升': 'sheng',
+        '级': 'ji', '新': 'xin', '建': 'jian', '扩': 'kuo', '建': 'jian',
+        '拆': 'chai', '除': 'chu', '搬': 'ban', '迁': 'qian', '装': 'zhuang',
+        '修': 'xiu', '装': 'zhuang', '饰': 'shi', '设': 'she', '计': 'ji',
+        '规': 'gui', '划': 'hua', '布': 'bu', '置': 'zhi', '摆': 'bai',
+        '放': 'fang', '整': 'zheng', '理': 'li', '清': 'qing', '洁': 'jie',
+        '消': 'xiao', '毒': 'du', '杀': 'sha', '虫': 'chong', '绿': 'lv',
+        '化': 'hua', '养': 'yang', '护': 'hu', '维': 'wei', '修': 'xiu',
+        '保': 'bao', '养': 'yang', '检': 'jian', '查': 'cha', '测': 'ce',
+        '试': 'shi', '调': 'diao', '试': 'shi', '运': 'yun', '行': 'xing',
+        '监': 'jian', '控': 'kong', '维': 'wei', '护': 'hu', '保': 'bao',
+        '养': 'yang', '维': 'wei', '修': 'xiu', '更': 'geng', '换': 'huan',
+        '升': 'sheng', '级': 'ji', '改': 'gai', '造': 'zao', '优': 'you',
+        '化': 'hua', '调': 'diao', '整': 'zheng', '更': 'geng', '新': 'xin',
+        '替': 'ti', '换': 'huan', '添': 'tian', '加': 'jia', '删': 'shan',
+        '除': 'chu', '修': 'xiu', '改': 'gai', '编': 'bian', '辑': 'ji',
+        '保': 'bao', '存': 'cun', '备': 'bei', '份': 'fen', '恢': 'hui',
+        '复': 'fu', '导': 'dao', '入': 'ru', '导': 'dao', '出': 'chu',
+        '上': 'shang', '传': 'chuan', '下': 'xia', '载': 'zai', '共': 'gong',
+        '享': 'xiang', '分': 'fen', '享': 'xiang', '发': 'fa', '送': 'song',
+        '接': 'jie', '收': 'shou', '查': 'cha', '看': 'kan', '浏': 'liu',
+        '览': 'lan', '搜': 'sou', '索': 'suo', '筛': 'shai', '选': 'xuan',
+        '排': 'pai', '序': 'xu', '过': 'guo', '滤': 'lv', '分': 'fen',
+        '组': 'zu', '分': 'fen', '类': 'lei', '标': 'biao', '记': 'ji',
+        '批': 'pi', '注': 'zhu', '评': 'ping', '论': 'lun', '回': 'hui',
+        '复': 'fu', '转': 'zhuan', '发': 'fa', '转': 'zhuan', '载': 'zai',
+        '收': 'shou', '藏': 'cang', '关': 'guan', '注': 'zhu', '取': 'qu',
+        '消': 'xiao', '删': 'shan', '除': 'chu', '清': 'qing', '空': 'kong',
+        '重': 'zhong', '置': 'zhi', '恢': 'hui', '复': 'fu', '默': 'mo',
+        '认': 'ren', '保': 'bao', '存': 'cun', '提': 'ti', '交': 'jiao',
+        '确': 'que', '认': 'ren', '取': 'qu', '消': 'xiao', '关': 'guan',
+        '闭': 'bi', '打': 'da', '开': 'kai', '启': 'qi', '停': 'ting',
+        '止': 'zhi', '运': 'yun', '行': 'xing', '启': 'qi', '动': 'dong',
+        '重': 'chong', '启': 'qi', '关': 'guan', '闭': 'bi', '连': 'lian',
+        '接': 'jie', '断': 'duan', '开': 'kai', '切': 'qie', '换': 'huan',
+        '更': 'geng', '改': 'gai', '修': 'xiu', '改': 'gai', '设': 'she',
+        '置': 'zhi', '配': 'pei', '置': 'zhi', '参': 'can', '数': 'shu',
+        '默': 'mo', '认': 'ren', '值': 'zhi', '自': 'zi', '定': 'ding',
+        '义': 'yi', '定': 'ding', '制': 'zhi', '个': 'ge', '性': 'xing',
+        '化': 'hua', '个': 'ge', '人': 'ren', '化': 'hua', '智': 'zhi',
+        '能': 'neng', '自': 'zi', '动': 'dong', '手': 'shou', '动': 'dong',
+        '快': 'kuai', '捷': 'jie', '高': 'gao', '效': 'xiao', '便': 'bian',
+        '捷': 'jie', '简': 'jian', '单': 'dan', '复': 'fu', '杂': 'za',
+        '高': 'gao', '级': 'ji', '基': 'ji', '础': 'chu', '专': 'zhuan',
+        '业': 'ye', '通': 'tong', '用': 'yong', '标': 'biao', '准': 'zhun',
+        '统': 'tong', '一': 'yi', '规': 'gui', '范': 'fan', '标': 'biao',
+        '准': 'zhun', '规': 'gui', '范': 'fan', '制': 'zhi', '度': 'du',
+        '流': 'liu', '程': 'cheng', '规': 'gui', '则': 'ze', '策': 'ce',
+        '略': 'lue', '方': 'fang', '案': 'an', '计': 'ji', '划': 'hua',
+        '规': 'gui', '划': 'hua', '设': 'she', '计': 'ji', '开': 'kai',
+        '发': 'fa', '测': 'ce', '试': 'shi', '验': 'yan', '证': 'zheng',
+        '发': 'fa', '布': 'bu', '上': 'shang', '线': 'xian', '运': 'yun',
+        '营': 'ying', '维': 'wei', '护': 'hu', '监': 'jian', '控': 'kong',
+        '分': 'fen', '析': 'xi', '优': 'you', '化': 'hua', '改': 'gai',
+        '进': 'jin', '创': 'chuang', '新': 'xin', '突': 'tu', '破': 'po',
+        '尝': 'chang', '试': 'shi', '实': 'shi', '践': 'jian', '总': 'zong',
+        '结': 'jie', '反': 'fan', '思': 'si', '学': 'xue', '习': 'xi',
+        '成': 'cheng', '长': 'zhang', '提': 'ti', '升': 'sheng', '突': 'tu',
+        '破': 'po', '飞': 'fei', '跃': 'yue', '跨': 'kua', '越': 'yue',
+        '领': 'ling', '先': 'xian', '引': 'yin', '领': 'ling', '创': 'chuang',
+        '新': 'xin', '引': 'yin', '领': 'ling', '技': 'ji', '术': 'shu',
+        '创': 'chuang', '新': 'xin', '模': 'mo', '式': 'shi', '创': 'chuang',
+        '新': 'xin', '产': 'chan', '品': 'pin', '创': 'chuang', '新': 'xin',
+        '服': 'fu', '务': 'wu', '创': 'chuang', '新': 'xin', '管': 'guan',
+        '理': 'li', '创': 'chuang', '新': 'xin', '营': 'ying', '销': 'xiao',
+        '创': 'chuang', '新': 'xin', '市': 'shi', '场': 'chang', '创': 'chuang',
+        '新': 'xin', '商': 'shang', '业': 'ye', '模': 'mo', '式': 'shi',
+        '创': 'chuang', '新': 'xin', '盈': 'ying', '利': 'li', '模': 'mo',
+        '式': 'shi', '创': 'chuang', '新': 'xin', '价': 'jia', '值': 'zhi',
+        '创': 'chuang', '新': 'xin', '用': 'yong', '户': 'hu', '体': 'ti',
+        '验': 'yan', '创': 'chuang', '新': 'xin', '运': 'yun', '营': 'ying',
+        '模': 'mo', '式': 'shi', '创': 'chuang', '新': 'xin', '商': 'shang',
+        '业': 'ye', '模': 'mo', '式': 'shi', '创': 'chuang', '新': 'xin',
+        '产': 'chan', '品': 'pin', '服': 'fu', '务': 'wu', '创': 'chuang',
+        '新': 'xin', '业': 'ye', '务': 'wu', '模': 'mo', '式': 'shi',
+        '创': 'chuang', '新': 'xin', '价': 'jia', '值': 'zhi', '提': 'ti',
+        '升': 'sheng', '用': 'yong', '户': 'hu', '增': 'zeng', '长': 'zhang',
+        '业': 'ye', '务': 'wu', '增': 'zeng', '长': 'zhang', '收': 'shou',
+        '入': 'ru', '增': 'zeng', '长': 'zhang', '利': 'li', '润': 'run',
+        '增': 'zeng', '长': 'zhang', '市': 'shi', '场': 'chang', '扩': 'kuo',
+        '展': 'zhan', '品': 'pin', '牌': 'pai', '建': 'jian', '设': 'she',
+        '用': 'yong', '户': 'hu', '获': 'huo', '取': 'qu', '客': 'ke',
+        '户': 'hu', '服': 'fu', '市': 'shi', '场': 'chang', '推': 'tui',
+        '广': 'guang', '销': 'xiao', '售': 'shou', '渠': 'qu', '道': 'dao',
+        '建': 'jian', '设': 'she', '合': 'he', '作': 'zuo', '伙': 'huo',
+        '伴': 'ban', '管': 'guan', '理': 'li', '供': 'gong', '应': 'ying',
+        '链': 'lian', '管': 'guan', '理': 'li', '物': 'wu', '流': 'liu',
+        '管': 'guan', '理': 'li', '库': 'ku', '存': 'cun', '管': 'guan',
+        '理': 'li', '财': 'cai', '务': 'wu', '管': 'guan', '理': 'li',
+        '人': 'ren', '力': 'li', '资': 'zi', '源': 'yuan', '管': 'guan',
+        '理': 'li', '行': 'xing', '政': 'zheng', '管': 'guan', '理': 'li',
+        '项': 'xiang', '目': 'mu', '管': 'guan', '理': 'li', '风': 'feng',
+        '险': 'xian', '管': 'guan', '理': 'li', '合': 'he', '规': 'gui',
+        '管': 'guan', '理': 'li', '数': 'shu', '据': 'ju', '治': 'zhi',
+        '理': 'li', '信': 'xin', '息': 'xi', '安': 'an', '全': 'quan',
+        '网': 'wang', '络': 'luo', '安': 'an', '全': 'quan', '系': 'xi',
+        '统': 'tong', '安': 'an', '全': 'quan', '数': 'shu', '据': 'ju',
+        '安': 'an', '全': 'quan', '应': 'ying', '用': 'yong', '安': 'an',
+        '全': 'quan', '网': 'wang', '站': 'zhan', '安': 'an', '全': 'quan',
+        '服': 'fu', '务': 'wu', '安': 'an', '全': 'quan', '云': 'yun',
+        '安': 'an', '全': 'quan', '移': 'yi', '动': 'dong', '安': 'an',
+        '全': 'quan', '物': 'wu', '联': 'lian', '网': 'wang', '安': 'an',
+        '全': 'quan', '工': 'gong', '业': 'ye', '安': 'an', '全': 'quan',
+        '车': 'che', '联': 'lian', '网': 'wang', '安': 'an', '全': 'quan',
+        '智': 'zhi', '能': 'neng', '安': 'an', '全': 'quan', '数': 'shu',
+        '字': 'zi', '安': 'an', '全': 'quan', '隐': 'yin', '私': 'si',
+        '保': 'bao', '护': 'hu', '合': 'he', '规': 'gui', '管': 'guan',
+        '理': 'li', '风': 'feng', '险': 'xian', '控': 'kong', '制': 'zhi',
+        '审': 'shen', '计': 'ji', '监': 'jian', '督': 'du', '检': 'jian',
+        '查': 'cha', '评': 'ping', '估': 'gu', '测': 'ce', '试': 'shi',
+        '验': 'yan', '证': 'zheng', '认': 'ren', '证': 'zheng', '审': 'shen',
+        '计': 'ji', '评': 'ping', '估': 'gu', '咨': 'zi', '询': 'xun',
+        '服': 'fu', '务': 'wu', '技': 'ji', '术': 'shu', '支': 'zhi',
+        '持': 'chi', '运': 'yun', '维': 'wei', '服': 'fu', '务': 'wu',
+        '监': 'jian', '控': 'kong', '服': 'fu', '务': 'wu', '告': 'gao',
+        '警': 'jing', '服': 'fu', '务': 'wu', '日': 'ri', '志': 'zhi',
+        '服': 'fu', '务': 'wu', '分': 'fen', '析': 'xi', '服': 'fu',
+        '务': 'wu', '优': 'you', '化': 'hua', '服': 'fu', '务': 'wu',
+        '扩': 'kuo', '容': 'rong', '服': 'fu', '务': 'wu', '恢': 'hui',
+        '复': 'fu', '服': 'fu', '务': 'wu', '备': 'bei', '份': 'fen',
+        '服': 'fu', '务': 'wu', '安': 'an', '全': 'quan', '服': 'fu',
+        '务': 'wu', '监': 'jian', '控': 'kong', '服': 'fu', '务': 'wu',
+        '告': 'gao', '警': 'jing', '服': 'fu', '务': 'wu', '日': 'ri',
+        '志': 'zhi', '服': 'fu', '务': 'wu', '分': 'fen', '析': 'xi',
+        '服': 'fu', '务': 'wu', '优': 'you', '化': 'hua', '服': 'fu',
+        '务': 'wu', '扩': 'kuo', '容': 'rong', '服': 'fu', '务': 'wu',
+        '恢': 'hui', '复': 'fu', '服': 'fu', '务': 'wu', '备': 'bei',
+        '份': 'fen', '服': 'fu', '务': 'wu', '安': 'an', '全': 'quan',
+        '服': 'fu', '务': 'wu', '监': 'jian', '控': 'kong', '服': 'fu',
+        '务': 'wu', '告': 'gao', '警': 'jing', '服': 'fu', '务': 'wu',
+        '日': 'ri', '志': 'zhi', '服': 'fu', '务': 'wu', '分': 'fen',
+        '析': 'xi', '服': 'fu', '务': 'wu', '优': 'you', '化': 'hua',
+        '服': 'fu', '务': 'wu', '扩': 'kuo', '容': 'rong', '服': 'fu',
+        '务': 'wu', '恢': 'hui', '复': 'fu', '服': 'fu', '务': 'wu',
+        '备': 'bei', '份': 'fen', '服': 'fu', '务': 'wu', '安': 'an',
+        '全': 'quan'
+      };
+
+      let pinyin = '';
+      for (let i = 0; i < name.length; i++) {
+        const char = name[i];
+        if (pinyinMap[char]) {
+          pinyin += pinyinMap[char];
+        } else if (/[a-zA-Z]/.test(char)) {
+          pinyin += char.toLowerCase();
+        } else if (/[0-9]/.test(char)) {
+          pinyin += char;
+        }
+      }
+
+      // 如果太长，截断到15字符
+      if (pinyin.length > 15) {
+        pinyin = pinyin.substring(0, 15);
+      }
+
+      accountField.value = pinyin;
+    }
+
+    function buildApplyQualityIssues() {
+      const attachment = document.getElementById('applyAttachment').value.trim();
+      let decodedAttachment = attachment.toLowerCase();
+      try {
+        decodedAttachment = decodeURIComponent(attachment).toLowerCase();
+      } catch (error) {}
+      const issues = [];
+      const hasFeishuDocLink = /feishu\.cn\/(wiki|docx|docs)\//.test(decodedAttachment);
+      const isDraftDoc = /(draft|todo|v0|未完成|待补充|示例)/.test(decodedAttachment);
+
+      if (!hasFeishuDocLink) {
+        issues.push({
+          label: '岗位定义',
+          desc: '未识别到可解析的飞书岗位说明书链接，无法抽取一句话总结与主要产出'
+        });
+        issues.push({
+          label: 'Top3 场景',
+          desc: '文档未进入解析流程，未识别到 3 个完整业务场景'
+        });
+        issues.push({
+          label: 'ROI 价值收益',
+          desc: '文档未进入解析流程，无法校验价值收益是否完整'
+        });
+        return issues;
+      }
+
+      if (/(missing-summary|summary-missing|no-summary)/.test(decodedAttachment) || isDraftDoc) {
+        issues.push({
+          label: '岗位定义',
+          desc: '未识别到“一句话总结”，请补充解决什么问题与主要产出'
+        });
+      }
+      if (/(missing-scene|scene-missing|scene-less)/.test(decodedAttachment)) {
+        issues.push({
+          label: 'Top3 场景',
+          desc: '完整业务场景少于 3 个，请补充“用户问什么 → 虾做什么 → 输出什么”'
+        });
+      }
+      if (/(duplicate-scene|scene-duplicate|scene-repeat)/.test(decodedAttachment) || isDraftDoc) {
+        issues.push({
+          label: 'Top3 场景',
+          desc: '业务场景存在重复，请拆分成 3 个不重复场景'
+        });
+      }
+      if (/(missing-roi|roi-missing|benefit-missing)/.test(decodedAttachment) || isDraftDoc) {
+        issues.push({
+          label: 'ROI 价值收益',
+          desc: '未识别到 3 条完整收益，请补充现状与上线后的价值预估'
+        });
+      }
+      if (/(duplicate-roi|roi-duplicate|benefit-repeat)/.test(decodedAttachment)) {
+        issues.push({
+          label: 'ROI 价值收益',
+          desc: '价值收益内容重复，请保留 3 条不同的收益项'
+        });
+      }
+
+      return issues;
+    }
+
+    function getApplyQualityPassItems() {
+      return [
+        { label: '岗位定义', desc: '已识别一句话总结，包含问题定义与主要产出' },
+        { label: 'Top3 场景', desc: '已识别 3 个不重复业务场景，结构完整' },
+        { label: 'ROI 价值收益', desc: '已识别 3 条收益项，包含现状与上线后对比' }
+      ];
+    }
+
+    function runApplyAiQualityCheck(options = {}) {
+      const {
+        autoSubmit = false,
+        triggerLabel = 'AI 质检'
+      } = options;
+      const attachment = document.getElementById('applyAttachment').value.trim();
+
+      if (!attachment) {
+        showToast('请先填写岗位说明书链接', 'warning');
+        return;
+      }
+
+      const checkId = ++applyAiCheckSequence;
+      setApplyAiCheckBusy(true, autoSubmit);
+
+      const loadingStages = [
+        {
+          progress: 28,
+          title: `${triggerLabel}已启动`,
+          desc: '已接收岗位说明书链接，开始抓取文档结构',
+          items: [
+            { label: '链接接入', desc: '已建立文档解析任务' }
+          ]
+        },
+        {
+          progress: 63,
+          title: '正在进行文档解析',
+          desc: '正在提取岗位定义、Top3 场景与 ROI 价值收益模块',
+          items: [
+            { label: '岗位定义', desc: '抽取一句话总结与主要产出' },
+            { label: 'Top3 场景', desc: '识别业务场景结构与重复项' },
+            { label: 'ROI 价值收益', desc: '校验收益条目与价值口径' }
+          ]
+        },
+        {
+          progress: 92,
+          title: '正在生成质检结论',
+          desc: '已完成规则比对，正在输出通过项与风险项',
+          items: [
+            { label: '规则比对', desc: '检查必填模块、重复内容与结构完整度' }
+          ]
+        }
+      ];
+
+      loadingStages.forEach((stage, index) => {
+        setTimeout(() => {
+          if (checkId !== applyAiCheckSequence) return;
+          setApplyAiCheckResult('loading', stage);
+        }, index * 850);
+      });
+
+      setTimeout(() => {
+        if (checkId !== applyAiCheckSequence) return;
+
+        const issues = buildApplyQualityIssues();
+
+        if (issues.length) {
+          setApplyAiCheckBusy(false);
+          setApplyAiCheckResult('error', {
+            title: '文档解析未通过，请先编辑后再提交',
+            desc: '以下模块未满足岗位说明书质检规则，需补齐后重新触发 AI 质检。',
+            items: issues,
+            tip: '请先回到岗位说明书补齐内容，再重新点击“AI验”或“提交申请”。'
+          });
+          showToast('AI 质检未通过，请补充岗位说明书', 'warning');
+          return;
+        }
+
+        if (!autoSubmit) {
+          setApplyAiCheckBusy(false);
+        }
+        setApplyAiCheckResult('success', {
+          title: '完成解析，岗位说明书质检通过',
+          desc: '已完成文档解析与规则校验，可以继续提交申请。',
+          items: getApplyQualityPassItems(),
+          tip: autoSubmit ? '系统正在提交申请，请稍候...' : '如内容有更新，请重新触发 AI 质检。'
+        });
+        showToast(autoSubmit ? 'AI 质检通过，正在提交申请' : 'AI 质检通过', 'success');
+
+        if (autoSubmit) {
+          setTimeout(() => {
+            if (checkId !== applyAiCheckSequence) return;
+            finishApplySubmission();
+          }, 900);
+        }
+      }, loadingStages.length * 850 + 450);
+    }
+
+    function handleAiVerify() {
+      if (applyAiCheckInProgress) return;
+      runApplyAiQualityCheck({ autoSubmit: false, triggerLabel: 'AI验' });
+    }
+
+    function createPendingApplicationRecord(shrimpId, formSnapshot) {
+      applyBpmCounter += 1;
+      const bpmId = `BPM20260507${String(applyBpmCounter).padStart(4, '0')}`;
+      return buildMockApplication('pending', shrimpId, formSnapshot, {
+        id: bpmId,
+        submittedAt: getApplyTimestamp()
+      });
+    }
+
+    function upsertSubmittedShrimp(formSnapshot) {
+      const spaceLabel = getApplySpaceLabel(formSnapshot.spaceValue);
+      const email = formSnapshot.miAccount ? `${formSnapshot.miAccount}@xiaomi.com` : '';
+      const avatarPalette = ['#2660FF', '#00B259', '#FF8800', '#8C93B3', '#FF4D4F', '#7B61FF'];
+
+      if (applyFormMode === 'resubmit' && applyEditingShrimpId != null) {
+        const shrimp = allShrimps.find((item) => item.id === applyEditingShrimpId);
+        if (!shrimp) return null;
+        Object.assign(shrimp, {
+          name: formSnapshot.shrimpName,
+          avatar: getApplyAvatarText(formSnapshot.shrimpName),
+          space: spaceLabel,
+          status: 'draft',
+          statusLabel: '申请中',
+          email,
+          reporter: formSnapshot.reporter,
+          applicant: currentUser,
+          department: formSnapshot.departmentName,
+          englishName: formSnapshot.englishName,
+          jobTitle: formSnapshot.jobTitle,
+          jobLevel: formSnapshot.jobLevel,
+          attachment: formSnapshot.attachment
+        });
+        shrimp.application = createPendingApplicationRecord(shrimp.id, formSnapshot);
+        return shrimp;
+      }
+
+      const newId = Math.max(...allShrimps.map((item) => item.id)) + 1;
+      const newShrimp = {
+        id: newId,
+        name: formSnapshot.shrimpName,
+        avatar: getApplyAvatarText(formSnapshot.shrimpName),
+        avatarColor: avatarPalette[(newId - 1) % avatarPalette.length],
+        space: spaceLabel,
+        status: 'draft',
+        statusLabel: '申请中',
+        agentId: `AGT${String(newId).padStart(3, '0')}`,
+        employeeId: '',
+        email,
+        mid: '',
+        reporter: formSnapshot.reporter,
+        applicant: currentUser,
+        user: '',
+        department: formSnapshot.departmentName,
+        businessLine: '',
+        favorited: false,
+        englishName: formSnapshot.englishName,
+        jobTitle: formSnapshot.jobTitle,
+        jobLevel: formSnapshot.jobLevel,
+        attachment: formSnapshot.attachment
+      };
+      newShrimp.application = createPendingApplicationRecord(newId, formSnapshot);
+      allShrimps.unshift(newShrimp);
+      return newShrimp;
+    }
+
+    function finishApplySubmission() {
+      const formSnapshot = collectApplyFormSnapshot();
+      const isResubmit = applyFormMode === 'resubmit';
+      const submittedShrimp = upsertSubmittedShrimp(formSnapshot);
+      if (!submittedShrimp) {
+        setApplyAiCheckBusy(false);
+        showToast('提交失败，未找到对应岗位虾', 'warning');
+        return;
+      }
+
+      refreshShrimpDashboard();
+      const toastText = document.getElementById('applyToastText');
+      if (toastText) {
+        toastText.textContent = isResubmit ? '已重新提交岗位虾申请' : '已提交岗位虾申请';
+      }
+      closeApplyDrawer(true);
+      const toast = document.getElementById('applyToast');
+      toast.style.display = 'block';
+      setTimeout(() => { toast.style.display = 'none'; }, 3000);
+    }
+
+    function handleApplySubmit() {
+      if (applyAiCheckInProgress) return;
+      for (let stepIndex = 0; stepIndex < APPLY_TOTAL_STEPS; stepIndex++) {
+        if (!validateApplyStep(stepIndex, false)) {
+          applyCurrentStep = stepIndex;
+          syncApplyStepUi();
+          validateApplyStep(stepIndex, true);
+          return;
+        }
+      }
+
+      runApplyAiQualityCheck({ autoSubmit: true, triggerLabel: '提交申请' });
+    }
+
+    // Department Search Selector
+
+    function toggleApplyDeptDropdown() {
+      if (applyAiCheckInProgress) return;
+      const dd = document.getElementById('applyDeptDropdown');
+      const trigger = document.getElementById('applyDeptTrigger');
+      const searchInput = document.getElementById('applyDeptSearch');
+      if (dd.classList.contains('show')) {
+        closeApplyDeptDropdown();
+      } else {
+        dd.classList.add('show');
+        trigger.classList.add('active');
+        searchInput.value = '';
+        renderApplyDeptSearchResults('');
+        setTimeout(() => searchInput.focus(), 0);
+      }
+    }
+
+    function closeApplyDeptDropdown() {
+      document.getElementById('applyDeptDropdown').classList.remove('show');
+      document.getElementById('applyDeptTrigger').classList.remove('active');
+    }
+
+    function renderApplyDeptSearchResults(query) {
+      const list = document.getElementById('applyDeptFlatList');
+      const normalizedQuery = (query || '').trim().toLowerCase();
+      let matched = normalizedQuery
+        ? applyDeptSearchOptions.filter((option) => option.searchText.includes(normalizedQuery))
+        : [...applyDeptSearchOptions];
+
+      matched.sort((a, b) => {
+        const aSelected = applySelectedDept && a.id === applySelectedDept.id ? -1 : 0;
+        const bSelected = applySelectedDept && b.id === applySelectedDept.id ? -1 : 0;
+        if (aSelected !== bSelected) return aSelected - bSelected;
+        return a.pathText.length - b.pathText.length;
+      });
+
+      if (!matched.length) {
+        list.innerHTML = '<div class="apply-tree-empty">未找到匹配的部门</div>';
+        return;
+      }
+
+      list.innerHTML = matched.map((option) => {
+        const isSelected = applySelectedDept && option.id === applySelectedDept.id;
+        return `<div class="apply-tree-flat-item${isSelected ? ' is-selected' : ''}" onclick="event.stopPropagation(); applyFlatItemClick('${option.id}')">
+          <div class="item-left">
+            <div class="item-main">
+              <div class="item-name">${option.pathText}</div>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    function applyFlatItemClick(nodeId) {
+      const node = applyFindNodeById(applyDeptTree, nodeId);
+      if (!node) return;
+      selectApplyDept(node);
+    }
+
+    function applyFindNodeById(nodes, id) {
+      for (const n of nodes) {
+        if (n.id === id) return n;
+        if (n.children) {
+          const found = applyFindNodeById(n.children, id);
+          if (found) return found;
+        }
+      }
+      return null;
+    }
+
+    function applyFindNodeByName(nodes, name) {
+      for (const n of nodes) {
+        if (n.name === name) return n;
+        if (n.children) {
+          const found = applyFindNodeByName(n.children, name);
+          if (found) return found;
+        }
+      }
+      return null;
+    }
+
+    function selectApplyDept(node) {
+      applySelectedDept = node;
+      const path = applyGetFullPath(applyDeptTree, node.id);
+      const placeholder = document.getElementById('applyDeptPlaceholder');
+      placeholder.className = 'selected-text';
+      placeholder.textContent = path || node.name;
+      closeApplyDeptDropdown();
+
+      // 自动带出汇报上级
+      const reporterInput = document.getElementById('applyReporter');
+      const manager = deptManagerMap[node.id] || '';
+      reporterInput.value = manager;
+      reporterInput.classList.toggle('apply-form-input--has-value', !!manager);
+
+      validateApplyForm();
+    }
+
+    function applyGetFullPath(nodes, targetId, currentPath) {
+      currentPath = currentPath || [];
+      for (const n of nodes) {
+        const newPath = [...currentPath, n.name];
+        if (n.id === targetId) return newPath.join('-');
+        if (n.children) {
+          const found = applyGetFullPath(n.children, targetId, newPath);
+          if (found) return found;
+        }
+      }
+      return null;
+    }
+
+    function clearApplyDept() {
+      applySelectedDept = null;
+      const placeholder = document.getElementById('applyDeptPlaceholder');
+      placeholder.className = 'placeholder';
+      placeholder.textContent = '请选择部门';
+
+      // 清空汇报上级
+      const reporterInput = document.getElementById('applyReporter');
+      reporterInput.value = '';
+      reporterInput.classList.remove('apply-form-input--has-value');
+
+      validateApplyForm();
+    }
+
+    function filterApplyDeptTree() {
+      const q = document.getElementById('applyDeptSearch').value.trim();
+      renderApplyDeptSearchResults(q);
+    }
+
+    document.addEventListener('click', (e) => {
+      const tree = document.querySelector('.apply-form-group-tree');
+      if (tree && !tree.contains(e.target)) {
+        closeApplyDeptDropdown();
+      }
+    });
+
+    // Bind apply button
+    document.querySelector('.page-header .btn-primary').addEventListener('click', () => openApplyDrawer({ mode: 'create' }));
+  </script>
+</body>
+</html>

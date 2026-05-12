@@ -1,0 +1,54 @@
+{
+  "_i18n-vendor-DR7G41_u.js": {
+    "file": "assets/i18n-vendor-DR7G41_u.js",
+    "name": "i18n-vendor"
+  },
+  "_react-vendor-BXGwaqVp.js": {
+    "file": "assets/react-vendor-BXGwaqVp.js",
+    "name": "react-vendor"
+  },
+  "index.html": {
+    "file": "assets/index-7FJeIpZz.js",
+    "name": "index",
+    "src": "index.html",
+    "isEntry": true,
+    "imports": [
+      "_react-vendor-BXGwaqVp.js",
+      "_i18n-vendor-DR7G41_u.js"
+    ],
+    "dynamicImports": [
+      "node_modules/.pnpm/@hi-ui+hiui@5.0.0-canary.40_@hi-ui+core@5.0.0-canary.6_react-dom@18.3.1_react@18.3.1__r_951be348019b2e991e0405148549ef49/node_modules/@hi-ui/hiui/lib/esm/index.js"
+    ],
+    "css": [
+      "assets/index-n5WoUs4p.css"
+    ],
+    "assets": [
+      "assets/bottom-avatar-BBp3aXwj.jpg",
+      "assets/profile-card-background-Cm3GH5JR.png",
+      "assets/international-it-bp-avatar-DiRlfP2U.png"
+    ]
+  },
+  "node_modules/.pnpm/@hi-ui+hiui@5.0.0-canary.40_@hi-ui+core@5.0.0-canary.6_react-dom@18.3.1_react@18.3.1__r_951be348019b2e991e0405148549ef49/node_modules/@hi-ui/hiui/lib/esm/index.js": {
+    "file": "assets/index-Cu3a_I4z.js",
+    "name": "index",
+    "src": "node_modules/.pnpm/@hi-ui+hiui@5.0.0-canary.40_@hi-ui+core@5.0.0-canary.6_react-dom@18.3.1_react@18.3.1__r_951be348019b2e991e0405148549ef49/node_modules/@hi-ui/hiui/lib/esm/index.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "index.html",
+      "_react-vendor-BXGwaqVp.js",
+      "_i18n-vendor-DR7G41_u.js"
+    ]
+  },
+  "src/assets/figma/primary-menu/bottom-avatar.jpg": {
+    "file": "assets/bottom-avatar-BBp3aXwj.jpg",
+    "src": "src/assets/figma/primary-menu/bottom-avatar.jpg"
+  },
+  "src/assets/job-shrimp/international-it-bp-avatar.png": {
+    "file": "assets/international-it-bp-avatar-DiRlfP2U.png",
+    "src": "src/assets/job-shrimp/international-it-bp-avatar.png"
+  },
+  "src/assets/job-shrimp/profile-card-background.png": {
+    "file": "assets/profile-card-background-Cm3GH5JR.png",
+    "src": "src/assets/job-shrimp/profile-card-background.png"
+  }
+}
