@@ -1,0 +1,115 @@
+{
+  "_react-vendor-BfVG-Xo3.js": {
+    "file": "assets/react-vendor-BfVG-Xo3.js",
+    "name": "react-vendor"
+  },
+  "index.html": {
+    "file": "assets/index-BX29EjkX.js",
+    "name": "index",
+    "src": "index.html",
+    "isEntry": true,
+    "imports": [
+      "_react-vendor-BfVG-Xo3.js"
+    ],
+    "dynamicImports": [
+      "src/pages/skill-repo/list.tsx",
+      "src/pages/skill-repo/upload.tsx",
+      "src/mock/browser.ts"
+    ],
+    "css": [
+      "assets/index-CLtpZopb.css"
+    ],
+    "assets": [
+      "assets/badge-avatar-default-CsUg-Kku.png",
+      "assets/badge-card-bg-BFwGA93W.png",
+      "assets/badge-status-active-BDHBIRhY.png",
+      "assets/badge-status-draft-BCk2SLWU.png",
+      "assets/badge-status-frozen-BRVZ3gxe.png",
+      "assets/badge-status-offline-C508SpND.png",
+      "assets/badge-status-trial-DYjMRGgJ.png",
+      "assets/profile-card-background-Cm3GH5JR.png",
+      "assets/international-it-bp-avatar-DiRlfP2U.png",
+      "assets/avatar-example-1-DTIE_a9v.png",
+      "assets/avatar-example-2-BsMsbjIf.png",
+      "assets/avatar-example-3-B_ge2RcP.png"
+    ]
+  },
+  "src/assets/badge-avatar-default.png": {
+    "file": "assets/badge-avatar-default-CsUg-Kku.png",
+    "src": "src/assets/badge-avatar-default.png"
+  },
+  "src/assets/badge-card-bg.png": {
+    "file": "assets/badge-card-bg-BFwGA93W.png",
+    "src": "src/assets/badge-card-bg.png"
+  },
+  "src/assets/badge-status-active.png": {
+    "file": "assets/badge-status-active-BDHBIRhY.png",
+    "src": "src/assets/badge-status-active.png"
+  },
+  "src/assets/badge-status-draft.png": {
+    "file": "assets/badge-status-draft-BCk2SLWU.png",
+    "src": "src/assets/badge-status-draft.png"
+  },
+  "src/assets/badge-status-frozen.png": {
+    "file": "assets/badge-status-frozen-BRVZ3gxe.png",
+    "src": "src/assets/badge-status-frozen.png"
+  },
+  "src/assets/badge-status-offline.png": {
+    "file": "assets/badge-status-offline-C508SpND.png",
+    "src": "src/assets/badge-status-offline.png"
+  },
+  "src/assets/badge-status-trial.png": {
+    "file": "assets/badge-status-trial-DYjMRGgJ.png",
+    "src": "src/assets/badge-status-trial.png"
+  },
+  "src/assets/job-shrimp/avatar-example-1.png": {
+    "file": "assets/avatar-example-1-DTIE_a9v.png",
+    "src": "src/assets/job-shrimp/avatar-example-1.png"
+  },
+  "src/assets/job-shrimp/avatar-example-2.png": {
+    "file": "assets/avatar-example-2-BsMsbjIf.png",
+    "src": "src/assets/job-shrimp/avatar-example-2.png"
+  },
+  "src/assets/job-shrimp/avatar-example-3.png": {
+    "file": "assets/avatar-example-3-B_ge2RcP.png",
+    "src": "src/assets/job-shrimp/avatar-example-3.png"
+  },
+  "src/assets/job-shrimp/international-it-bp-avatar.png": {
+    "file": "assets/international-it-bp-avatar-DiRlfP2U.png",
+    "src": "src/assets/job-shrimp/international-it-bp-avatar.png"
+  },
+  "src/assets/job-shrimp/profile-card-background.png": {
+    "file": "assets/profile-card-background-Cm3GH5JR.png",
+    "src": "src/assets/job-shrimp/profile-card-background.png"
+  },
+  "src/mock/browser.ts": {
+    "file": "assets/browser-BpxmGCxI.js",
+    "name": "browser",
+    "src": "src/mock/browser.ts",
+    "isDynamicEntry": true,
+    "imports": [
+      "index.html",
+      "_react-vendor-BfVG-Xo3.js"
+    ]
+  },
+  "src/pages/skill-repo/list.tsx": {
+    "file": "assets/list-a-k9i6b9.js",
+    "name": "list",
+    "src": "src/pages/skill-repo/list.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_react-vendor-BfVG-Xo3.js",
+      "index.html"
+    ]
+  },
+  "src/pages/skill-repo/upload.tsx": {
+    "file": "assets/upload-DihJmdKo.js",
+    "name": "upload",
+    "src": "src/pages/skill-repo/upload.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_react-vendor-BfVG-Xo3.js",
+      "index.html"
+    ]
+  }
+}
