@@ -1,22 +1,23 @@
 {
-  "_react-vendor-DIKJe53O.js": {
-    "file": "assets/react-vendor-DIKJe53O.js",
+  "_react-vendor-BfVG-Xo3.js": {
+    "file": "assets/react-vendor-BfVG-Xo3.js",
     "name": "react-vendor"
   },
   "index.html": {
-    "file": "assets/index-Pn_cphbX.js",
+    "file": "assets/index-CpSqWCqD.js",
     "name": "index",
     "src": "index.html",
     "isEntry": true,
     "imports": [
-      "_react-vendor-DIKJe53O.js"
+      "_react-vendor-BfVG-Xo3.js"
     ],
     "dynamicImports": [
       "src/pages/skill-repo/list.tsx",
-      "src/pages/skill-repo/upload.tsx"
+      "src/pages/skill-repo/upload.tsx",
+      "src/mock/browser.ts"
     ],
     "css": [
-      "assets/index-SaPGAmP5.css"
+      "assets/index-CLtpZopb.css"
     ],
     "assets": [
       "assets/badge-avatar-default-CsUg-Kku.png",
@@ -25,7 +26,12 @@
       "assets/badge-status-draft-BCk2SLWU.png",
       "assets/badge-status-frozen-BRVZ3gxe.png",
       "assets/badge-status-offline-C508SpND.png",
-      "assets/badge-status-trial-DYjMRGgJ.png"
+      "assets/badge-status-trial-DYjMRGgJ.png",
+      "assets/profile-card-background-Cm3GH5JR.png",
+      "assets/international-it-bp-avatar-DiRlfP2U.png",
+      "assets/avatar-example-1-DTIE_a9v.png",
+      "assets/avatar-example-2-BsMsbjIf.png",
+      "assets/avatar-example-3-B_ge2RcP.png"
     ]
   },
   "src/assets/badge-avatar-default.png": {
@@ -56,23 +62,53 @@
     "file": "assets/badge-status-trial-DYjMRGgJ.png",
     "src": "src/assets/badge-status-trial.png"
   },
+  "src/assets/job-shrimp/avatar-example-1.png": {
+    "file": "assets/avatar-example-1-DTIE_a9v.png",
+    "src": "src/assets/job-shrimp/avatar-example-1.png"
+  },
+  "src/assets/job-shrimp/avatar-example-2.png": {
+    "file": "assets/avatar-example-2-BsMsbjIf.png",
+    "src": "src/assets/job-shrimp/avatar-example-2.png"
+  },
+  "src/assets/job-shrimp/avatar-example-3.png": {
+    "file": "assets/avatar-example-3-B_ge2RcP.png",
+    "src": "src/assets/job-shrimp/avatar-example-3.png"
+  },
+  "src/assets/job-shrimp/international-it-bp-avatar.png": {
+    "file": "assets/international-it-bp-avatar-DiRlfP2U.png",
+    "src": "src/assets/job-shrimp/international-it-bp-avatar.png"
+  },
+  "src/assets/job-shrimp/profile-card-background.png": {
+    "file": "assets/profile-card-background-Cm3GH5JR.png",
+    "src": "src/assets/job-shrimp/profile-card-background.png"
+  },
+  "src/mock/browser.ts": {
+    "file": "assets/browser-B1C7fHAu.js",
+    "name": "browser",
+    "src": "src/mock/browser.ts",
+    "isDynamicEntry": true,
+    "imports": [
+      "index.html",
+      "_react-vendor-BfVG-Xo3.js"
+    ]
+  },
   "src/pages/skill-repo/list.tsx": {
-    "file": "assets/list-DSipD-Tr.js",
+    "file": "assets/list-DpzmS0f-.js",
     "name": "list",
     "src": "src/pages/skill-repo/list.tsx",
     "isDynamicEntry": true,
     "imports": [
-      "_react-vendor-DIKJe53O.js",
+      "_react-vendor-BfVG-Xo3.js",
       "index.html"
     ]
   },
   "src/pages/skill-repo/upload.tsx": {
-    "file": "assets/upload-IF_BIPJJ.js",
+    "file": "assets/upload-CVwk5GAn.js",
     "name": "upload",
     "src": "src/pages/skill-repo/upload.tsx",
     "isDynamicEntry": true,
     "imports": [
-      "_react-vendor-DIKJe53O.js",
+      "_react-vendor-BfVG-Xo3.js",
       "index.html"
     ]
   }
