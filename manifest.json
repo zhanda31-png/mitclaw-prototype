@@ -4,7 +4,7 @@
     "name": "react-vendor"
   },
   "index.html": {
-    "file": "assets/index-CpSqWCqD.js",
+    "file": "assets/index-CoZRPbtZ.js",
     "name": "index",
     "src": "index.html",
     "isEntry": true,
@@ -83,7 +83,7 @@
     "src": "src/assets/job-shrimp/profile-card-background.png"
   },
   "src/mock/browser.ts": {
-    "file": "assets/browser-B1C7fHAu.js",
+    "file": "assets/browser-CUvb1ayh.js",
     "name": "browser",
     "src": "src/mock/browser.ts",
     "isDynamicEntry": true,
@@ -93,7 +93,7 @@
     ]
   },
   "src/pages/skill-repo/list.tsx": {
-    "file": "assets/list-DpzmS0f-.js",
+    "file": "assets/list-T7kldT5W.js",
     "name": "list",
     "src": "src/pages/skill-repo/list.tsx",
     "isDynamicEntry": true,
@@ -103,7 +103,7 @@
     ]
   },
   "src/pages/skill-repo/upload.tsx": {
-    "file": "assets/upload-CVwk5GAn.js",
+    "file": "assets/upload-Bcy_4d5d.js",
     "name": "upload",
     "src": "src/pages/skill-repo/upload.tsx",
     "isDynamicEntry": true,
